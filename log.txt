@@ -1,0 +1,258 @@
+09/04/18 16:53
+- Service Call & Inventory Recon App added
+- Spatie Laravel-Permissions added for managing roles & permissions
+- SuperAdmin middleware removed
+- `role` column in `users` table removed
+- Role Model, Controller & View altered for readability and convenience
+  based on existing UI
+
+09/05/18 09:55
+- Permission Model, Controller & View altered for readability and convenience
+  based on exisiting UI
+
+09/05/18 11:45
+- Displaying errors & successes using @include
+- AuthorizationController added for managing user authorizations
+
+09/06/18 16:01
+- items, brands & categories url route changed to product/items, product/brands & product/categories
+- ProductItemClearance, ProductCategoryClearance & ProductBrandClearance middleware added for authorization control
+
+09/08/18 11:55
+- service_categories, service_providers & service_types url route changed to service/categories, service/providers & service/types
+- PowerInterruptionClearance, ServiceCategoryClearance, ServiceProviderClearance, ServiceTypeClearance & ConnentivityTicketClearance middleware added for authorization control
+
+09/13/18 13:14
+- InventoryClearance middleware added for authorization control
+- Machine number 103 hard-coded as Admin in branch table; used in InventoryRecon to identify Inventory Admin & Inventory User
+- Views, routes & controller added for Inventory Recon Web App
+
+09/14/18 9:01
+- MessageCastSettingClearance, MessageClearance & ContactListClearance middleware added for authorization control for MessageCast Web App
+- Views, routes & controller added for Message Cast Web App
+
+09/17/18 09:51
+- PermissionsTableSeeder seeder added for convenience
+
+09/17/18 15:36
+- Camera & File Model with migration & controller added for Customer Photo Web App
+
+09/18/18 15:46
+- Camera model with routes, migration & controller changed to Customer model with routes, migration & controller
+- CustomerClearance middleware added for authorization control for Customer Photo Web App
+- customers/*/files/*/store route url change to customers/*/files/*/supply
+  customers/*/files/*/edit route url change to customers/*/files/*/alter
+  customers/*/files/*/update route url change to customers/*/files/*/revise
+  customers/*/files/*/trash route url change to customers/*/files/*/bin
+  customers/*/files/*/delete route url change to customers/*/files/*/destroy
+  to fix bug in CustomerClearance middleware conflict with other route url
+
+09/18/18 16:30
+- AdminAuth middleware added to ThemeController
+
+09/19/18 09:49
+- File doesn't belong to customer & customer doesn't belong to user's branch fixed in CustomerController
+
+09/19/18 16:04
+- Pending & PendingChart model added
+- Region model with routes, migration & controller added
+
+09/20/18 10:19
+- PendingController added
+- pending views added
+- user_id column in pendings table changed to branch_id to make user independent in adding pendings
+- Minor labeling in branch views and controller
+
+09/20/18 16:02
+- Partial views in pendings has been updated
+
+09/21/18 17:00
+- PendingChartController with routes & views has been updated
+
+09/22/18 15:43
+- PendingClearance added for authorization control
+
+09/26/18 09:14
+- InterviewSchedule model with routes, migration, controller & views added
+- InterviewScheduleClearance middleware added for authorization control
+
+09/26/18 16:58
+- Department, Position, AccessChart & UserEmployment model with routes, migration & controller added
+
+09/27/18 10:04
+- BranchesTableSeeder seeder updated
+- PermissionsTableSeeder seeder updated
+- RegionsTableSeeder seeder added
+- RolesTableSeeder seeder added
+- ModelHasRolesTableSeeder seeder added for default super admin
+- RoleHasPermissionsTableSeeder seeder added for default super admin
+- Make default super admin (Alexander Flores, alexela8882@gmail.com) impossible to access, edit and delete
+
+09/27/18 13:32
+- updating branch_id column in users table when UserEmploymentController@update triggered
+- updating branch_id column in user_employments table when UserController@update triggered
+
+09/27/18 15:07
+- previous & next button added in branches.edit, regions.edit & users.employment_details.edit
+
+09/29/18 15:37
+- AccessChart, AccessLevel, AccessChartUserMap model with routes, migrations, views & controllers added
+
+10/01/18 10:20
+- Column approval_number added in table interview_schedules
+
+10/02/18 09:50
+- BranchSchedule model with routes, migrations, controller & views added
+- name column in branch_schedules table removed
+
+10/02/18 13:36
+- Branch machine number in migration updated
+
+10/03/18 10:42
+- Action column in bootstrap table of Interview Schedules removed if the role is Interview Schedule Admin
+
+10/03/18 10:43
+- ReportClearance middleware added for authorization control for Biometric Report & DTR Report
+
+10/03/18 11:04
+- Import Daily Time Record Logs permission let url reports/biometric pass the report_clearance (fixed)
+
+10/03/18 13:58
+- Printing in pending trasnaction monitoring web app fixed - added button to print in new window
+
+10/03/18 15:36
+- EmployeeController, Employee Dashboard & EmployeeClearance added
+- remarks & last_date_reported column added in table user_employments
+- PermissionsTableSeeder updated
+
+10/04/18 10:27
+- Show Employee changed to Show Employees
+- Edit Employee changed to Edit Employees
+
+10/04/18 10:51
+- Saving both user_id & branch_id column in UserController after storing in users table
+- sss, branch & department column removed in bootstrap table of Employee Dashboard
+
+10/06/18 10:53
+- Page title added for every laravel blade template
+- Uniformity of views template updated
+
+10/09/18 09:41
+- user_id column in customers table removed
+
+10/15/18 14:44
+- Import employee data in users.index added for convenience
+
+10/15/18 15:25
+- Page title in login page added
+
+10/15/18 15:41
+- Displaying all employees when the user's machine number is 103 in EmployeeController@index altered
+
+10/16/18 16:15
+- Position, Department & Access Chart added when importing users
+
+10/21/18 11:40
+- branch selection in adding user in access chart added
+- deleting user in access_chart_user_maps table when deleting users
+- deleting user in user_employments table when deleting users
+
+10/22/18 16:26
+- timezone in config/app.php changed from 'Asia/Manila' to 'UTC'
+
+10/14/18 08:43
+- EmployeeController@index get all employee when user has permission 'Show Employee' otherwise get employees same with the user's branch
+
+11/03/18 10:08
+- Sync data in Customers added
+
+11/06/18 14:20
+- upload_fail Session changed to update_fail in InventoryController@import_proceed for displaying error message when importing
+- status in connecticity ticket removed when creating & editing tickets
+- fill up date resolution to close connectivity tickets & leave blank to open status
+
+11/08/18 08:35
+- timezone in config/app.php changed from 'UTC' to 'Asia/Manila' for accurate record logs
+- line 35 in PendingController.php changed from "'now' => Carbon::now()->addHour(+8)->format('H:i:s'),"
+  to "'now' => Carbon::now()->format('H:i:s'),"
+
+11/16/18 11:49
+- OTLOA webapp added with model, controller, migration, middleware and routes
+
+11/17/18 09:12
+- Employee details popover added in Overtime Pending Approval
+
+11/19/18 13:53
+- OtloaApprovalClearance updated
+- OvertimeClearance added
+- BodController removed; control moved to ApprovalController
+- PermissionsTableSeeder and RolesTableSeeder Updated
+- bug in tooltip and popover in overtimes.index fixed
+
+11/20/18 08:52
+- Logic in OtloaApprovalClearance resolved (Overlook & Approver)
+
+11/20/18 11:22
+- Bug fixed in views overtimes.approvals.approve, overtimes.approvals.return & overtimes.approvals.reject
+
+11/20/18 11:45
+- OvertimeApprovalController added
+- ApprovalController codes moved to OvertimeApprovalController
+- ApprovalController removed
+- routes updated
+
+11/21/18 16:55
+- reason in views & controller revised to new format
+
+12/03/18 10:23
+- overtimes.reports.index updated: pre_totaltime must not be in a negative value when adding to post_totaltime
+
+12/18/18
+- Export PDF fixed in Biometric Reporting
+
+01/23/19 10:32
+- PendingController@methods altered for adding pendings by pending admins
+- index_as, add_as, edit_as & readd_as methods added in PendingController
+- New routes for pending added in web.php
+- as_branch folder in pendings view added
+- PendingClearance altered
+
+01/23/19 11:27
+- Variable `$branch_id` bug fixed in PendingController@chart & PendingController@filtered_chart
+
+01/23/19 11:58
+- Adding breakdown on chart by pending admin added
+
+01/24/019 15:11
+- adding, editing, readding and deleting of pending by pending admins restricted based on branch's connectivity & power interruptions which managed by service call dashboard
+- PendingController@methods and pendings view altered for this change
+
+01/26/19 13:49
+- PendingClearance altered for restrictions of users and admin rights
+
+01/28/19 09:34
+- pending.readd_breakdown route changed from {id}/readd_breakdown to {id}/{pending_id}/readd_breakdown
+- PendingController@readd_breakdown method altered: branch id is added
+- pendings.breakdown view altered: branch id added in route pending.readd_breakdown
+
+01/28/19 11:37
+- pending.store_breakdown route changed from store_breakdown to {branch_id}/store_breakdown
+- PendingController@store_breakdown method altered: branch id is added
+- PendingClearance.php altered based on the changed route
+- Bug fixed in pendings.index & pendings.ci views
+- grace_period, conn_tickets_array & power_interruptions_array variables added in PendingController@show & PendingController@show_ci
+
+01/29/19 09:54
+- pending.edit_as route changed from {id}/edit_as to {id}/{pending_as}/edit_as
+- pending.delete route changed from {id}/delete to {id}/{pending_as}/delete
+- PendingController@edit_as & PendingController@delete method altered: branch id is added
+- pendings.as_branch.index & pendings.as_branch.index_previous views altered based on changed route
+- pendings.as_branch.readd route altered: cancel button redirected to specific branch
+
+01/29/19 11:15
+- pendings.index2 & pendings.index3 views altered based on changed route
+
+01/30/19 11:27
+- check problem column in connectivity_tickets if there's a string like 'noconnection'
+  to determine the status of branches with no connection to be reflected in pending monitoring
+- ConnectivityTicket model altered in PendingController@__construct

@@ -1,0 +1,94 @@
+html {
+  overflow-y: scroll;
+}
+
+/*Button look likes a link*/
+.btn-to-link {
+	background:none !important;
+	color:#5f86e6;
+	border:none;
+	padding:0!important;
+	font: inherit;
+	/*border is optional*/
+	border-bottom:1px solid #5f86e6;
+	cursor: pointer;
+}
+
+.thumbnail {
+  display: block;
+  padding: 4px;
+  margin-bottom: 20px;
+  line-height: 1.42857143;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  -webkit-transition: border .2s ease-in-out;
+       -o-transition: border .2s ease-in-out;
+          transition: border .2s ease-in-out;
+}
+.thumbnail > img,
+.thumbnail a > img {
+  margin-right: auto;
+  margin-left: auto;
+}
+a.thumbnail:hover,
+a.thumbnail:focus,
+a.thumbnail.active {
+  border-color: #337ab7;
+}
+.thumbnail .caption {
+  padding: 9px;
+  color: #333;
+}
+
+
+table.invt_tbl {
+  text-align: center;
+  vertical-align: middle;
+}
+
+code.code_inverse {
+  color: #6464ec;
+}
+
+.reason-list {
+  margin: 0;
+  padding: 0 10px 0 10px;
+}
+
+.theme-selector {
+  display: none !important;
+}
+
+.overtime_checkbox {
+  margin: 10px 0 0 0;
+}
+
+.skin-black-light .sidebar-menu > li:hover > a,
+.skin-black-light .sidebar-menu .treeview-menu > li > a:hover {
+  color: #000 !important;
+}
+
+.skin-black-light .sidebar-menu > li.active > a,
+.skin-black-light .sidebar-menu .treeview-menu > li.active > a {
+  color: #016205 !important;
+}
+
+pre {
+  border: 1px solid transparent !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/*Button color fixer for selected row in datatables*/
+table.dataTable tbody tr.selected a,
+table.dataTable tbody th.selected a,
+table.dataTable tbody td.selected a {
+  color: #444 !important;
+}
+
+/*fixed for small popup sweetaler2 when using bootstrap*/
+.swal2-popup {
+  font-size: 1.6rem !important;
+}

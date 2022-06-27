@@ -1,0 +1,224 @@
+01/31/19 14:46
+- AdminLTE theme applied
+- Theme applied to branches views
+
+01/31/19 16:49
+- Theme applied to branches.schedules views
+
+02/01/19 09:00
+- Theme applied to regions views
+
+02/01/19 09:51
+- Theme applied to users views
+- major bug fixed in UserController@delete method
+
+02/01/19 10:28
+- Theme applied to users.employment_details views
+
+02/01/19 12:00
+- Major bug fixed in UserController@store: validation for empty branch_input
+
+02/01/19 13:46
+- iCheck.js added in app.blade.php
+
+02/01/19 14:14
+- Theme applied to users.authorizations views
+
+02/01/19 14:54
+- Dynamic active routing state applied in includes.sidenav view
+
+02/01/19 17:01
+- Theme applied in roles & permissions view
+- Dynamic active routing state updated in includes.sidenav view
+
+02/02/19 08:53
+- Theme applied in departments view
+
+02/02/19 09:12
+- Theme applied in positions view
+- fixed class added in body tag in layouts.app view for fixed menu & sidenav bar
+- table-responsive class added in every index of views
+
+02/02/19 14:17
+- Theme applied in biometrics.reports view
+- date range applied in biometrics.reports view
+
+02/02/19 15:38
+- Theme applied in biometrics.branch_reports view
+- Theme applied in dtrs.reports view
+- Theme applied in dtrs.branch_reports view
+- Major bug fixed in includes.reports view
+
+02/02/19 16:23
+- Display bug fixed in dtrs.reports view
+
+02/04/19 11:42
+- jquery-datetimepicker fixed in layouts.app view
+- Theme applied in employees view
+
+02/05/19 08:29
+- Roles & Approving Officers added in includes.nav view
+
+02/05/19 09:03
+- Validator bug fixed in InterviewScheduleController@store
+
+02/05/19 09:14
+- Theme applied in schedules.interviews view
+
+02/05/19 09:58
+- Theme applied in overtimes.reports & overtimes.branch_reports view
+- includes.header added in overtimes.report view
+
+02/05/19 11:44
+- Theme applied in overtimes view
+- includes.sidenav updated for overtime links
+
+02/05/19 14:59
+- Theme applied in overtimes.approvals & overtimes.overlooks view
+
+02/05/19 15:15
+- bug fixed in ReportController@overtime, @dtr, @biometric &
+  BranchReportController@overtime, @dtr, @biometric: addDays(1) added in variable $end
+- Print button added at the bottom of DTR Report page
+
+02/06/19 16:30
+- Theme applied in tickets.computerwares
+
+02/11/19 10:12
+- Theme applied in products view
+- Bug fixed in error catching of products.brands.index, products.items.index & products.categories.index
+
+02/11/19 14:33
+- Theme applied in services view
+- Bug fixed in error catching of services.providers.index, services.types.index & services.categories.index
+
+02/12/19 13:32
+- Theme applied in tickets.connectivities, power_interruptions & access_charts view
+
+02/13/19 14:52
+- Debug Bar Package added as troubleshooting tools
+- Laravel caching sample added in UserController@index, UserController@store & UserController@update
+
+02/14/19 09:42
+- Theme applied in inventories view
+- includes.sidenav updated for active routing state
+
+02/14/19 10:15
+- Theme applied in inventories.branch view
+
+02/16/19 10:20
+- Theme applied in pendings view
+
+02/16/19 12:00
+- includes.sidenav view updated for active routing state
+
+02/16/19 14:25
+- Theme applied in charts view
+
+02/18/19 14:17
+- Theme applied in settings, contact_lists & messages view
+
+02/19/19 08:12
+- includes.nav view updated for active routing state
+
+02/19/19 11:27
+- Theme applied in customers & customers.files view
+- includes.sidenav update for active routing state
+
+02/20/19 09:01
+- Query in AuthorizationController@index optimized
+
+02/20/19 09:15
+- Query in UserEmploymentController@index optimized
+
+02/20/19 11:42
+- Query in EmployeeController@index optimized
+- Exporting PDF in schedules.interviews view added
+
+02/20/19 12:00
+- Exporting PDF in employees view added
+
+02/21/19 14:25
+- DataTables buttons, fixedcolumns & fixedheader extensions added
+- Applied in inventories.branch.get_raw.blade.php
+
+02/22/19 14:30
+- DataTables buttons, fixedcolumns & fixedheader extensions applied in all index tables
+
+02/23/19 11:30
+- Query in ConnectivityTicketController@index optimized
+- Datatables responsive applied in all index tables
+- Datatables resposnive with modal applied in
+  tickets.connectivities.index, tickets.compouterwares.index, overtimes.index & branches.index
+
+02/26/19 08:41
+- Datatables responsive applied in power_interruptions view
+
+02/27/19 09:02
+- Datatables editor trial version tested & applied in branches.schedules view
+
+02/28/19 16:01
+- Theme for adminlte applied in view and database
+- clickable-row class in table>tr removed; select: true in datatables options added
+
+03/02/19 13:40
+- UserClearance, UserEmploymentClearance, UserAuthorizationClearance,
+  BranchClearance, DepartmentClearance & PositionClearance middleware added for more control
+- UserControl, UserEmploymentControl, UserAuthorizationControl,
+  BranchControl, DepartmentControl & PositionControl updated
+- Kernel.php updated
+
+03/02/19 14:08
+- Button color fixer for selected row in datatables added in public/app.css
+
+03/02/19 14:34
+- AccessChartClearance middleware added for control
+- Kernel.php updated
+- AccessChartController, AccessChartuserMapController & AccessLevelController updated
+
+03/02/19 14:56
+- PermissionsTableSeeder updated
+
+03/02/19 17:01
+- Not Assigned employment fixed in includes.sidenav & includes.nav
+- Prevent editing Administer roles & permissions permission in Super Admin role
+- Prevent deleting Super Admin role in view, clearance & controller
+- Prevent deleting Administer roles & permissions permission in view, clearance & controller
+
+03/06/19 16:16
+- roles.edit altered to make permissions id 1 (Administer roles & permissions) default for role id 1 (Super Admin)
+- User Authorization & User Employments permissions added in permissions seeder
+- includes.sidenav updated; wrong placement of user, user auth & user employments
+
+03/07/19 08:12
+- Generate Overtime Reports & Generate Leave of Absence Reports permission added in seeder
+
+03/07/19 09:12
+- Folder 'migrations_70' added in /database/ path and moved a copy of themes migration
+- Permissions in Reports links in includes.sidenav fixed
+
+03/07/19 10:20
+- Not assigned employment, department, branch, position in includes.nav & includes.sidenav view fixed
+- Behind the table header tooltip fixed in overtimes.index view
+
+03/07/19 13:11
+- ordering datatables in inventories.index removed
+
+03/07/19 15:23
+- Exporting datatables with linebreak applied in tickets.connectivities.index view
+
+03/08/19 11:04
+- Compute for total days, hours & minutes using columnDefs
+- footerCallback datatables applied in tickets.connectivities.index
+- Compute for total seconds added in footer
+
+03/09/19 14:29
+- Compute for total days, hours & minutes added in footer
+
+03/11/19 11:26
+- Forget cache in UserController@delete to update users in the client side
+- Includes access_chart_users/*/store in AccessChartClearance to prevent unauthorized users to assign approving officers
+
+03/12/19 09:35
+- Typo error in App\UserEmployment.php fixed (AccesschartUserMap instead of AccessChartUserMap)
+- Double loop in overtimes.index fixed

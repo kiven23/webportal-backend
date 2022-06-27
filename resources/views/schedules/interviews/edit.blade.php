@@ -1,0 +1,93 @@
+@extends('layouts.app')
+
+@section('title', 'Edit Interview Schedule')
+
+@section('content')
+<div class="content-wrapper">
+  <section class="content-header">
+    <h1>
+      Scheduling
+      <small>Manage interview schedules</small>
+    </h1>
+    <ol class="breadcrumb">
+      <li><a href="{{ route('home') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+      <li><a href="{{ route('interview_scheds.index') }}">Interview Schedules</a></li>
+      <li class="active">Edit</li>
+    </ol>
+  </section>
+
+  <section class="content">
+    <div class="row mt-4 mb-4">
+      <div class="col-md-12">
+        <div class="box box-warning">
+          <div class="box-header with-border">
+            <h3 class="box-title">
+              Edit interview schedule
+            </h3>
+          </div>
+          <form method="post" action="{{ route('interview_sched.update', ['id' => $isched->id]) }}">
+						{{ csrf_field() }}
+						<div class="box-body">
+							<div class="row">
+								<div class="col-md-5">
+									@include ('errors.list')
+									@include ('successes.list')
+
+				          <div class="form-group {{ $errors->has('applicant_name') ? 'has-error' : '' }}">
+										<label>Name of Applicant</label>
+										<input type="text" class="form-control" name="applicant_name" value="{{ $isched->applicant_name }}" placeholder="Full Name">
+										@if ($errors->has('applicant_name'))
+											<span class="form-text text-danger">
+												{{ $errors->first('applicant_name') }}
+											</span>
+										@endif
+									</div>
+
+									<div class="form-group {{ $errors->has('contact_number') ? 'has-error' : '' }}">
+										<label>Contact Number</label>
+										<input type="text" class="form-control" name="contact_number" value="{{ $isched->contact_number }}" placeholder="Contact Number">
+										@if ($errors->has('contact_number'))
+											<span class="form-text text-danger">
+												{{ $errors->first('contact_number') }}
+											</span>
+										@endif
+									</div>
+
+				          <div class="form-group {{ $errors->has('position_applying') ? 'has-error' : '' }}">
+										<label>Position Applying For</label>
+										<input type="text" class="form-control" name="position_applying" value="{{ $isched->position_applying }}" placeholder="Position">
+										@if ($errors->has('position_applying'))
+											<span class="form-text text-danger">
+												{{ $errors->first('position_applying') }}
+											</span>
+										@endif
+									</div>
+
+									<div class="form-group {{ $errors->has('approval_number') ? 'has-error' : '' }}">
+										<label>Approval Number</label>
+										<input type="text" class="form-control" name="approval_number" value="{{ $isched->approval_number }}" placeholder="Approval Number">
+										@if ($errors->has('approval_number'))
+											<span class="form-text text-danger">
+												{{ $errors->first('approval_number') }}
+											</span>
+										@endif
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="box-footer">
+							<div class="row">
+								<div class="col-md-5">
+									<button type="submit" class="btn btn-primary">Update</button>
+									<a href="{{ route('interview_scheds.index') }}" class="btn btn-default pull-right">Back</a>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>
+@endsection

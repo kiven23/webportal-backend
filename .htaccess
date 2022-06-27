@@ -1,0 +1,4 @@
+<FilesMatch "^\.env|composer.json|server.php|README.txt|readme.md|log.txt|log - V2.0.txt">
+Order allow,deny
+Deny from all
+</FilesMatch>

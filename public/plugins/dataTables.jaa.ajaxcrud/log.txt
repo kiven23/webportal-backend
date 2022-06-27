@@ -1,0 +1,33 @@
+03/15/19 10:37
+- Initial
+
+03/15/19 13:34
+- Bug fixed in keyup & readonly state
+- formId & modalId added
+
+03/15/19 14:25
+- Throw "Not Assigned" when column is null when adding rows to dataTables
+
+03/16/19 11:54
+- Converted into plugin
+- Args added: modal, table (both required)
+- Modal must be outside the table
+
+03/18/19 16:24
+- DataTables must be in ajax server-side to implement dynamic add rows based on column name
+- Ajax index controller added in Laravel side
+- operators for buttons moved from plugin to initialized table
+- Appending new data in select tag added
+
+03/19/19 09:27
+- Checking duplicate option before appending into select tag
+- Check var formSelects first before doing the function: for non-selects form
+
+03/20/19 08:25
+- Get first record when success and pass response from controller
+- Ajax success change from data.respose[0] to data.response
+- FormData used in form instead of serialize()
+
+03/21/19 14:34
+- `$(this).next().remove();` replaced to `$(this).siblings('span').remove();`
+  to be more precise on what's really removing which is the bootstrap helpblock for error validation

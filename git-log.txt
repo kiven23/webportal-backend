@@ -1,0 +1,1 @@
+git log --stat --pretty=format:"%ad %s %N" --date=format:"%c"
