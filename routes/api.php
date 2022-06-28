@@ -34,16 +34,13 @@ Route::group(['prefix' => 'users', 'middleware' => ['jwt.auth', 'user_clearance'
 });
 
 Route::group(['prefix' => 'divisions', 'middleware' => ['jwt.auth', 'division_clearance']], function () {
-
 	Route::get('/', 'DivisionController@all')->name('divisions');
 	Route::post('/', 'DivisionController@store_api')->name('division.store');
 	Route::put('/update', 'DivisionController@update_api')->name('division.update');
 	Route::patch('/delete/multiple', 'DivisionController@delete_multiple')->name('division.delete');
-
 });
 
 Route::group(['prefix' => 'departments', 'middleware' => ['jwt.auth', 'department_clearance']], function () {
-
 	Route::get('/', 'DepartmentController@all')->name('departments');
 	Route::post('/', 'DepartmentController@store_api')->name('department.store');
 	Route::put('/update', 'DepartmentController@update_api')->name('department.update');
@@ -206,9 +203,7 @@ Route::group(['prefix' => 'pending-transactions', 'middleware' => ['jwt.auth', '
 	Route::patch('/delete', 'PendingController@delete_api')->name('pendingtransaction.delete');
 });
 
-
-
-	// ARCHIVED
+	//ARCHIVED
 	Route::group(['prefix' => 'archived', 'middleware' => ['jwt.auth', 'government_clearance']], function () {
 
 		Route::get('/index', 'ArchivedController@all')->name('archived.land');
@@ -218,7 +213,7 @@ Route::group(['prefix' => 'pending-transactions', 'middleware' => ['jwt.auth', '
 		Route::post('/delete', 'ArchivedController@delete')->name('archived.land.delete');
 	});
 
-	// AGENCIES
+	//AGENCIES
 	Route::group(['prefix' => 'agencies','middleware' => ['jwt.auth', 'government_clearance']], function () {
 		Route::get('/index', 'AgenciesController@all')->name('agencies.all');
 		Route::post('/store', 'AgenciesController@store')->name('agencies.store');
@@ -227,8 +222,8 @@ Route::group(['prefix' => 'pending-transactions', 'middleware' => ['jwt.auth', '
 		Route::post('/download', 'AgenciesController@download')->name('agencies.download');
 		Route::post('/delete', 'AgenciesController@delete')->name('agencies.delete');
 	});
-	Route::post('/agencies/date', 'AgenciesController@getDate')->name('agencies.date');
-	Route::get('/date', 'DateController@get_date')->name('getDate');
+		Route::post('/agencies/date', 'AgenciesController@getDate')->name('agencies.date');
+		Route::get('/date', 'DateController@get_date')->name('getDate');
 
  
     //BRANCH PUBLIC API
@@ -236,34 +231,36 @@ Route::group(['prefix' => 'pending-transactions', 'middleware' => ['jwt.auth', '
 		Route::get('/public', 'CustomerDigitizedReqController@branches')->name('digitizedcustomer.branches');
 		
 	});
-		//SAP API
-		Route::group(['prefix' => 'public', 'middleware'=> ['jwt.auth', 'sapapi_clearance']], function () {
-				//INSTALLMENT DUE
-				Route::post('/index', 'SapApiController@index')->name('sap.index');
-				Route::post('/installment', 'SapApiController@installment')->name('sap.installment');
-                //CREDIT STANDING	
-				Route::post('/credit/standing/generate', 'CreditStandingController@generate')->name('credit.standing.generate');
-				Route::get('/credit/standing/index', 'CreditStandingController@index')->name('credit.standing.index');
-				//INSTALLMENT LEDGER-> RECON
-				Route::post('/installment/index', 'SapApiController@installment_ledger')->name('sap.installment.index');
-				Route::post('/installment/create', 'SapApiController@installment_Bal')->name('sap.installment_Bal');
-				Route::post('/installment/updatemanual', 'SapApiController@updatemanual')->name('sap.updatemanual');
-				//GET BRANCH SEGMENTCODE
-				Route::get('/branch/segment', 'SapApiController@getBranchSegment')->name('sap.getBranchSegment');
-		});
-		//DIGITIZED REQUIREMENT
-		Route::group(['prefix' => 'digitized', 'middleware' => ['jwt.auth', 'cdr_clearance']], function () {
-			Route::get('/index', 'CustomerDigitizedReqController@index')->name('digitizedcustomer.index');
-			Route::post('/upload', 'CustomerDigitizedReqController@upload')->name('digitizedcustomer.upload');
-			Route::post('/update', 'CustomerDigitizedReqController@update')->name('digitizedcustomer.update');
-			Route::post('/download', 'CustomerDigitizedReqController@download')->name('digitizedcustomer.download');
-			Route::post('/trash', 'CustomerDigitizedReqController@trash')->name('digitizedcustomer.trash');
-			Route::post('/delete', 'CustomerDigitizedReqController@delete')->name('digitizedcustomer.delete');
-		});
 
-		//BLACKLISTED CUSTOMER
-		Route::group(['prefix' => 'blacklisted'], function () {
-			Route::get('/index', 'BlackListedController@index')->name('blacklisted.index');
-			Route::post('/upload', 'BlackListedController@upload')->name('blacklisted.upload');
-			Route::post('/search', 'BlackListedController@search')->name('credit.search.index');
-		});
+	//SAP API
+	Route::group(['prefix' => 'public', 'middleware'=> ['jwt.auth', 'sapapi_clearance']], function () {
+			//INSTALLMENT DUE
+			Route::post('/index', 'SapApiController@index')->name('sap.index');
+			Route::post('/installment', 'SapApiController@installment')->name('sap.installment');
+			//CREDIT STANDING	
+			Route::post('/credit/standing/generate', 'CreditStandingController@generate')->name('credit.standing.generate');
+			Route::get('/credit/standing/index', 'CreditStandingController@index')->name('credit.standing.index');
+			//INSTALLMENT LEDGER-> RECON
+			Route::post('/installment/index', 'SapApiController@installment_ledger')->name('sap.installment.index');
+			Route::post('/installment/create', 'SapApiController@installment_Bal')->name('sap.installment_Bal');
+			Route::post('/installment/updatemanual', 'SapApiController@updatemanual')->name('sap.updatemanual');
+			//GET BRANCH SEGMENTCODE
+			Route::get('/branch/segment', 'SapApiController@getBranchSegment')->name('sap.getBranchSegment');
+	});
+
+	//DIGITIZED REQUIREMENT
+	Route::group(['prefix' => 'digitized', 'middleware' => ['jwt.auth', 'cdr_clearance']], function () {
+		Route::get('/index', 'CustomerDigitizedReqController@index')->name('digitizedcustomer.index');
+		Route::post('/upload', 'CustomerDigitizedReqController@upload')->name('digitizedcustomer.upload');
+		Route::post('/update', 'CustomerDigitizedReqController@update')->name('digitizedcustomer.update');
+		Route::post('/download', 'CustomerDigitizedReqController@download')->name('digitizedcustomer.download');
+		Route::post('/trash', 'CustomerDigitizedReqController@trash')->name('digitizedcustomer.trash');
+		Route::post('/delete', 'CustomerDigitizedReqController@delete')->name('digitizedcustomer.delete');
+	});
+
+	//BLACKLISTED CUSTOMER
+	Route::group(['prefix' => 'blacklisted'], function () {
+		Route::get('/index', 'BlackListedController@index')->name('blacklisted.index');
+		Route::post('/upload', 'BlackListedController@upload')->name('blacklisted.upload');
+		Route::post('/search', 'BlackListedController@search')->name('credit.search.index');
+	});
