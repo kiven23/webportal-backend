@@ -21,8 +21,12 @@ class CustomerDigitizedReqController extends Controller
     public function branches(){
         $branches = Branch::orderBy('name', 'asc')->get();
         foreach($branches as $branch){
-            $b[] = ['name'=> $branch->name, 'value'=> $branch->id, 'sapcode' => $branch->sapcode];
+            $b[] = ['name'=> $branch->name,
+             'value'=> $branch->id, 
+             'sapcode' => $branch->sapcode,
+             'segment'=> $branch->sap_segment];
         }
+
     	return response()->json($b);
     }
     public function upload(request $req){

@@ -11,7 +11,7 @@ use Carbon\Carbon;
 class SapApiController extends Controller
 {
     public function index(request $req){
-      
+       
         if($req->sapcode){
             $data = \DB::connection('sqlsrv')->table('oinv')
             ->select(DB::raw('Address as Address'),
@@ -129,7 +129,9 @@ class SapApiController extends Controller
         return response()->json($final);
     }
     public function installment_ledger(request $req){
+       
         if($req->sapcode){
+           
             $data = \DB::connection('sqlsrv')->table('oinv')
             ->select(DB::raw('Address as Address'),
             'oinv.NumAtCard as InvoiceNumber',
@@ -148,6 +150,8 @@ class SapApiController extends Controller
             ->where('oinv.DocStatus', '!=', 'C' )
             ->where('octg.PymntGroup', '!=', 'CASH')
            ->get();
+
+      
         } else{
             $data = \DB::connection('sqlsrv')->table('oinv')
             ->select(DB::raw('Address as Address'),
@@ -168,8 +172,9 @@ class SapApiController extends Controller
             ->where('octg.PymntGroup', '!=', 'CASH')
            ->get();
      }
-        
-        return response()->json(@$data);
+         
+        $d = ['data'=> $data, 'grade'=> $this->compute_grade($req->segment)];
+        return response()->json(@$d);
     }
 
     public function installment_Bal(request $req){
@@ -266,9 +271,16 @@ class SapApiController extends Controller
         public function getBranchSegment(){
            return  \DB::connection('sqlsrv')->table('OASC')->get();
         }
-        public function compute_grade(request $req){
+        public function compute_grade($req){
+           if(\Auth::user()->branch->id != 1 ){
+            $branch = \Auth::user()->branch->sap_segment;
+           }else{
+            $branch = $req;
+           }
+        
+
            $today = Carbon::now()->format('m.d.Y');
-           $branch = \Auth::user()->branch->sap_segment;
+            
            $get = \DB::connection('sqlsrv')->unprepared("
            declare @StatementDate smalldatetime
            declare @LastDayNextMonth smalldatetime
