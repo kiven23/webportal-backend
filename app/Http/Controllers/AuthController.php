@@ -308,7 +308,22 @@ class AuthController extends Controller
           ],
         ];  
         }
-        array_push($css_perm, @$cportal,@$blc,@$cdr, @$installment, @$recon);              
+        if (\Auth::user()->hasRole(['Dunning Letter Branch',
+        'Dunning Letter Admin'])){
+          $dunning_letters = [
+            'text' => 'Dunning Letters',
+            'links' => 
+            [
+              0 => 
+              [
+                'text' => 'Dashboard',
+                'icon' => 'description',
+                'route' => '/ccs/dunning-letters',
+              ] 
+            ],
+          ];  
+        }
+        array_push($css_perm, @$cportal,@$blc,@$cdr, @$installment, @$recon, @$dunning_letters);              
         if (\Auth::user()->hasRole([
         'CDR Main Office',
         'CDR Branch',
@@ -316,7 +331,9 @@ class AuthController extends Controller
         'BlackListed Customer Portal User',
         'Installment Due Access',
         'Aging Recon Access',
-        'Credit Standing Access'])){
+        'Credit Standing Access',
+        'Dunning Letter Branch',
+        'Dunning Letter Admin',])){
               $ccs = [
                 'text' => 'Credit & Collection',
                 'icon' => 'description',

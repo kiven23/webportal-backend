@@ -89,6 +89,27 @@ class SapApi
                     }
                     
                 }    
-   
+
+
+                //SHOW DUNNING LETTERS
+                if($request->is('api/credit-dunning/index')) {
+                    $user = \Auth::user();
+                    if ($user->hasRole(['Dunning Letter Branch', 'Dunning Letter Admin']) && $user->hasPermissionTo("Show Dunning Letters")) {
+                        return $next($request);
+                    } else {
+                        abort('403');
+                    }
+                }
+
+                //DOWNLOAD DUNNING LETTERS 
+                if($request->is('api/credit-dunning/download-letters')) {
+                    if (\Auth::user()->hasPermissionTo("Download Dunning Letters")) {
+                        return $next($request);
+                    } else {
+                        abort('403');
+                    }
+                } 
+
+
     }
 }
