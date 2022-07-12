@@ -79,9 +79,9 @@ class SapApi
                     }
                     
                 }    
-
+                 
                 //BRANCH SEGMENT 
-                if ($request->is('api/public/branch/segment')) {
+                if ($request->is('api/public/branch/segment') || $request->is('api/public/calculate/grade')) {
                     if (\Auth::user()->hasPermissionTo('SapApiAccess Branch')) {
                         return $next($request);
                     } else {
@@ -89,6 +89,7 @@ class SapApi
                     }
                     
                 }    
+
 
                 //SHOW DUNNING LETTERS
                 if($request->is('api/credit-dunning/index')) {
@@ -109,6 +110,6 @@ class SapApi
                     }
                 } 
 
-        
+
     }
 }

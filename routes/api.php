@@ -244,8 +244,11 @@ Route::group(['prefix' => 'pending-transactions', 'middleware' => ['jwt.auth', '
 			Route::post('/installment/index', 'SapApiController@installment_ledger')->name('sap.installment.index');
 			Route::post('/installment/create', 'SapApiController@installment_Bal')->name('sap.installment_Bal');
 			Route::post('/installment/updatemanual', 'SapApiController@updatemanual')->name('sap.updatemanual');
+			//CALCULATE BRANCH GRADE
+	        Route::get('/calculate/grade', 'SapApiController@compute_grade')->name('sap.compute_grade');
 			//GET BRANCH SEGMENTCODE
 			Route::get('/branch/segment', 'SapApiController@getBranchSegment')->name('sap.getBranchSegment');
+		 
 	});
 
 	//DIGITIZED REQUIREMENT
