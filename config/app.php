@@ -189,6 +189,9 @@ return [
         // JWT Auth
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
 
+        //DomPDF
+        Barryvdh\DomPDF\ServiceProvider::class,
+
     ],
 
     /*
@@ -257,6 +260,9 @@ return [
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
 
         'NoCaptcha' => Anhskohbo\NoCaptcha\Facades\NoCaptcha::class,
+
+        //Barryvdh DomPDF alias
+        'PDF' => Barryvdh\DomPDF\Facade::class,
 
     ],
 
