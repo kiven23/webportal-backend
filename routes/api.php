@@ -231,7 +231,7 @@ Route::group(['prefix' => 'pending-transactions', 'middleware' => ['jwt.auth', '
 		Route::get('/public', 'CustomerDigitizedReqController@branches')->name('digitizedcustomer.branches');
 		
 	});
-
+ 
 	//SAP API
 	Route::group(['prefix' => 'public', 'middleware'=> ['jwt.auth', 'sapapi_clearance']], function () {
 			//INSTALLMENT DUE
@@ -248,7 +248,7 @@ Route::group(['prefix' => 'pending-transactions', 'middleware' => ['jwt.auth', '
 	        Route::get('/calculate/grade', 'SapApiController@compute_grade')->name('sap.compute_grade');
 			//GET BRANCH SEGMENTCODE
 			Route::get('/branch/segment', 'SapApiController@getBranchSegment')->name('sap.getBranchSegment');
-		 
+	
 	});
 
 	//DIGITIZED REQUIREMENT
@@ -267,3 +267,16 @@ Route::group(['prefix' => 'pending-transactions', 'middleware' => ['jwt.auth', '
 		Route::post('/upload', 'BlackListedController@upload')->name('blacklisted.upload');
 		Route::post('/search', 'BlackListedController@search')->name('credit.search.index');
 	});
+
+	//CUSTOMERS WITH OVERDUE 
+	Route::group(['prefix' => 'credit-dunning', 'middleware' => ['jwt.auth', 'sapapi_clearance']], function () {
+		Route::post('/index', 'CreditDungLettersController@index')->name('dunning.index');	
+		Route::post('/download-letters', 'CreditDungLettersController@downloadLetters')->name('dunning.download_letters');
+	});
+
+	//to be removed
+	Route::get('/credit-dunning/download-letters/{branch}/{aging}', 'CreditDungLettersController@downloadLettersGet');
+	Route::get('/credit-dunning/download-letter/{branch}/{aging}', 'CreditDungLettersController@downloadLetter')->name('dunning.download_letter');
+	Route::get('/credit-dunning', 'CreditDungLettersController@test');
+	Route::get('/get-branches', 'CreditDungLettersController@getBranches')->name('dunning.branches');
+	
