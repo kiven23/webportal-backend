@@ -275,9 +275,12 @@ class SapApiController extends Controller
         public function compute_grade($req = ''){
 
             function getbranch($resp){
-                $sql = \DB::connection('sqlsrv2')->table('InstallmentReceivableDetailed_LY')
-                    ->where('CardCode',  'LIKE' ,'%'.$resp.'%')->get();
+                $sql = \DB::connection('sqlsrv2')->select(DB::raw("SELECT * FROM InstallmentReceivableDetailed_LY where CardCode LIKE '%$resp%' UNION SELECT * FROM IRDetailed_ETO where CardCode LIKE '%$resp%'"));
+                    // ->where()->get();
                 return $sql;
+                // $sql = \DB::connection('sqlsrv2')->table('InstallmentReceivableDetailed_LY')
+                // ->where('CardCode',  'LIKE' ,'%'.$resp.'%')->get();
+                // return $sql;
             }
             function compute($resp){
  
@@ -292,7 +295,6 @@ class SapApiController extends Controller
                  }else{
                     return response()->json(0);
                  }
- 
             }
              //FUNCTION
              if(\Auth::user()->branch->id != 1 ){
@@ -369,10 +371,6 @@ class SapApiController extends Controller
         //          group by e0.transid, e0.line_id, e0.DueDate, e1.CardCode
             
         //     )Int01
-            
-            
-            
-            
         //     SELECT * INTO #TempInstallmentsDocument FROM(
             
         //     SELECT	mm0.TransId, 
@@ -417,8 +415,6 @@ class SapApiController extends Controller
                  
         //     GROUP BY mm0.TransId 
         //     )EXTable0
-            
-            
         //     SELECT * INTO #TempInstallmentReceivableByPosting FROM(
         //     select	t2.CardCode, 
         //             max(t2.CardName) as CardName, 
