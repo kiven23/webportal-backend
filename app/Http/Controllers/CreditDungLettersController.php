@@ -258,8 +258,13 @@ class CreditDungLettersController extends Controller
         $total_penalty = 0;
         $mi = $customer_info->MI;
 
+        $final_mo_overdue_penalty = 0;
+
         if(($no_of_mos == 1 && !$is_lapcon) || ($is_lapcon && $overdue_amt <= $mi)) {
             $total_penalty = round($overdue_amt * $percent);
+            if($is_lapcon) {
+                $final_mo_overdue_penalty = $total_penalty;
+            }
         } else {
             // $overdue_amt_per_month = $overdue_amt - ($mi * ($is_lapcon? 1 : $no_of_mos - 1));
             // do {
@@ -280,7 +285,14 @@ class CreditDungLettersController extends Controller
             $overdue_amt_per_month = $excess_mi_payed == 0? $mi : $excess_mi_payed;
             do {
                 //echo $overdue_amt_per_month . ">>>>";
-                $total_penalty += round($overdue_amt_per_month * $percent);
+                // $total_penalty += round($overdue_amt_per_month * $percent);
+                $penalty = round($overdue_amt_per_month * $percent);
+                $total_penalty += $penalty;
+                
+                if($is_lapcon && $overdue_amt_per_month == $overdue_amt) {
+                    $final_mo_overdue_penalty = $penalty;    
+                }
+
                 $overdue_amt_per_month += $mi;
             } while($overdue_amt_per_month <= $overdue_amt);
             //echo "<br/>";
@@ -319,7 +331,7 @@ class CreditDungLettersController extends Controller
         // }
         
         if($is_lapcon) {
-            $total_penalty = $total_penalty + ($total_penalty * $no_of_mos);
+            $total_penalty = $total_penalty + ($final_mo_overdue_penalty * $no_of_mos);
         }
 
         return $total_penalty;
