@@ -85,65 +85,65 @@ class CreditDungLettersController extends Controller
         $letter_type = $this->getLetterType($aging);
 
         $file_name = $this->getFileName($branch, $letter_type);
-        $full_path = $this->getFullPath($branch, $file_name);
+        //$full_path = $this->getFullPath($branch, $file_name);
 
-        $last_month_file_full_path = $this->getLastMonthFileFullPath($branch, $letter_type);
+        //$last_month_file_full_path = $this->getLastMonthFileFullPath($branch, $letter_type);
         
-        if(Storage::disk("local")->exists($last_month_file_full_path)) {
-            Storage::delete($last_month_file_full_path);
-        }
+        // if(Storage::disk("local")->exists($last_month_file_full_path)) {
+        //     Storage::delete($last_month_file_full_path);
+        // }
 
-        if(! Storage::disk("local")->exists($full_path)) {
+        // if(! Storage::disk("local")->exists($full_path)) {
 
-            $customers = $this->sqlCon->table('InstallmentReceivableDetailed')
-            ->where([
-                "Branch" => $branch,
-                "Aging" => $aging,
-            ])
-            ->orderBy("CardName")
-            ->get();
+        $customers = $this->sqlCon->table('InstallmentReceivableDetailed')
+        ->where([
+            "Branch" => $branch,
+            "Aging" => $aging,
+        ])
+        ->orderBy("CardName")
+        ->get();
 
-            foreach ($customers as $key => $customer) {
+        foreach ($customers as $key => $customer) {
 
-                $nameRes = $this->formatName($customer->CardName);
-                $full_name = $nameRes['full_name'];
+            $nameRes = $this->formatName($customer->CardName);
+            $full_name = $nameRes['full_name'];
 
-                $address = $this->getAddress($customer->CardCode);
+            $address = $this->getAddress($customer->CardCode);
 
-                $data[$key] = [
-                    'name' => $full_name,
-                    'address' => $address['address'],
-                    'province' => $address['province'],
-                    'last_name' => ucfirst(strtolower($nameRes['last_name'])),
-                    'as_of_date' => Carbon::now()->subMonthNoOverflow()->endOfMonth()->format("F d, Y")
-                ];
+            $data[$key] = [
+                'name' => $full_name,
+                'address' => $address['address'],
+                'province' => $address['province'],
+                'last_name' => ucfirst(strtolower($nameRes['last_name'])),
+                'as_of_date' => Carbon::now()->subMonthNoOverflow()->endOfMonth()->format("F d, Y")
+            ];
 
-                if($aging != "03 TWO(2) MONTHS") {
-                    $this->addOverdueAndPenalty($data[$key], $customer);
-                }
-
-                if($aging != "02 ONE(1) MONTH" && $aging != "03 TWO(2) MONTHS") {
-                    $this->addCompanyInfo($data[$key], $customer);       
-                }
+            if($aging != "03 TWO(2) MONTHS") {
+                $this->addOverdueAndPenalty($data[$key], $customer);
             }
 
-            $letter_title .= str_plural(ucwords(str_replace("_", " ",$letter_type))) . " - $branch Branch, As of " . Carbon::now()->format("M. Y");
-
-            $pdf = PDF::loadView("credit_dung_letters.main_letter", ["letter_title" => $letter_title, "letter_type" => $letter_type,  "letters" => $data]);
-        
-            $content = $pdf->download()->getOriginalContent();
-
-            Storage::put($full_path, $content);   
+            if($aging != "02 ONE(1) MONTH" && $aging != "03 TWO(2) MONTHS") {
+                $this->addCompanyInfo($data[$key], $customer);       
+            }
         }
 
-        $headers = array(
-            'Content-Type: application/pdf',
-            'Access-Control-Expose-Headers' => 'Content-Disposition',
-            'Content-Disposition' => 'attachment;filename='.$file_name,
-        );
+        $letter_title .= str_plural(ucwords(str_replace("_", " ",$letter_type))) . " - $branch Branch, As of " . Carbon::now()->format("M. Y");
 
-        return Storage::download($full_path, $file_name, $headers);
-       
+        $pdf = PDF::loadView("credit_dung_letters.main_letter", ["letter_title" => $letter_title, "letter_type" => $letter_type,  "letters" => $data]);
+        
+            // $content = $pdf->download()->getOriginalContent();
+
+            // Storage::put($full_path, $content);   
+        //}
+
+        // $headers = array(
+        //     'Content-Type: application/pdf',
+        //     'Access-Control-Expose-Headers' => 'Content-Disposition',
+        //     'Content-Disposition' => 'attachment;filename='.$file_name,
+        // );
+
+        //return Storage::download($full_path, $file_name, $headers);
+        return $pdf->download($file_name)->header('Access-Control-Expose-Headers', 'Content-Disposition'); 
     }
 
     private function checkIfHasAccessInBranch($branchFromRequest){
