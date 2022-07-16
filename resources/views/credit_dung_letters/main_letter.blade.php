@@ -53,7 +53,9 @@
             @include("credit_dung_letters.layouts.letter_header")
             <p style="margin-top:2.8em; margin-bottom:2.5em">{{ \Carbon\Carbon::now()->format("F d, Y")}}</p>
             @include("credit_dung_letters.layouts.customer_info")
-            <p style="margin-bottom:0px">Greetings!</p>
+            @if($letter_type != "final_demand_letter")
+                <p style="margin-bottom:0px">Greetings!</p>
+            @endif
             <div class="content">
                 @include("credit_dung_letters." . $letter_type)
             </div>
