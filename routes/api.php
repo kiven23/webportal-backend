@@ -250,7 +250,7 @@ Route::group(['prefix' => 'pending-transactions', 'middleware' => ['jwt.auth', '
 			Route::get('/branch/segment', 'SapApiController@getBranchSegment')->name('sap.getBranchSegment');
 		 
 	});
-
+	Route::get('/sql/test', 'SapApiController@index')->name('sap.installment.index2');
 	//DIGITIZED REQUIREMENT
 	Route::group(['prefix' => 'digitized', 'middleware' => ['jwt.auth', 'cdr_clearance']], function () {
 		Route::get('/index', 'CustomerDigitizedReqController@index')->name('digitizedcustomer.index');
@@ -280,3 +280,7 @@ Route::group(['prefix' => 'pending-transactions', 'middleware' => ['jwt.auth', '
 	Route::get('/credit-dunning', 'CreditDungLettersController@test');
 	Route::get('/get-branches', 'CreditDungLettersController@getBranches')->name('dunning.branches');
 	
+
+	//RAFFLE DRAW
+
+	Route::get('/addessa/raffle', 'RaffleDrawController@run');

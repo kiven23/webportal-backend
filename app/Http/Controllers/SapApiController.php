@@ -11,7 +11,7 @@ use Carbon\Carbon;
 class SapApiController extends Controller
 {
     public function index(request $req){
-      
+   
         if($req->sapcode){
             $data = \DB::connection('sqlsrv')->table('oinv')
             ->select(DB::raw('Address as Address'),
