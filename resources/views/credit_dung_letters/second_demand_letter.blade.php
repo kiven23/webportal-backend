@@ -1,7 +1,7 @@
 <div class="second-demand">
     <p>
         On the account of your refusal to pay outstanding balance of your account with our client, {{ $letter["branch_company_name"] }},
-        which constitutes a clean violation of the provisions of the contract and pursuant to the said contract, our client is giving
+        which constitutes a clean violation of the provisions of the Contract and pursuant to the said Contract, our client is giving
         you three (3) days from the receipt of this letter within which to exercise ANY of the following options:
         <ol class="number-order-with-double-parenthesis">
             <li>PAY to our client the sum of {{ $letter["principal"] }} principal + {{ $letter["penalty"] }} penalty charges.</li>

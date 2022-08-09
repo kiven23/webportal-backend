@@ -85,65 +85,65 @@ class CreditDungLettersController extends Controller
         $letter_type = $this->getLetterType($aging);
 
         $file_name = $this->getFileName($branch, $letter_type);
-        $full_path = $this->getFullPath($branch, $file_name);
+        //$full_path = $this->getFullPath($branch, $file_name);
 
-        $last_month_file_full_path = $this->getLastMonthFileFullPath($branch, $letter_type);
+        //$last_month_file_full_path = $this->getLastMonthFileFullPath($branch, $letter_type);
         
-        if(Storage::disk("local")->exists($last_month_file_full_path)) {
-            Storage::delete($last_month_file_full_path);
-        }
+        // if(Storage::disk("local")->exists($last_month_file_full_path)) {
+        //     Storage::delete($last_month_file_full_path);
+        // }
 
-        if(! Storage::disk("local")->exists($full_path)) {
+        // if(! Storage::disk("local")->exists($full_path)) {
 
-            $customers = $this->sqlCon->table('InstallmentReceivableDetailed')
-            ->where([
-                "Branch" => $branch,
-                "Aging" => $aging,
-            ])
-            ->orderBy("CardName")
-            ->get();
+        $customers = $this->sqlCon->table('InstallmentReceivableDetailed')
+        ->where([
+            "Branch" => $branch,
+            "Aging" => $aging,
+        ])
+        ->orderBy("CardName")
+        ->get();
 
-            foreach ($customers as $key => $customer) {
+        foreach ($customers as $key => $customer) {
 
-                $nameRes = $this->formatName($customer->CardName);
-                $full_name = $nameRes['full_name'];
+            $nameRes = $this->formatName($customer->CardName);
+            $full_name = $nameRes['full_name'];
 
-                $address = $this->getAddress($customer->CardCode);
+            $address = $this->getAddress($customer->CardCode);
 
-                $data[$key] = [
-                    'name' => $full_name,
-                    'address' => $address['address'],
-                    'province' => $address['province'],
-                    'last_name' => ucfirst(strtolower($nameRes['last_name'])),
-                    'as_of_date' => Carbon::now()->subMonthNoOverflow()->endOfMonth()->format("F d, Y")
-                ];
+            $data[$key] = [
+                'name' => $full_name,
+                'address' => $address['address'],
+                'province' => $address['province'],
+                'last_name' => ucfirst(strtolower($nameRes['last_name'])),
+                'as_of_date' => Carbon::now()->subMonthNoOverflow()->endOfMonth()->format("F d, Y")
+            ];
 
-                if($aging != "03 TWO(2) MONTHS") {
-                    $this->addOverdueAndPenalty($data[$key], $customer);
-                }
-
-                if($aging != "02 ONE(1) MONTH" && $aging != "03 TWO(2) MONTHS") {
-                    $this->addCompanyInfo($data[$key], $customer);       
-                }
+            if($aging != "03 TWO(2) MONTHS") {
+                $this->addOverdueAndPenalty($data[$key], $customer);
             }
 
-            $letter_title .= str_plural(ucwords(str_replace("_", " ",$letter_type))) . " - $branch Branch, As of " . Carbon::now()->format("M. Y");
-
-            $pdf = PDF::loadView("credit_dung_letters.main_letter", ["letter_title" => $letter_title, "letter_type" => $letter_type,  "letters" => $data]);
-        
-            $content = $pdf->download()->getOriginalContent();
-
-            Storage::put($full_path, $content);   
+            if($aging != "02 ONE(1) MONTH" && $aging != "03 TWO(2) MONTHS") {
+                $this->addCompanyInfo($data[$key], $customer);       
+            }
         }
 
-        $headers = array(
-            'Content-Type: application/pdf',
-            'Access-Control-Expose-Headers' => 'Content-Disposition',
-            'Content-Disposition' => 'attachment;filename='.$file_name,
-        );
+        $letter_title .= str_plural(ucwords(str_replace("_", " ",$letter_type))) . " - $branch Branch, As of " . Carbon::now()->format("M. Y");
 
-        return Storage::download($full_path, $file_name, $headers);
-       
+        $pdf = PDF::loadView("credit_dung_letters.main_letter", ["letter_title" => $letter_title, "letter_type" => $letter_type,  "letters" => $data]);
+        
+            // $content = $pdf->download()->getOriginalContent();
+
+            // Storage::put($full_path, $content);   
+        //}
+
+        // $headers = array(
+        //     'Content-Type: application/pdf',
+        //     'Access-Control-Expose-Headers' => 'Content-Disposition',
+        //     'Content-Disposition' => 'attachment;filename='.$file_name,
+        // );
+
+        //return Storage::download($full_path, $file_name, $headers);
+        return $pdf->download($file_name)->header('Access-Control-Expose-Headers', 'Content-Disposition'); 
     }
 
     private function checkIfHasAccessInBranch($branchFromRequest){
@@ -258,8 +258,13 @@ class CreditDungLettersController extends Controller
         $total_penalty = 0;
         $mi = $customer_info->MI;
 
+        $final_mo_overdue_penalty = 0;
+
         if(($no_of_mos == 1 && !$is_lapcon) || ($is_lapcon && $overdue_amt <= $mi)) {
             $total_penalty = round($overdue_amt * $percent);
+            if($is_lapcon) {
+                $final_mo_overdue_penalty = $total_penalty;
+            }
         } else {
             // $overdue_amt_per_month = $overdue_amt - ($mi * ($is_lapcon? 1 : $no_of_mos - 1));
             // do {
@@ -280,7 +285,14 @@ class CreditDungLettersController extends Controller
             $overdue_amt_per_month = $excess_mi_payed == 0? $mi : $excess_mi_payed;
             do {
                 //echo $overdue_amt_per_month . ">>>>";
-                $total_penalty += round($overdue_amt_per_month * $percent);
+                // $total_penalty += round($overdue_amt_per_month * $percent);
+                $penalty = round($overdue_amt_per_month * $percent);
+                $total_penalty += $penalty;
+                
+                if($is_lapcon && $overdue_amt_per_month == $overdue_amt) {
+                    $final_mo_overdue_penalty = $penalty;    
+                }
+
                 $overdue_amt_per_month += $mi;
             } while($overdue_amt_per_month <= $overdue_amt);
             //echo "<br/>";
@@ -319,7 +331,7 @@ class CreditDungLettersController extends Controller
         // }
         
         if($is_lapcon) {
-            $total_penalty = $total_penalty + ($total_penalty * $no_of_mos);
+            $total_penalty = $total_penalty + ($final_mo_overdue_penalty * $no_of_mos);
         }
 
         return $total_penalty;

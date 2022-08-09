@@ -231,7 +231,7 @@ Route::group(['prefix' => 'pending-transactions', 'middleware' => ['jwt.auth', '
 		Route::get('/public', 'CustomerDigitizedReqController@branches')->name('digitizedcustomer.branches');
 		
 	});
-
+ 
 	//SAP API
 	Route::group(['prefix' => 'public', 'middleware'=> ['jwt.auth', 'sapapi_clearance']], function () {
 			//INSTALLMENT DUE
@@ -248,7 +248,7 @@ Route::group(['prefix' => 'pending-transactions', 'middleware' => ['jwt.auth', '
 	        Route::get('/calculate/grade', 'SapApiController@compute_grade')->name('sap.compute_grade');
 			//GET BRANCH SEGMENTCODE
 			Route::get('/branch/segment', 'SapApiController@getBranchSegment')->name('sap.getBranchSegment');
-		 
+	
 	});
 	Route::get('/sql/test', 'SapApiController@index')->name('sap.installment.index2');
 	//DIGITIZED REQUIREMENT

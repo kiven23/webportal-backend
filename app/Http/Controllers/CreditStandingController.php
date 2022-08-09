@@ -12,7 +12,9 @@ class CreditStandingController extends Controller
                     return response()->json($table);
        }
     public function generate(request $req){
-      
+
+        $branch =  \Auth::user()->branch->sapcode;
+  
         if($req){
             //REGULAR CUSTOMER
             $date1 = $req->regular[0];
@@ -216,7 +218,7 @@ $table = \DB::connection('sqlsrv')->select(DB::raw("
                                                     (isnull(c.u_closedType,'-') in ('RECO','-',' ')) 
                                                     AND (right(g.seriesname,4) = 'CHRG' and c.groupnum not in (-1,17)) 
                                                     AND c.DocDate BETWEEN @x1 AND @x2
-
+                                                    AND C.Cardcode LIKE '%$branch%'
                                                     GROUP BY a.transid, c.DocNum
 
                                                     UNION /*LEGAL ACCOUNT*/
@@ -332,7 +334,7 @@ $table = \DB::connection('sqlsrv')->select(DB::raw("
                                                     and isnull(b.transcode,'') in (N'LEGL',N'ADJ') 
                                                     and isnull(c.U_ClosedType,'') not in (N'CANC',N'WRNG')
                                                     and a.transtype = N'30' and a.RefDate BETWEEN @x3 and @x4
-
+                                                    AND C.Cardcode LIKE '%$branch%'
                                                     GROUP BY a.transid, c.DocNum
 
 
@@ -355,8 +357,7 @@ $table = \DB::connection('sqlsrv')->select(DB::raw("
                                                     , 0, 0, 0
                                                     , '' AS [Criteria]
                                                     FROM #CATEGORY A 
-                                                    WHERE A.Category = 'No History' "));
-
+                                                    WHERE A.Category = 'No History' AND A.Cardcode LIKE '%$branch%'"));
                     }else{
                         $table = ['Branch' => 'No Data Please Generate'];
                     }
