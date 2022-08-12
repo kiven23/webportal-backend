@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class RaffleDraw extends Model
+class GiftCode extends Model
 {
     //
 }

@@ -379,9 +379,28 @@ class AuthController extends Controller
                         ]
                     ];
                   }
+                  $smsystem = [];
+                  $giftcodes = [
+                    'text' => 'HBD Gift Codes',
+                    'icon' => 'search',
+                    'route' => '/giftcodes/index',
+                  ];
+                  array_push($smsystem, $giftcodes);
+                  $sms = [
+                    'text' => 'SMS SYSTEM',
+                    'icon' => 'file_download',
+                    'subLinks' => 
+                    [
+                      0 => 
+                      [
+                        'text' => 'Automated Gift Code',
+                        'links' => array_filter($smsystem),
+                      ],
+                    ]
+                ];
                   
  
-          array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs );
+          array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs, @$sms );
              
            
  

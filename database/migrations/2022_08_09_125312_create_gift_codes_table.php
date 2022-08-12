@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRaffleDrawsTable extends Migration
+class CreateGiftCodesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,14 @@ class CreateRaffleDrawsTable extends Migration
      */
     public function up()
     {
-        Schema::create('raffle_draws', function (Blueprint $table) {
+        Schema::create('gift_codes', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('branch');
+            $table->string('cardname');
+            $table->string('cardcode');
+            $table->string('mobile');
+            $table->string('birthmonth');
+            $table->string('status');
             $table->timestamps();
         });
     }
@@ -26,6 +32,6 @@ class CreateRaffleDrawsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('raffle_draws');
+        Schema::dropIfExists('gift_codes');
     }
 }

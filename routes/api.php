@@ -284,3 +284,10 @@ Route::group(['prefix' => 'pending-transactions', 'middleware' => ['jwt.auth', '
 	//RAFFLE DRAW
 
 	Route::get('/addessa/raffle', 'RaffleDrawController@run');
+
+	//GIFT CODE SYSTEM
+	Route::get('/sms/giftcode/sync', 'GiftCodeController@sync');
+	//GIFT CODE LOGS 
+	Route::get('/sms/giftcode/fetch', 'GiftCodeLogsController@index');
+	//GIFT CODE TRIGGER SEND
+	Route::get('/sms/giftcode/send', 'GiftCodeController@send');

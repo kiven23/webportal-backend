@@ -43,7 +43,7 @@ return [
             'driver' => 'mysql',
             'host' => 'localhost',
             'port' => '3306',
-            'database' => 'portal_staging',
+            'database' => 'webportal_8',
             'username' => 'root',
             'password' => 'crawling23',
            
