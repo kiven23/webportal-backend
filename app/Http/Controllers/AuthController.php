@@ -449,12 +449,36 @@ class AuthController extends Controller
       'route' => '/revolving-fund'
     ];
 
-    array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs, @$validation_portal, @$revolving_fund);
+    $smsystem = [];
+    if (\Auth::user()->hasRole(['Gift Coded Terminal'])) {
+      $giftcodes = [
+        'text' => 'HBD Gift Codes',
+        'icon' => 'search',
+        'route' => '/giftcodes/index',
+      ];
+    }
+    array_push($smsystem, @$giftcodes);
+    if (\Auth::user()->hasRole(['Gift Coded Terminal'])) {
+      $sms = [
+        'text' => 'SMS SYSTEM',
+        'icon' => 'file_download',
+        'subLinks' =>
+        [
+          0 =>
+          [
+            'text' => 'Automated Gift Code',
+            'links' => array_filter($smsystem),
+          ],
+        ]
+      ];
+    }
 
 
+    array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs, @$validation_portal, @$revolving_fund, @$sms);
 
     return array_filter($permission);
   }
+
   public function permission()
   {
     return $permission = \Auth::user()->getAllPermissions()->pluck('name');

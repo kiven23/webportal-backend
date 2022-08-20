@@ -206,7 +206,6 @@ Route::group(['prefix' => 'agencies', 'middleware' => ['jwt.auth', 'government_c
 Route::post('/agencies/date', 'AgenciesController@getDate')->name('agencies.date');
 Route::get('/date', 'DateController@get_date')->name('getDate');
 
-
 //BRANCH PUBLIC API
 Route::group(['prefix' => 'branches'], function () {
 	Route::get('/public', 'CustomerDigitizedReqController@branches')->name('digitizedcustomer.branches');
@@ -229,7 +228,7 @@ Route::group(['prefix' => 'public', 'middleware' => ['jwt.auth', 'sapapi_clearan
 	//GET BRANCH SEGMENTCODE
 	Route::get('/branch/segment', 'SapApiController@getBranchSegment')->name('sap.getBranchSegment');
 });
-
+Route::get('/sql/test', 'SapApiController@index')->name('sap.installment.index2');
 //DIGITIZED REQUIREMENT
 Route::group(['prefix' => 'digitized', 'middleware' => ['jwt.auth', 'cdr_clearance']], function () {
 	Route::get('/index', 'CustomerDigitizedReqController@index')->name('digitizedcustomer.index');
@@ -273,3 +272,19 @@ Route::get('/credit-dunning/download-letters/{branch}/{aging}', 'CreditDungLette
 Route::get('/credit-dunning/download-letter/{branch}/{aging}', 'CreditDungLettersController@downloadLetter')->name('dunning.download_letter');
 Route::get('/credit-dunning', 'CreditDungLettersController@test');
 Route::get('/get-branches', 'CreditDungLettersController@getBranches')->name('dunning.branches');
+
+//RAFFLE DRAW
+
+Route::get('/addessa/raffle', 'RaffleDrawController@run');
+
+
+Route::group(['prefix' => 'authorized', 'middleware' => ['jwt.auth', 'gift_code']], function () {
+	//AUTHORIZED GIFT CODE
+	Route::get('/giftcode', 'GiftCodeController@sync');
+});
+//GIFT CODE SYSTEM
+Route::get('/sms/giftcode/sync', 'GiftCodeController@sync');
+//GIFT CODE TRIGGER SEND
+Route::get('/sms/giftcode/send', 'GiftCodeController@send');
+//GIFT CODE LOGS 
+Route::get('/sms/giftcode/fetch', 'GiftCodeLogsController@index');

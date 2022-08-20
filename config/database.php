@@ -43,9 +43,10 @@ return [
             'driver' => 'mysql',
             'host' => 'localhost',
             'port' => '3306',
-            'database' => 'portal_staging',
+            'database' => 'webportal_8',
             'username' => 'root',
-            'password' => 'M15@2dwin0n7y',
+            'password' => 'crawling23',
+           
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
