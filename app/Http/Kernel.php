@@ -65,17 +65,17 @@ class Kernel extends HttpKernel
         'clearance' => \App\Http\Middleware\ClearanceMiddleware::class,
 
         // Service Call
-          // computerware
-          'product_category_clearance' => \App\Http\Middleware\ProductCategoryClearance::class,
-          'product_brand_clearance' => \App\Http\Middleware\ProductBrandClearance::class,
-          'product_item_clearance' => \App\Http\Middleware\ProductItemClearance::class,
-          'computerware_ticket_clearance' => \App\Http\Middleware\ComputerwareTicketClearance::class,
-          'power_interruption_clearance' => \App\Http\Middleware\PowerInterruptionClearance::class,
-          // connectivity
-          'service_category_clearance' => \App\Http\Middleware\ServiceCategoryClearance::class,
-          'service_provider_clearance' => \App\Http\Middleware\ServiceProviderClearance::class,
-          'service_type_clearance' => \App\Http\Middleware\ServiceTypeClearance::class,
-          'connectivity_ticket_clearance' => \App\Http\Middleware\ConnectivityTicketClearance::class,
+        // computerware
+        'product_category_clearance' => \App\Http\Middleware\ProductCategoryClearance::class,
+        'product_brand_clearance' => \App\Http\Middleware\ProductBrandClearance::class,
+        'product_item_clearance' => \App\Http\Middleware\ProductItemClearance::class,
+        'computerware_ticket_clearance' => \App\Http\Middleware\ComputerwareTicketClearance::class,
+        'power_interruption_clearance' => \App\Http\Middleware\PowerInterruptionClearance::class,
+        // connectivity
+        'service_category_clearance' => \App\Http\Middleware\ServiceCategoryClearance::class,
+        'service_provider_clearance' => \App\Http\Middleware\ServiceProviderClearance::class,
+        'service_type_clearance' => \App\Http\Middleware\ServiceTypeClearance::class,
+        'connectivity_ticket_clearance' => \App\Http\Middleware\ConnectivityTicketClearance::class,
 
         // Inventory
         'inventory_clearance' => \App\Http\Middleware\InventoryClearance::class,
@@ -181,7 +181,11 @@ class Kernel extends HttpKernel
 
         // Sap Api
         'sapapi_clearance' => \App\Http\Middleware\SapApi::class,
-        // Sap Api
+
+        //Validation Portal 
+        'validation_portal_clearance' => \App\Http\Middleware\ValidationPortalClearance::class,
+
+        // Gift Code
         'gift_code' => \App\Http\Middleware\GiftCode::class,
     ];
 }
