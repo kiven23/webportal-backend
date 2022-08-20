@@ -285,9 +285,14 @@ Route::group(['prefix' => 'pending-transactions', 'middleware' => ['jwt.auth', '
 
 	Route::get('/addessa/raffle', 'RaffleDrawController@run');
 
-	//GIFT CODE SYSTEM
-	Route::get('/sms/giftcode/sync', 'GiftCodeController@sync');
-	//GIFT CODE LOGS 
-	Route::get('/sms/giftcode/fetch', 'GiftCodeLogsController@index');
-	//GIFT CODE TRIGGER SEND
-	Route::get('/sms/giftcode/send', 'GiftCodeController@send');
+
+	Route::group(['prefix' => 'authorized', 'middleware'=> ['jwt.auth', 'gift_code']], function () {
+				//AUTHORIZED GIFT CODE
+				Route::get('/giftcode', 'GiftCodeController@sync');
+	});
+				//GIFT CODE SYSTEM
+				Route::get('/sms/giftcode/sync', 'GiftCodeController@sync');
+				//GIFT CODE TRIGGER SEND
+				Route::get('/sms/giftcode/send', 'GiftCodeController@send');
+				//GIFT CODE LOGS 
+				Route::get('/sms/giftcode/fetch', 'GiftCodeLogsController@index');

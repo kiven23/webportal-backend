@@ -181,5 +181,7 @@ class Kernel extends HttpKernel
 
         // Sap Api
         'sapapi_clearance' => \App\Http\Middleware\SapApi::class,
+        // Sap Api
+        'gift_code' => \App\Http\Middleware\GiftCode::class,
     ];
 }

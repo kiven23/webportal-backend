@@ -11,6 +11,7 @@ use GuzzleHttp\Client;
 class GiftCodeController extends Controller
 {
     public function sync(){
+    
            $SQL = DB::connection('sqlsrv')
             ->select('SELECT TOP 3 OINV.CARDNAME, OINV.CARDCODE, COUNT(*) AS REPEAT, OINV.CREATEDATE, OCRD.U_BDAY, OCRD.CELLULAR
                         FROM OINV 
@@ -53,7 +54,7 @@ class GiftCodeController extends Controller
                     ]);
                 }
         }
-        return response()->json('ok');
+        return response()->json('sync');
     }
     public function send(){
         $month = Carbon::now()->month;
