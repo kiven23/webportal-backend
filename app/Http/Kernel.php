@@ -181,5 +181,8 @@ class Kernel extends HttpKernel
 
         // Sap Api
         'sapapi_clearance' => \App\Http\Middleware\SapApi::class,
+
+        //Validation Portal 
+        'validation_portal_clearance' => \App\Http\Middleware\ValidationPortalClearance::class,
     ];
 }
