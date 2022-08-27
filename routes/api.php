@@ -209,6 +209,8 @@ Route::get('/date', 'DateController@get_date')->name('getDate');
 //BRANCH PUBLIC API
 Route::group(['prefix' => 'branches'], function () {
 	Route::get('/public', 'CustomerDigitizedReqController@branches')->name('digitizedcustomer.branches');
+	//REUPLOADBRANCHCODE
+	Route::get('/public/uploadbranchcode', 'CustomerDigitizedReqController@reuploadBranchCode')->name('digitizedcustomer.reuploadBranchCode');
 });
 
 //SAP API

@@ -450,15 +450,20 @@ class AuthController extends Controller
     ];
 
     $smsystem = [];
-    if (\Auth::user()->hasRole(['Gift Coded Terminal'])) {
+    if (\Auth::user()->hasRole(['Gift Code Terminal'])) {
       $giftcodes = [
         'text' => 'HBD Gift Codes',
         'icon' => 'search',
         'route' => '/giftcodes/index',
       ];
+      $raffle = [
+        'text' => 'Raffle Draw',
+        'icon' => 'mdi-cash-check',
+        'route' => '/raffle',
+      ];
     }
-    array_push($smsystem, @$giftcodes);
-    if (\Auth::user()->hasRole(['Gift Coded Terminal'])) {
+    array_push($smsystem, @$giftcodes, @$raffle);
+    if (\Auth::user()->hasRole(['Gift Code Terminal'])) {
       $sms = [
         'text' => 'SMS SYSTEM',
         'icon' => 'file_download',
