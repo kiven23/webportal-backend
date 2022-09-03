@@ -57,8 +57,8 @@ class GiftCodeController extends Controller
         return response()->json('sync');
     }
     public function send(){
-        $month = Carbon::now()->month;
-        $sql = DB::table('gift_codes')
+       $month = Carbon::now()->month;
+       $sql = DB::table('gift_codes')
                 ->whereMonth('birthmonth', $month)
                 ->where('status', 0)
                 ->get();
@@ -68,8 +68,9 @@ class GiftCodeController extends Controller
             return $giftcode;
         }
         function msg($name, $cardcode){
+            $ex = explode(',', $name);
             $s = "'";
-            $message = 'It'.$s.'s your birth month, '.$name.'! We'.$s.'d like to greet you a happy birthday in advance. We assure you that Addessa will forever be your partner towards the way to comfort living, and as our way celebrating your life, here is your gift code '.giftcode($cardcode).' to get your surprise!  Please present the code to any Addessa branch near you within 30 days upon receipt of this message to claim your gift. Happy Birthday Suki, from your Addessa Family';             return  $message;
+            $message = 'It'.$s.'s your birth month, '.$ex[0].'! We'.$s.'d like to greet you a happy birthday in advance. We assure you that Addessa will forever be your partner towards the way to comfort living, and as our way celebrating your life, here is your gift code '.giftcode($cardcode).' to get your surprise!  Please present the code to any Addessa branch near you within 30 days upon receipt of this message to claim your gift. Happy Birthday Suki, from your Addessa Family';             return  $message;
         }
         function sendtoApi($cardname ,$n ,$cardcode){
             $full_link = 'http://mcpro1.sun-solutions.ph/mc/send.aspx?user=ADDESSA&pass=MPoq5g7y&from=ADDESSA&to='.$n.'&msg='.msg($cardname,$cardcode).'';
@@ -81,7 +82,7 @@ class GiftCodeController extends Controller
                 sendtoApi($data->cardname,$data->mobile, $data->cardcode);
                 DB::table('gift_codes')
                         ->where('id', $data->id)->update([
-                        'status'=> 0
+                        'status'=> 1
                 ]);
                 DB::table('gift_code_logs')
                 ->insert([
@@ -95,4 +96,6 @@ class GiftCodeController extends Controller
         }
         return response()->json('ok');
     }
+
+    
 }
