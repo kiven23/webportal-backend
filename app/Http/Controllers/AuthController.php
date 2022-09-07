@@ -479,7 +479,7 @@ class AuthController extends Controller
     }
 
 
-    array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs, @$validation_portal, @$revolving_fund, @$sms);
+    array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs, @$validation_portal, @$sms);
 
     return array_filter($permission);
   }
