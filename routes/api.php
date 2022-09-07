@@ -229,6 +229,9 @@ Route::group(['prefix' => 'public', 'middleware' => ['jwt.auth', 'sapapi_clearan
 	Route::get('/calculate/grade', 'SapApiController@compute_grade')->name('sap.compute_grade');
 	//GET BRANCH SEGMENTCODE
 	Route::get('/branch/segment', 'SapApiController@getBranchSegment')->name('sap.getBranchSegment');
+
+	//SAPREPORTS
+	Route::post('/reports/incoming/crb', 'SapRportsController@incoming_crb_generate')->name('sap.SapRports.crb');
 });
 Route::get('/sql/test', 'SapApiController@index')->name('sap.installment.index2');
 //DIGITIZED REQUIREMENT
@@ -290,3 +293,7 @@ Route::get('/sms/giftcode/sync', 'GiftCodeController@sync');
 Route::get('/sms/giftcode/send', 'GiftCodeController@send');
 //GIFT CODE LOGS 
 Route::get('/sms/giftcode/fetch', 'GiftCodeLogsController@index');
+
+//resync
+ 
+Route::get('/re/sysnc', 'SapApiController@Rsync_branchsegment');

@@ -88,7 +88,17 @@ class SapApi
                         abort('403');
                     }
                     
+                }
+                //BRANCH SAP ACCESS CRB
+                if ($request->is('api/public/reports/incoming/crb')) {
+                    if (\Auth::user()->hasPermissionTo('SapApiAccess Branch')) {
+                        return $next($request);
+                    } else {
+                        abort('403');
+                    }
+                    
                 }    
+                    
 
 
                 //SHOW DUNNING LETTERS

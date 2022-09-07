@@ -478,8 +478,32 @@ class AuthController extends Controller
       ];
     }
 
+    $sapb1Reports = [];
+     if (\Auth::user()->hasRole(['SapApiAccess Branch'])) {
+      $incomingPaymentcrb = [
+        'text' => 'Generate',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/index',
+      ];
+     }
+    array_push($sapb1Reports, @$incomingPaymentcrb);
+    if (\Auth::user()->hasRole(['SapApiAccess Branch'])) {
+      $sapreports = [
+        'text' => 'SAP B1 REPORTS',
+        'icon' => 'description',
+        'subLinks' =>
+        [
+          0 =>
+          [
+            'text' => 'Incoming Payments CRB',
+            'links' => array_filter($sapb1Reports),
+          ],
+        ]
+      ];
+      }
 
-    array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs, @$validation_portal, @$sms);
+
+    array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs, @$validation_portal, @$revolving_fund, @$sms, @$sapreports);
 
     return array_filter($permission);
   }
