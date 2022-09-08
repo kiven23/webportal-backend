@@ -104,12 +104,12 @@ class CustomerDigitizedReqController extends Controller
     public function branches(){
         $branches = Branch::orderBy('name', 'asc')->get();
         foreach($branches as $branch){
-            if($branch->sapcode == 'SANJ-NE' || $branch->sapcode == 'GUIM-NE'){
+            // if($branch->sapcode == 'SANJ-NE' || $branch->sapcode == 'GUIM-NE'){
                 $b[] = ['name'=> $branch->name,
                 'value'=> $branch->id, 
                 'sapcode' => $branch->sapcode,
                 'segment'=> $branch->sap_segment];
-            }
+            // }
            
         }
 
