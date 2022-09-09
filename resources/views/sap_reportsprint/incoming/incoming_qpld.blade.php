@@ -36,8 +36,8 @@
 <td class="s0" dir="ltr">OR#</td>
 <td class="s0" dir="ltr">Amount</td>
 <td class="s0" dir="ltr">PaymtAcct</td>
-<td class="s0" dir="ltr">otherBranch_Acc</td>
 <td class="s0" dir="ltr">Interest/DP</td>
+<td class="s0" dir="ltr">otherBranch_Acc</td>
 <td class="s0" dir="ltr">Supplier</td>
 <td class="s0" dir="ltr">Rebate</td>
 </tr><tr style="height: 20px">
