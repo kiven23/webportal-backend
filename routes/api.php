@@ -297,3 +297,8 @@ Route::get('/sms/giftcode/fetch', 'GiftCodeLogsController@index');
 //resync
  
 Route::get('/re/sysnc', 'SapApiController@Rsync_branchsegment');
+//Change Background
+Route::get('/change/background', 'SapApiController@changecolor');
+ 
+//PrintPreview
+Route::get('/reports/printview', 'SapRportsController@preview')->name('sap.SapRports.crb.print');

@@ -272,6 +272,12 @@ class SapApiController extends Controller
         public function getBranchSegment(){
            return  \DB::connection('sqlsrv')->table('OASC')->get();
         }
+        public function changecolor(){
+            $arr = [
+                'color'=> true
+            ];
+            return response()->json($arr);
+        }
         public function compute_grade($req = ''){
 
             function getbranch($resp){
