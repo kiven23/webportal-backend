@@ -479,7 +479,7 @@ class AuthController extends Controller
     }
 
     $sapb1Reports = [];
-     if (\Auth::user()->hasRole(['SapApiAccess Branch'])) {
+     if (\Auth::user()->hasRole(['SapApiAccess'])) {
       $incomingPaymentcrb = [
         'text' => 'Generate',
         'icon' => 'description',
@@ -487,7 +487,7 @@ class AuthController extends Controller
       ];
      }
     array_push($sapb1Reports, @$incomingPaymentcrb);
-    if (\Auth::user()->hasRole(['SapApiAccess Branch'])) {
+    if (\Auth::user()->hasRole(['SapApiAccess'])) {
       $sapreports = [
         'text' => 'SAP B1 REPORTS',
         'icon' => 'description',
