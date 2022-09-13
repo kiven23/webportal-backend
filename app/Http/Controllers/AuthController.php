@@ -481,12 +481,59 @@ class AuthController extends Controller
     $sapb1Reports = [];
      if (\Auth::user()->hasRole(['SapApiAccess'])) {
       $incomingPaymentcrb = [
-        'text' => 'Generate',
+        'text' => 'Incoming Payments CRB',
         'icon' => 'description',
         'route' => '/sapb1/reports/index',
       ];
+      $q1 = [
+        'text' => 'Invoice Query Series Revised',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/query/series/revised',
+      ];
+      $q2 = [
+        'text' => 'Marketing AR Invoice',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/query/marketing/ar/invoice',
+      ];
+      $q3 = [
+        'text' => 'Summary of Customer Deposit Applied',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/query/summary/customer/depositapplied',
+      ];
+      $q4 = [
+        'text' => 'Adjustment Sales Discount',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/query/adjustment/sales/discount',
+      ];
+      $q5 = [
+        'text' => 'Recomputed Account',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/query/recomputed/account',
+      ];
+      $q6 = [
+        'text' => 'Searching of vehicles parts',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/query/searching/vehicles/parts',
+      ];
+      $q7 = [
+        'text' => 'AR Invoice Open Balance',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/ar/openbalance',
+      ];
+      $q8 = [
+        'text' => 'Incoming Payment Customer Deposit',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/incomingpayment/customerdeposit',
+      ];
+      $q9 = [
+        'text' => 'Incoming Payment Open Balance',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/incomingpayment/openbalance',
+      ];
      }
-    array_push($sapb1Reports, @$incomingPaymentcrb);
+    array_push($sapb1Reports,
+     @$incomingPaymentcrb,
+      @$q1,@$q2,@$q3,@$q4,@$q5,@$q6,@$q7,@$q8,@$q9);
     if (\Auth::user()->hasRole(['SapApiAccess'])) {
       $sapreports = [
         'text' => 'SAP B1 REPORTS',
@@ -495,7 +542,7 @@ class AuthController extends Controller
         [
           0 =>
           [
-            'text' => 'Incoming Payments CRB',
+            'text' => 'Sap Queries',
             'links' => array_filter($sapb1Reports),
           ],
         ]

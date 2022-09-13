@@ -212,9 +212,9 @@ Route::group(['prefix' => 'branches'], function () {
 	//REUPLOADBRANCHCODE
 	Route::get('/public/uploadbranchcode', 'CustomerDigitizedReqController@reuploadBranchCode')->name('digitizedcustomer.reuploadBranchCode');
 });
-
+//, 'middleware' => ['jwt.auth', 'sapapi_clearance']
 //SAP API
-Route::group(['prefix' => 'public', 'middleware' => ['jwt.auth', 'sapapi_clearance']], function () {
+Route::group(['prefix' => 'public'], function () {
 	//INSTALLMENT DUE
 	Route::post('/index', 'SapApiController@index')->name('sap.index');
 	Route::post('/installment', 'SapApiController@installment')->name('sap.installment');
@@ -232,6 +232,26 @@ Route::group(['prefix' => 'public', 'middleware' => ['jwt.auth', 'sapapi_clearan
 
 	//SAPREPORTS
 	Route::post('/reports/incoming/crb', 'SapRportsController@incoming_crb_generate')->name('sap.SapRports.crb');
+
+	//Query Searching of Vehicles parts
+	Route::get('/reports/queries/searchofvehicleparts', 'SapRportsController@searchofvehicleparts')->name('sap.SapRports.searchofvehicleparts');
+	//Invoice Query Series Revised
+	Route::get('/reports/queries/invoicequeryseriesrevised', 'SapRportsController@invoicequeryseriesrevised')->name('sap.SapRports.invoicequeryseriesrevised');
+	//Martketing AR Invoice Query
+	Route::get('/reports/queries/marketingarinvoicequery', 'SapRportsController@marketingarinvoicequery')->name('sap.SapRports.marketingarinvoicequery');
+	//Summary of Customer DepositApplied
+	Route::get('/reports/queries/summaryofcustomerdepositapplied', 'SapRportsController@summaryofcustomerdepositapplied')->name('sap.SapRports.summaryofcustomerdepositapplied');
+	//Adjustments Sales Discount
+	Route::get('/reports/queries/adjustmentsalesdiscount', 'SapRportsController@adjustmentsalesdiscount')->name('sap.SapRports.adjustmentsalesdiscount');
+	//Recomputed Account
+	Route::get('/reports/queries/recomputedaccount', 'SapRportsController@recomputedaccount')->name('sap.SapRports.recomputedaccount');
+	//Ar Invoice Open Balance
+	Route::get('/reports/queries/arinvoiceopenbalance', 'SapRportsController@arinvoiceopenbalance')->name('sap.SapRports.arinvoiceopenbalance');
+	//Incoming Payment Customer Deposit
+	Route::get('/reports/queries/incomingpaymentcustomerdeposit', 'SapRportsController@incomingpaymentcustomerdeposit')->name('sap.SapRports.incomingpaymentcustomerdeposit');
+	//Incoming Payment open Balamce
+	Route::get('/reports/queries/incomingpaymentopenbalance', 'SapRportsController@incomingpaymentopenbalance')->name('sap.SapRports.incomingpaymentopenbalance');
+
 });
 Route::get('/sql/test', 'SapApiController@index')->name('sap.installment.index2');
 //DIGITIZED REQUIREMENT
@@ -300,5 +320,27 @@ Route::get('/re/sysnc', 'SapApiController@Rsync_branchsegment');
 //Change Background
 Route::get('/change/background', 'SapApiController@changecolor');
  
-//PrintPreview
+
+
+
+//PrintPreview Sap Queries
 Route::get('/reports/printview', 'SapRportsController@preview')->name('sap.SapRports.crb.print');
+
+//Query Searching of Vehicles parts
+Route::get('/reports/printview/searchofvehicleparts/print', 'SapRportsController@searchofvehicleparts_preview')->name('sap.SapRports.searchofvehicleparts_preview');
+//Invoice Query Series Revised
+Route::get('/reports/printview/invoicequeryseriesrevised/print', 'SapRportsController@invoicequeryseriesrevised_preview')->name('sap.SapRports.invoicequeryseriesrevised_preview');
+//Martketing AR Invoice Query
+Route::get('/reports/printview/marketingarinvoicequery/print', 'SapRportsController@marketingarinvoicequery_preview')->name('sap.SapRports.marketingarinvoicequery_preview');
+//Summary of Customer DepositApplied
+Route::get('/reports/printview/summaryofcustomerdepositapplied/print', 'SapRportsController@summaryofcustomerdepositapplied_preview')->name('sap.SapRports.summaryofcustomerdepositapplied_preview');
+//Adjustments Sales Discount
+Route::get('/reports/printview/adjustmentsalesdiscount/print', 'SapRportsController@adjustmentsalesdiscount_preview')->name('sap.SapRports.adjustmentsalesdiscount_preview');
+//Recomputed Account
+Route::get('/reports/printview/recomputedaccount/print', 'SapRportsController@recomputedaccount_preview')->name('sap.SapRports.recomputedaccount_preview');
+//Ar Invoice Open Balance
+Route::get('/reports/printview/arinvoiceopenbalance/print', 'SapRportsController@arinvoiceopenbalance_preview')->name('sap.SapRports.arinvoiceopenbalance_preview');
+//Incoming Payment Customer Deposit
+Route::get('/reports/printview/incomingpaymentcustomerdeposit/print', 'SapRportsController@incomingpaymentcustomerdeposit_preview')->name('sap.SapRports.incomingpaymentcustomerdeposit_preview');
+//Incoming Payment open Balamce
+Route::get('/reports/printview/incomingpaymentopenbalance/print', 'SapRportsController@incomingpaymentopenbalance_preview')->name('sap.SapRports.incomingpaymentopenbalance_preview');
