@@ -325,22 +325,5 @@ Route::get('/change/background', 'SapApiController@changecolor');
 
 //PrintPreview Sap Queries
 Route::get('/reports/printview', 'SapRportsController@preview')->name('sap.SapRports.crb.print');
-
-//Query Searching of Vehicles parts
-Route::get('/reports/printview/searchofvehicleparts/print', 'SapRportsController@searchofvehicleparts_preview')->name('sap.SapRports.searchofvehicleparts_preview');
-//Invoice Query Series Revised
-Route::get('/reports/printview/invoicequeryseriesrevised/print', 'SapRportsController@invoicequeryseriesrevised_preview')->name('sap.SapRports.invoicequeryseriesrevised_preview');
-//Martketing AR Invoice Query
-Route::get('/reports/printview/marketingarinvoicequery/print', 'SapRportsController@marketingarinvoicequery_preview')->name('sap.SapRports.marketingarinvoicequery_preview');
-//Summary of Customer DepositApplied
-Route::get('/reports/printview/summaryofcustomerdepositapplied/print', 'SapRportsController@summaryofcustomerdepositapplied_preview')->name('sap.SapRports.summaryofcustomerdepositapplied_preview');
-//Adjustments Sales Discount
-Route::get('/reports/printview/adjustmentsalesdiscount/print', 'SapRportsController@adjustmentsalesdiscount_preview')->name('sap.SapRports.adjustmentsalesdiscount_preview');
-//Recomputed Account
-Route::get('/reports/printview/recomputedaccount/print', 'SapRportsController@recomputedaccount_preview')->name('sap.SapRports.recomputedaccount_preview');
-//Ar Invoice Open Balance
-Route::get('/reports/printview/arinvoiceopenbalance/print', 'SapRportsController@arinvoiceopenbalance_preview')->name('sap.SapRports.arinvoiceopenbalance_preview');
-//Incoming Payment Customer Deposit
-Route::get('/reports/printview/incomingpaymentcustomerdeposit/print', 'SapRportsController@incomingpaymentcustomerdeposit_preview')->name('sap.SapRports.incomingpaymentcustomerdeposit_preview');
-//Incoming Payment open Balamce
-Route::get('/reports/printview/incomingpaymentopenbalance/print', 'SapRportsController@incomingpaymentopenbalance_preview')->name('sap.SapRports.incomingpaymentopenbalance_preview');
+//
+Route::get('/seriesname/fetch', 'SapRportsController@seriesname')->name('sap.SapRports.series');

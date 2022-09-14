@@ -9,6 +9,16 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 class SapRportsController extends Controller
 {
+
+    public function seriesname(request $req){
+        if($req){
+            $q = DB::connection('sqlsrv')->select("SELECT distinct SeriesName from nnm1");
+            if($req->q == 'sapprogtbl' ){
+            $q = DB::connection('sqlsrv')->select("SELECT U_Branch1 FROM DBO.[@PROGTBL]");
+            }
+        }
+        return  response()->json($q);
+    }
     public function incoming_crb_generate(request $req){
         
  
@@ -218,120 +228,177 @@ class SapRportsController extends Controller
  
 
     //Invoice Query Series Revised
-    public function invoicequeryseriesrevised(){
-        $get = \DB::connection('sqlsrv')->unprepared("
-        DECLARE @DateFrom AS smalldatetime
-        DECLARE @DateTo AS smalldatetime
-        DECLARE @Series AS VARCHAR(50)
-        
-        SET @DateFrom='2022-06-02'
-        SET @DateTo='2022-06-30'
-        SET @Series ='URDACASH'
-        
-        SELECT	T0.NumAtCard AS [INVOICE#],
-                max(T0.DocDate) AS [DOCUMENT DATE], 
-                max(T0.DocNum) AS [DOCUMENT NUMBER], 
-                max(T0.CardName) AS [NAME OF CUSTOMER], 
-                sum(T1.LineTotal) AS [INVOICE AMOUNT],
-                CASE	WHEN max(T0.docstatus) = 'O' and MAX(T0.Printed) = 'N' THEN 'OPEN'
-                        WHEN MAX(T0.DocStatus) = 'O' and MAX(T0.Printed) = 'Y' THEN 'OPEN - PRINTED'
-                        WHEN MAX(T0.DocStatus) = 'C' THEN 'CLOSED'
-                End AS STATUS,
-                max(t6.PymntGroup) as [Payment Terms], 
-                --MAX(isnull(T3.DocNum,'')) AS  ARCM,
-                MAX(T0.U_ClosedType) AS CLOSEDTYPE
-                INTO #TEMP 
-                FROM OINV T0 
-                INNER JOIN INV1 T1 ON T0.[DocEntry] = T1.[DocEntry] 
-                left join RIN1 T2 on T2.[BaseEntry] = T1.Docentry and T2.[BaseLine] = T1.[LineNum] and T2.[BaseType] =13 
-                left JOIN ORIN T3 ON T2.[DocEntry] = T3.[DocEntry]
-                inner join NNM1 t4 on t0.Series = t4.Series
-                LEFT JOIN [@PROGTBL] t5 ON LEFT(t4.SeriesName,4) = t5.Name
-                INNER JOIN OCTG T6 ON T0.GroupNum = t6.GroupNum
-                WHERE t4.SeriesName = @Series and t0.DocDate between @DateFrom and @DateTo
-                and t1.ItemCode <> 'DIFC2' and t1.LineTotal <> 0 AND T0.U_ClosedType  in ('WRNG','CANC','-')
-                --AND (isnull(T3.DocNum,'')) = 0
-                GROUP BY t0.NumAtCard, t0.DocDate,t0.DocNum, t0.CardName
-        ORDER BY T0.NumAtCard");
-        $q = \DB::connection('sqlsrv')
-        ->select("SELECT * FROM #TEMP A
-		        where (isnull(a.[DOCUMENT NUMBER],'')) = 0 and  A.CLOSEDTYPE = '-'
-	            UNION ALL
-                SELECT * FROM #TEMP A
-                where (isnull(a.[DOCUMENT NUMBER],'')) <> 0 and  A.CLOSEDTYPE = '-'
-                UNION ALL
-                SELECT * FROM #TEMP A
-                where (isnull(a.[DOCUMENT NUMBER],'')) = 0 and  A.CLOSEDTYPE <> '-'
-                DROP TABLE #TEMP");
-        return $q;
-    }
+    public function invoicequeryseriesrevised(request $req){
+          
+       try{
+ 
+            function concept($branch, $dateFrom, $dateTo, $params){
+                $get = \DB::connection('sqlsrv')->unprepared("
+                DECLARE @DateFrom AS smalldatetime
+                DECLARE @DateTo AS smalldatetime
+                DECLARE @Series AS VARCHAR(50)
+                
+                SET @DateFrom='$dateFrom'
+                SET @DateTo='$dateTo'
+                SET @Series = '$branch'
+                
+                SELECT	T0.NumAtCard AS [INVOICE],
+                        max(T0.DocDate) AS [DOCUMENTDATE], 
+                        max(T0.DocNum) AS [DOCUMENTNUMBER], 
+                        max(T0.CardName) AS [NAMEOFCUSTOMER], 
+                        sum(T1.LineTotal) AS [INVOICEAMOUNT],
+                        CASE	WHEN max(T0.docstatus) = 'O' and MAX(T0.Printed) = 'N' THEN 'OPEN'
+                                WHEN MAX(T0.DocStatus) = 'O' and MAX(T0.Printed) = 'Y' THEN 'OPEN - PRINTED'
+                                WHEN MAX(T0.DocStatus) = 'C' THEN 'CLOSED'
+                        End AS STATUS,
+                        max(t6.PymntGroup) as [PaymentTerms], 
+                        --MAX(isnull(T3.DocNum,'')) AS  ARCM,
+                        MAX(T0.U_ClosedType) AS CLOSEDTYPE
+                        INTO #TEMP 
+                        FROM OINV T0 
+                        INNER JOIN INV1 T1 ON T0.[DocEntry] = T1.[DocEntry] 
+                        left join RIN1 T2 on T2.[BaseEntry] = T1.Docentry and T2.[BaseLine] = T1.[LineNum] and T2.[BaseType] =13 
+                        left JOIN ORIN T3 ON T2.[DocEntry] = T3.[DocEntry]
+                        inner join NNM1 t4 on t0.Series = t4.Series
+                        LEFT JOIN [@PROGTBL] t5 ON LEFT(t4.SeriesName,4) = t5.Name
+                        INNER JOIN OCTG T6 ON T0.GroupNum = t6.GroupNum
+                        WHERE t4.SeriesName = @Series and t0.DocDate between @DateFrom and @DateTo
+                        and t1.ItemCode <> 'DIFC2' and t1.LineTotal <> 0 AND T0.U_ClosedType  in ('WRNG','CANC','-')
+                        --AND (isnull(T3.DocNum,'')) = 0
+                        GROUP BY t0.NumAtCard, t0.DocDate,t0.DocNum, t0.CardName
+                ORDER BY T0.NumAtCard");
+                
+                $q = \DB::connection('sqlsrv')
+                ->select("SELECT * FROM #TEMP A
+                        where (isnull(a.[DOCUMENTNUMBER],'')) = 0 and  A.CLOSEDTYPE = '-'
+                        UNION ALL
+                        SELECT * FROM #TEMP A
+                        where (isnull(a.[DOCUMENTNUMBER],'')) <> 0 and  A.CLOSEDTYPE = '-'
+                        UNION ALL
+                        SELECT * FROM #TEMP A
+                        where (isnull(a.[DOCUMENTNUMBER],'')) = 0 and  A.CLOSEDTYPE <> '-'
+                        DROP TABLE #TEMP");
+                    if($params == 'queries'){
+                            return $q;
+                    }
+                    if($params == 'printing'){
+                        return view('sap_reportsprint.invoicequeryseriesrevised.invoice_query_series_revised', compact('q','dateFrom','dateTo'));
+                    }
+  
+            }
+
+                if($req->q){
+                        $dateFrom = $req->datefrom;
+                        $dateTo = $req->dateto;
+                        $seriesName = $req->series;
+                        $params = $req->q;
+                        return concept($seriesName,$dateFrom,$dateTo, $params);
+                }
+                }catch(Exception $e){
+                        return response()->json('something wrong');
+                }
+            
+                    return "Stevefox Linux Pogi";
+                
+                }
  
     //Martketing AR Invoice Query
-    public function marketingarinvoicequery(){
-       
-        $q = \DB::connection('sqlsrv')
-                        ->select("
-                        DECLARE @DateFrom AS smalldatetime
-                        DECLARE @DateTo AS smalldatetime
-                        DECLARE @Seriesname AS VARCHAR(50)
-                        SET @DateFrom='2022-06-02'
-                        SET @DateTo='2022-06-30'
-                        SET @Seriesname ='URDACASH'
-                        SELECT	
-                                a.CardName AS NAME,
-                                f.Block + ' ' + isnull(f.City, 'No City') + ' ' + province.Name AS [ADDRESS],
-                                h.FirmName as BRAND, G.frgnName as [PRODUCT CATEGORY],
-                                G.ItemName AS [MODEL],
-                                E.Cellular AS [CONTACT NO.]
-                        from OINV A 
-                        INNER JOIN INV1 B ON A.DocEntry = B.DocEntry
-                        inner join nnm1 c on c.series = a.series
-                        LEFT JOIN [@PROGTBL] d ON LEFT(c.SeriesName,4) = d.Name
-                        inner join OCRD e on a.CardCode = e.CardCode
-                        inner join CRD1 f on a.CardCode = f.CardCode
-                        INNER JOIN OITM G ON B.ItemCode = G.ItemCode
-                        INNER JOIN OMRC H ON G.FirmCode = h.FirmCode
-                        INNER JOIN OCST province ON province.Code = f.State
-                        WHERE @Seriesname = C.SeriesName AND a.DocDate between @DateFrom AND @DateTo and b.ItemCode <> 'DIFC2'
-                        and a.ObjType = '13' and a.U_ClosedType not in ('CANC', 'WRNG')
-                        FOR BROWSE");
-        return $q;
+    public function marketingarinvoicequery(request $req){
+        try{
+               function concept($branch, $dateFrom, $dateTo, $params){
+                $q = \DB::connection('sqlsrv')
+                ->select("
+                DECLARE @DateFrom AS smalldatetime
+                DECLARE @DateTo AS smalldatetime
+                DECLARE @Seriesname AS VARCHAR(50)
+                    SET @DateFrom='$dateFrom'
+                    SET @DateTo='$dateTo'
+                    SET @Seriesname ='$branch'
+                    SELECT	
+                            a.CardName AS NAME,
+                            f.Block + ' ' + isnull(f.City, 'No City') + ' ' + province.Name AS [ADDRESS],
+                            h.FirmName as BRAND, G.frgnName as [PRODUCTCATEGORY],
+                            G.ItemName AS [MODEL],
+                            E.Cellular AS [CONTACTNO]
+                    from OINV A 
+                    INNER JOIN INV1 B ON A.DocEntry = B.DocEntry
+                    inner join nnm1 c on c.series = a.series
+                    LEFT JOIN [@PROGTBL] d ON LEFT(c.SeriesName,4) = d.Name
+                    inner join OCRD e on a.CardCode = e.CardCode
+                    inner join CRD1 f on a.CardCode = f.CardCode
+                    INNER JOIN OITM G ON B.ItemCode = G.ItemCode
+                    INNER JOIN OMRC H ON G.FirmCode = h.FirmCode
+                    INNER JOIN OCST province ON province.Code = f.State
+                    WHERE @Seriesname = C.SeriesName AND a.DocDate between @DateFrom AND @DateTo and b.ItemCode <> 'DIFC2'
+                    and a.ObjType = '13' and a.U_ClosedType not in ('CANC', 'WRNG')
+                    FOR BROWSE");
+ 
+                    if($params == 'queries'){
+                            return $q;
+                    }
+                    if($params == 'printing'){
+                        return view('sap_reportsprint.marketingarinvoicequery.marketing_ar_invoice_query', compact('q','dateFrom','dateTo'));
+                    }
+            }
+                if($req->q){
+                        $dateFrom = $req->datefrom;
+                        $dateTo = $req->dateto;
+                        $seriesName = $req->series;
+                        $params = $req->q;
+                        return concept($seriesName,$dateFrom,$dateTo, $params);
+                }
+                }catch(Exception $e){
+                        return response()->json('something wrong');
+                }
+                    return "Stevefox Linux Pogi";
     }
  
     //Summary of Customer DepositApplied
-    public function summaryofcustomerdepositapplied(){   
-        ## branch SELECT distinct U_Branch FROM DBO.[@QUOTA]; 
-        $q = \DB::connection('sqlsrv')
-                        ->select(" 
-                                DECLARE @DateFrom AS smalldatetime
-                                DECLARE @DateTo AS smalldatetime
-                                DECLARE @Branch AS VARCHAR(50)
-                                SET @DateFrom='2022-06-02'
-                                SET @DateTo='2022-06-30'
-                                SET @Branch ='AGOO'
-                                SELECT	t4.CardName AS [CUSTOMER NAME],
-                                T0.RefDate as [DATE],
-                                T0.Number AS [JE NUMBER],
-                                T0.TransCode AS [TRANS. CODE],
-                                T0.Ref2 AS [REF2],
-                                T0.SysTotal AS [AMOUNT]
-                            
-                                FROM OJDT T0 
-                                --INNER JOIN JDT1 T1 ON T0.Transid = T1.Transid 
-                                --INNER JOIN OACT T2 ON T1.ContraAct = T2.AcctCode
-                                --INNER JOIN OCRD	T3 ON T1.ShortName = T3.CardCode
-                                --inner join NNM1 t4 on t0.Series = t4.Series
-                                --LEFT JOIN [@PROGTBL] t5 ON LEFT(t4.SeriesName,4) = t5.Name
-                                
-                                inner join JDT1 T1 on T0.TransID = T1.TransID
-                                inner join OACT T2 on T2.AcctCode = T1.contraact
-                                left join [@QUOTA] T3 on T2.Segment_2 = T3.U_Segment
-                                inner join OCRD T4 on T1.ShortName = T4.CardCode
-                                
-                                WHERE T2.Segment_0 in ('21510','11210') and t0.RefDate between @DateFrom and @DateTo
-                                and @Branch = t3.U_Branch and T0.TransType = '30'
-                                ORDER BY T0.RefDate");
-        return $q;
+    public function summaryofcustomerdepositapplied(request $req){   
+        try{
+            function concept($branch, $dateFrom, $dateTo, $params){
+                $q = \DB::connection('sqlsrv')
+                ->select(" 
+                        DECLARE @DateFrom AS smalldatetime
+                        DECLARE @DateTo AS smalldatetime
+                        DECLARE @Branch AS VARCHAR(50)
+                        SET @DateFrom='$dateFrom'
+                        SET @DateTo='$dateTo'
+                        SET @Branch ='$branch'
+                        SELECT	t4.CardName AS [CUSTOMERNAME],
+                        T0.RefDate as [DATE],
+                        T0.Number AS [JENUMBER],
+                        T0.TransCode AS [TRANSCODE],
+                        T0.Ref2 AS [REF2],
+                        T0.SysTotal AS [AMOUNT]
+                        FROM OJDT T0 
+                        inner join JDT1 T1 on T0.TransID = T1.TransID
+                        inner join OACT T2 on T2.AcctCode = T1.contraact
+                        left join [@QUOTA] T3 on T2.Segment_2 = T3.U_Segment
+                        inner join OCRD T4 on T1.ShortName = T4.CardCode
+                        WHERE T2.Segment_0 in ('21510','11210') and t0.RefDate between @DateFrom and @DateTo
+                        and @Branch = t3.U_Branch and T0.TransType = '30'
+                        ORDER BY T0.RefDate");
+ 
+                 if($params == 'queries'){
+                         return $q;
+                 }
+                 if($params == 'printing'){
+                     return view('sap_reportsprint.summaryofcustomerdepositapplied.summary_of_customerdeposit', compact('q','dateFrom','dateTo'));
+                 }
+         }
+             if($req->q){
+                     $dateFrom = $req->datefrom;
+                     $dateTo = $req->dateto;
+                     $seriesName = $req->series;
+                     $params = $req->q;
+                     return concept($seriesName,$dateFrom,$dateTo, $params);
+             }
+             }catch(Exception $e){
+                     return response()->json('something wrong');
+             }
+                 return "Stevefox Linux Pogi";
+        
     }
 
     //Adjustments Sales Discount
@@ -489,7 +556,7 @@ class SapRportsController extends Controller
                  T0.[DocNum],
                  T0.[CardName],
                  T0.[CounterRef],
-                   T0.[OpenBal] FROM ORCT T0 INNER JOIN NNM1 T1 ON  T0.Series =  T1.Series WHERE T0.[OpenBal] <> 0.00 AND T1.SeriesName = 'AGOO' ORDER BY T0.[DocNum]");
+                   T0.[OpenBal] FROM ORCT T0 INNER JOIN NNM1 T1 ON  T0.Series =  T1.Series WHERE T0.[OpenBal] <> 0.00 AND T1.SeriesName = 'URDAALEX' ORDER BY T0.[DocNum]");
                 return $q;
     }
  

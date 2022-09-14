@@ -662,6 +662,38 @@ class SapApiController extends Controller
        
         }
         public function Rsync_branchsegment(){
+
+            function remaping($series){
+                $q  = DB::table('branches')->where('name', 'like', '%'.$series.'%')->pluck('name','id')->first();
+                return $q;
+            }
+            $q = DB::connection('sqlsrv')->select("SELECT distinct SeriesName from nnm1");
+   
+            foreach($q as $d){
+                $arr [] = remaping(substr($d->SeriesName, 0, 4)) .'---> '. $d->SeriesName;
+            }
+            return $arr;
+            
+
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            return '';
             // $segmentCode = \DB::connection('sqlsrv')->table('OASC')->get();
             // foreach($segmentCode as $d){
             //     $res[] =  DB::table('branches')->where('name', 'like' , '%'.$d['Name'].'%')->update([
@@ -29312,7 +29344,7 @@ class SapApiController extends Controller
             //     DB::table('branches')->where('name', zinc($q['Remark']))
             //     ->update(['seriesname'=> null]); 
             // }
-      
+            
             }
             return 'ok';
         }
