@@ -402,162 +402,249 @@ class SapRportsController extends Controller
     }
 
     //Adjustments Sales Discount
-    public function adjustmentsalesdiscount(){
-        ##SELECT U_Branch1 FROM DBO.[@PROGTBL];
-        $q = \DB::connection('sqlsrv')
-        ->select(" 
-                DECLARE @DateFrom AS smalldatetime
-                DECLARE @DateTo AS smalldatetime
-                DECLARE @Branch AS VARCHAR(50)
-                SET @DateFrom='2022-06-02'
-                SET @DateTo='2022-06-30'
-                SET @Branch ='AGOO'
+    public function adjustmentsalesdiscount(request $req){
+        try{
+            function concept($branch, $dateFrom, $dateTo, $params){
+            ##SELECT U_Branch1 FROM DBO.[@PROGTBL];
+            $q = \DB::connection('sqlsrv')
+            ->select(" 
+                    DECLARE @DateFrom AS smalldatetime
+                    DECLARE @DateTo AS smalldatetime
+                    DECLARE @Branch AS VARCHAR(50)
+                    SET @DateFrom='$dateFrom'
+                    SET @DateTo='$dateTo'
+                    SET @Branch ='$branch'
+                    SELECT  c.CardName AS [CUSTOMERNAME],
+                    a.RefDate AS [DATE],
+                    a.Number AS [JENUMBER],
+                    a.TransCode AS [TRANSCODE],
+                    a.Ref2,
+                    b.credit - b.Debit AS AMOUNT
+                    from dbo.ojdt a
+                        inner join dbo.nnm1 a1 on a1.series = a.series
+                        inner join dbo.jdt1 b on b.transid = a.transid
+                        inner join dbo.ocrd c on c.cardcode = b.shortname 
+                        --inner join dbo.oact c1 on c1.acctcode = b.Account
+                        left join OACT d1 on d1.AcctCode = b.ContraAct --f1
+                        left join [@PROGTBL] E ON A1.SeriesName = E.U_Series1
+                            
+                        where a.TransCode = 'BEG' and d1.AcctCode is null
+                        and a.RefDate between @DateFrom and @DateTo
+                        and e.U_Branch1 = @Branch
+                    union all
+                    SELECT c.CardName AS [CUSTOMERNAME],
+                    a.RefDate AS [DATE],
+                    a.Number AS [JENUMBER],
+                    a.TransCode AS [TRANSCODE],
+                    a.Ref2,
+                    b.credit - b.Debit AS AMOUNT
+                    from dbo.ojdt a
+                        inner join dbo.nnm1 a1 on a1.series = a.series
+                        inner join dbo.jdt1 b on b.transid = a.transid
+                        inner join dbo.ocrd c on c.cardcode = b.shortname 
+                        --inner join dbo.oact c1 on c1.acctcode = b.Account
+                        left join OACT d1 on d1.AcctCode = b.ContraAct --f1
+                        left join [@PROGTBL] E ON A1.SeriesName = E.U_Series1
+                        where ISNULL(a.TransCode,'') IN('ASD','') and d1.segment_0 = '41310' 
+                        and a.TransType = N'30'
+                        and a.RefDate between @DateFrom and @DateTo
+                        and e.U_Branch1 = @Branch          
+                    union all	
+                    SELECT  c.CardName AS [CUSTOMERNAME],
+                    a.RefDate AS [DATE],
+                    a.Number AS [JENUMBER],
+                    a.TransCode AS [TRANSCODE],
+                    a.Ref2,
+                    b.credit - b.Debit AS AMOUNT
 
+                    from dbo.ojdt a
+                        inner join dbo.nnm1 a1 on a1.series = a.series
+                        inner join dbo.jdt1 b on b.transid = a.transid
+                        inner join dbo.ocrd c on c.cardcode = b.shortname 
+                        --inner join dbo.oact c1 on c1.acctcode = b.Account
+                        left join OACT d1 on d1.AcctCode = b.ContraAct --f1
+                        left join [@PROGTBL] E ON A1.SeriesName = E.U_Series1
 
-                
-                SELECT  c.CardName AS [CUSTOMER NAME],
-                a.RefDate AS [DATE],
-                a.Number AS [JE NUMBER],
-                a.TransCode AS [TRANS. CODE],
-                a.Ref2,
-                b.credit - b.Debit AS AMOUNT
+                        where a.TransType = N'30' AND isnull(a.TransCode,'') IN('OPT','') and d1.segment_0 = '41250'  --and a.TransCode = 'OPT'
+                        and a.RefDate between @DateFrom and @DateTo
+                        and e.U_Branch1 = @Branch");
+                 if($params == 'queries'){
+                         return $q;
+                 }
+                 if($params == 'printing'){
+                     return view('sap_reportsprint.adjustmentsalesdiscounts.adjustment_sales_discounts', compact('q','dateFrom','dateTo'));
+                 }
+         }
+             if($req->q){
+                     $dateFrom = $req->datefrom;
+                     $dateTo = $req->dateto;
+                     $seriesName = $req->series;
+                     $params = $req->q;
+                     return concept($seriesName,$dateFrom,$dateTo, $params);
+             }
+             }catch(Exception $e){
+                     return response()->json('something wrong');
+             }
+                 return "Stevefox Linux Pogi";
 
-                from dbo.ojdt a
-                    inner join dbo.nnm1 a1 on a1.series = a.series
-                    inner join dbo.jdt1 b on b.transid = a.transid
-                    inner join dbo.ocrd c on c.cardcode = b.shortname 
-                    --inner join dbo.oact c1 on c1.acctcode = b.Account
-                    left join OACT d1 on d1.AcctCode = b.ContraAct --f1
-                    left join [@PROGTBL] E ON A1.SeriesName = E.U_Series1
-                        
-                    where a.TransCode = 'BEG' and d1.AcctCode is null
-                    and a.RefDate between @DateFrom and @DateTo
-                    and e.U_Branch1 = @Branch
-                union all
-
-                SELECT c.CardName AS [CUSTOMER NAME],
-                a.RefDate AS [DATE],
-                a.Number AS [JE NUMBER],
-                a.TransCode AS [TRANS. CODE],
-                a.Ref2,
-                b.credit - b.Debit AS AMOUNT
-
-                from dbo.ojdt a
-                    inner join dbo.nnm1 a1 on a1.series = a.series
-                    inner join dbo.jdt1 b on b.transid = a.transid
-                    inner join dbo.ocrd c on c.cardcode = b.shortname 
-                    --inner join dbo.oact c1 on c1.acctcode = b.Account
-                    left join OACT d1 on d1.AcctCode = b.ContraAct --f1
-                    left join [@PROGTBL] E ON A1.SeriesName = E.U_Series1
-
-                    where ISNULL(a.TransCode,'') IN('ASD','') and d1.segment_0 = '41310' 
-                    and a.TransType = N'30'
-                    and a.RefDate between @DateFrom and @DateTo
-                    and e.U_Branch1 = @Branch
-                                
-                union all	
-                SELECT  c.CardName AS [CUSTOMER NAME],
-                a.RefDate AS [DATE],
-                a.Number AS [JE NUMBER],
-                a.TransCode AS [TRANS. CODE],
-                a.Ref2,
-                b.credit - b.Debit AS AMOUNT
-
-                from dbo.ojdt a
-                    inner join dbo.nnm1 a1 on a1.series = a.series
-                    inner join dbo.jdt1 b on b.transid = a.transid
-                    inner join dbo.ocrd c on c.cardcode = b.shortname 
-                    --inner join dbo.oact c1 on c1.acctcode = b.Account
-                    left join OACT d1 on d1.AcctCode = b.ContraAct --f1
-                    left join [@PROGTBL] E ON A1.SeriesName = E.U_Series1
-
-                    where a.TransType = N'30' AND isnull(a.TransCode,'') IN('OPT','') and d1.segment_0 = '41250'  --and a.TransCode = 'OPT'
-                    and a.RefDate between @DateFrom and @DateTo
-                    and e.U_Branch1 = @Branch");
-            return $q;
     }
      //Recomputed Account
-     public function recomputedaccount(){
-        ##SELECT U_Branch1 FROM DBO.[@PROGTBL];
-        $q = \DB::connection('sqlsrv')
-        ->select("  DECLARE @From AS smalldatetime
-                    DECLARE @To AS smalldatetime
-                    DECLARE @branch AS VARCHAR(50)
-                    SET @From='2022-06-02'
-                    SET @To='2022-06-30'
-                    SET @branch ='BAGUIO'
+     public function recomputedaccount(request $req){
+        try{
+            function concept($branch, $dateFrom, $dateTo, $params){
+                    ##SELECT U_Branch1 FROM DBO.[@PROGTBL];
+                    $q = \DB::connection('sqlsrv')
+                    ->select("  DECLARE @From AS smalldatetime
+                                DECLARE @To AS smalldatetime
+                                DECLARE @branch AS VARCHAR(50)
+                                SET @From='$dateFrom'
+                                SET @To='$dateTo'
+                                SET @branch ='$branch'
 
-                    select distinct a.DocNum,a.CardName,c.NumAtCard as [Invoice#], 
-                    a.CounterRef as [OR#], c.TaxDate as [Date of OR], c.U_Coll as [Collector Code], e.U_Branch1 as [Branch]
-                    from ORCT a
-                    inner join RCT2 b on b.DocNum = a.DocNum
-                    inner join OINV c on c.DocEntry = b.DocEntry and c.ObjType = N'13'
-                    left join NNM1 d on d.Series = a.Series
-                    left join [@PROGTBL] e on e.U_Series1 = d.SeriesName
-                    where a.DocDate between @From and @To 
-                    and a.U_Status = '9' and e.U_Branch1 = @branch for browse");
-        return $q;
+                                select distinct a.DocNum,a.CardName,c.NumAtCard as [Invoice], 
+                                a.CounterRef as [OR], c.TaxDate as [DateofOR], c.U_Coll as [CollectorCode], e.U_Branch1 as [Branch]
+                                from ORCT a
+                                inner join RCT2 b on b.DocNum = a.DocNum
+                                inner join OINV c on c.DocEntry = b.DocEntry and c.ObjType = N'13'
+                                left join NNM1 d on d.Series = a.Series
+                                left join [@PROGTBL] e on e.U_Series1 = d.SeriesName
+                                where a.DocDate between @From and @To 
+                                and a.U_Status = '9' and e.U_Branch1 = @branch for browse");
+ 
+                 if($params == 'queries'){
+                         return $q;
+                 }
+                 if($params == 'printing'){
+                     return view('sap_reportsprint.recomputedaccount.recomputed_account', compact('q','dateFrom','dateTo'));
+                 }
+         }
+             if($req->q){
+                     $dateFrom = $req->datefrom;
+                     $dateTo = $req->dateto;
+                     $seriesName = $req->series;
+                     $params = $req->q;
+                     return concept($seriesName,$dateFrom,$dateTo, $params);
+             }
+             }catch(Exception $e){
+                     return response()->json('something wrong');
+             }
+                 return "Stevefox Linux Pogi";
+
+        
     }
  
     //Ar Invoice Open Balance 
-    public function arinvoiceopenbalance(){
-                ##SELECT U_Branch1 FROM DBO.[@PROGTBL];
-                $q = \DB::connection('sqlsrv')
-                ->select("SELECT	
-                DISTINCT
-                T3.[U_Branch1] AS Branch,
-                T0.[DocDate],
-                T0.NumAtCard AS [Invoice #], 
-                T0.DocNum AS [Document No.], 
-                T0.CardName as [Customer Name],
-                (t0.DocTotal - T0.PaidToDate) AS [Open Balance Amt.]
-                FROM OINV t0
-                INNER JOIN  INV1 T1 on T1.docentry = T0.docentry
-                INNER JOIN  NNM1 T2 on T2.series = T0.series
-                LEFT JOIN [@PROGTBL] T3 ON LEFT(T2.SeriesName,4) = T3.Name
-                WHERE T0.[DocStatus] = 'O' and T3.U_Branch1 = 'AGOO' 
-                AND T0.GroupNum IN ('-1', '30', '57')
-                ORDER BY T0.[DocDate]
-                FOR BROWSE");
-                return $q;
+    public function arinvoiceopenbalance(request $req){
+                try{
+                    function concept($branch, $dateFrom, $dateTo, $params){
+                            ##SELECT U_Branch1 FROM DBO.[@PROGTBL];
+                            $q = \DB::connection('sqlsrv')
+                            ->select("SELECT	
+                            DISTINCT
+                            T3.[U_Branch1] AS Branch,
+                            T0.[DocDate],
+                            T0.NumAtCard AS [Invoice], 
+                            T0.DocNum AS [DocumentNo], 
+                            T0.CardName as [CustomerName],
+                            (t0.DocTotal - T0.PaidToDate) AS [OpenBalanceAmt]
+                            FROM OINV t0
+                            INNER JOIN  INV1 T1 on T1.docentry = T0.docentry
+                            INNER JOIN  NNM1 T2 on T2.series = T0.series
+                            LEFT JOIN [@PROGTBL] T3 ON LEFT(T2.SeriesName,4) = T3.Name
+                            WHERE T0.[DocStatus] = 'O' and T3.U_Branch1 = '$branch' 
+                            AND T0.GroupNum IN ('-1', '30', '57')
+                            ORDER BY T0.[DocDate]
+                            FOR BROWSE");
+                         if($params == 'queries'){
+                                 return $q;
+                         }
+                         if($params == 'printing'){
+                             return view('sap_reportsprint.arinvoiceopenbalance.ar_invoice_open_balance', compact('q','dateFrom','dateTo'));
+                         }
+                 }
+                     if($req->q){
+                             $dateFrom = $req->datefrom;
+                             $dateTo = $req->dateto;
+                             $seriesName = $req->series;
+                             $params = $req->q;
+                             return concept($seriesName,$dateFrom,$dateTo, $params);
+                     }
+                     }catch(Exception $e){
+                             return response()->json('something wrong');
+                     }
+                         return "Stevefox Linux Pogi";
     }
- 
     //Incoming Payment Customer Deposit
-    public function incomingpaymentcustomerdeposit(){
+    public function incomingpaymentcustomerdeposit(request $req){
                 ##SELECT from nnm1 for branch
-                $q = \DB::connection('sqlsrv')
-                ->select("SELECT	
-                DISTINCT
-                T3.[U_Branch1] AS Branch,
-                T0.[DocDate],
-                T0.NumAtCard AS [Invoice #], 
-                T0.DocNum AS [Document No.], 
-                T0.CardName as [Customer Name],
-                (t0.DocTotal - T0.PaidToDate) AS [Open Balance Amt.]
-                FROM OINV t0
-                INNER JOIN  INV1 T1 on T1.docentry = T0.docentry
-                INNER JOIN  NNM1 T2 on T2.series = T0.series
-                LEFT JOIN [@PROGTBL] T3 ON LEFT(T2.SeriesName,4) = T3.Name
-                WHERE T0.[DocStatus] = 'O' and T3.U_Branch1 = 'AGOO' 
-                AND T0.GroupNum IN ('-1', '30', '57')
-                ORDER BY T0.[DocDate]
-                FOR BROWSE");
-                return $q;
+                try{
+                    function concept($branch, $params){
+                        $q = \DB::connection('sqlsrv')
+                        ->select("SELECT	
+                        DISTINCT
+                        T3.[U_Branch1] AS Branch,
+                        T0.[DocDate],
+                        T0.NumAtCard AS [Invoice], 
+                        T0.DocNum AS [DocumentNo], 
+                        T0.CardName as [CustomerName],
+                        (t0.DocTotal - T0.PaidToDate) AS [OpenBalanceAmt]
+                        FROM OINV t0
+                        INNER JOIN  INV1 T1 on T1.docentry = T0.docentry
+                        INNER JOIN  NNM1 T2 on T2.series = T0.series
+                        LEFT JOIN [@PROGTBL] T3 ON LEFT(T2.SeriesName,4) = T3.Name
+                        WHERE T0.[DocStatus] = 'O' and T3.U_Branch1 = '$branch' 
+                        AND T0.GroupNum IN ('-1', '30', '57')
+                        ORDER BY T0.[DocDate]
+                        FOR BROWSE");
+                         if($params == 'queries'){
+                                 return $q;
+                         }
+                         if($params == 'printing'){
+                             return view('sap_reportsprint.inncomingpaymentdeposit.incoming_payment_deposit', compact('q'));
+                         }
+                 }
+                     if($req->q){
+                             $seriesName = $req->series;
+                             $params = $req->q;
+                             return concept($seriesName, $params);
+                     }
+                     }catch(Exception $e){
+                             return response()->json('something wrong');
+                     }
+                         return "Stevefox Linux Pogi";
     }
  
     //Incoming Payment open Balamce
-    public function incomingpaymentopenbalance(){
+    public function incomingpaymentopenbalance(request $req){
                 ##SELECT from nnm1 for branch
-                $q = \DB::connection('sqlsrv')
-                ->select("SELECT 
-                 T1.[SeriesName],
-                 T0.[Series],
-                 T0.[DocDate], 
-                 T0.[DocNum],
-                 T0.[CardName],
-                 T0.[CounterRef],
-                   T0.[OpenBal] FROM ORCT T0 INNER JOIN NNM1 T1 ON  T0.Series =  T1.Series WHERE T0.[OpenBal] <> 0.00 AND T1.SeriesName = 'URDAALEX' ORDER BY T0.[DocNum]");
-                return $q;
+                try{
+                    function concept($branch, $params){
+                        $q = \DB::connection('sqlsrv')
+                        ->select("SELECT 
+                         T1.[SeriesName],
+                         T0.[Series],
+                         T0.[DocDate], 
+                         T0.[DocNum],
+                         T0.[CardName],
+                         T0.[CounterRef],
+                           T0.[OpenBal] FROM ORCT T0 INNER JOIN NNM1 T1 ON  T0.Series =  T1.Series WHERE T0.[OpenBal] <> 0.00 AND T1.SeriesName = '$branch' ORDER BY T0.[DocNum]");
+            
+                         if($params == 'queries'){
+                                 return $q;
+                         }
+                         if($params == 'printing'){
+                             return view('sap_reportsprint.incomingpaymentopenbalance.incoming_payment_openbalance', compact('q'));
+                         }
+                 }
+                     if($req->q){
+                             $seriesName = $req->series;
+                             $params = $req->q;
+                             return concept($seriesName, $params);
+                     }
+                     }catch(Exception $e){
+                             return response()->json('something wrong');
+                     }
+                         return "Stevefox Linux Pogi";
     }
  
 
