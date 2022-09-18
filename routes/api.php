@@ -214,7 +214,7 @@ Route::group(['prefix' => 'branches'], function () {
 });
 //, 'middleware' => ['jwt.auth', 'sapapi_clearance']
 //SAP API
-Route::group(['prefix' => 'public'], function () {
+Route::group(['prefix' => 'public', 'middleware' => ['jwt.auth', 'sapapi_clearance']], function () {
 	//INSTALLMENT DUE
 	Route::post('/index', 'SapApiController@index')->name('sap.index');
 	Route::post('/installment', 'SapApiController@installment')->name('sap.installment');
@@ -327,3 +327,6 @@ Route::get('/change/background', 'SapApiController@changecolor');
 Route::get('/reports/printview', 'SapRportsController@preview')->name('sap.SapRports.crb.print');
 //
 Route::get('/seriesname/fetch', 'SapRportsController@seriesname')->name('sap.SapRports.series');
+//GET AND UPDATE DATABASE MSSQL FOR SAP CONNECTIONS
+Route::get('/connections', 'DatabaseSelectionController@connections')->name('sap.mssq.conn');
+Route::post('/connections/update', 'DatabaseSelectionController@update')->name('sap.mssq.conn.update');

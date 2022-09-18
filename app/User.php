@@ -70,4 +70,7 @@ class User extends Authenticatable implements JWTSubject
     public function theme () {
         return $this->hasOne('App\Theme');
     }
+    public function dbselection(){
+        return $this->hasOne('App\DatabaseSelection', 'id', 'sqldb');
+      }
 }

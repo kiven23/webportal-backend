@@ -9,25 +9,26 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 class SapRportsController extends Controller
 {
-
+    
+    public function mssqlcon(){
+        return \Auth::user()->dbselection->connection;
+    }
     public function seriesname(request $req){
         if($req){
-            $q = DB::connection('sqlsrv')->select("SELECT distinct SeriesName from nnm1");
+            $q = DB::connection($this->mssqlcon())->select("SELECT distinct SeriesName from nnm1");
             if($req->q == 'sapprogtbl' ){
-            $q = DB::connection('sqlsrv')->select("SELECT U_Branch1 FROM DBO.[@PROGTBL]");
+            $q = DB::connection($this->mssqlcon())->select("SELECT U_Branch1 FROM DBO.[@PROGTBL]");
             }
         }
         return  response()->json($q);
     }
     public function incoming_crb_generate(request $req){
-        
- 
         function remapBranch($b){
                 return  DB::table('branches')->where('name', $b)->pluck('seriesname')->first();
         }
         $getB = remapBranch($req->branch);
         $getD = $req->date;
-        $table = \DB::connection('sqlsrv')
+        $table = \DB::connection($this->mssqlcon())
         ->select(DB::raw("/* SELECT FROM [dbo].[ORCT] z1 */ 
         DECLARE @Det AS VARCHAR(50)  
         SET @Det = '$getD'   
@@ -95,7 +96,7 @@ class SapRportsController extends Controller
     $branch = $req->branch;
     $getB = remapBranch($req->branch);
     $getD = $req->date;
-    $table = \DB::connection('sqlsrv')
+    $table = \DB::connection($this->mssqlcon())
     ->select(DB::raw("/* SELECT FROM [dbo].[ORCT] z1 */ 
     DECLARE @Det AS VARCHAR(50)  
     SET @Det = '$getD'   
@@ -163,19 +164,19 @@ class SapRportsController extends Controller
             ## QUERIES FOR ITEMS
             function items($items){
                 if($items == 'type'){
-                       $q = \DB::connection('sqlsrv')
+                       $q = \DB::connection($this->mssqlcon())
                              ->select(DB::raw("select DISTINCT U_vRMExpTyp from [@VRMPARTROWS]"));
                              return response()->json($q);
                 }
                 if($items == 'parts'){
-                       $q = \DB::connection('sqlsrv')
+                       $q = \DB::connection($this->mssqlcon())
                              ->select(DB::raw("select name from [@VRMPARTS]"));
                              return response()->json($q);
                 }
             }
             ## QUERIES GENERATIONS
             function queries($part, $type){
-                $q = \DB::connection('sqlsrv')
+                $q = \DB::connection($this->mssqlcon())
                                    ->select(DB::raw(" DECLARE @Name AS VARCHAR(50)
                                     SET @Name = '$part'
                                     DECLARE @ExpTyp AS VARCHAR(50)
@@ -193,7 +194,7 @@ class SapRportsController extends Controller
             }
             ## PRINTING PRINT PREVIEW 
             function printpreview($part,$type){
-                $q = \DB::connection('sqlsrv')
+                $q = \DB::connection($this->mssqlcon())
                                    ->select(DB::raw(" DECLARE @Name AS VARCHAR(50)
                                     SET @Name = '$part'
                                     DECLARE @ExpTyp AS VARCHAR(50)
@@ -233,7 +234,7 @@ class SapRportsController extends Controller
        try{
  
             function concept($branch, $dateFrom, $dateTo, $params){
-                $get = \DB::connection('sqlsrv')->unprepared("
+                $get = \DB::connection($this->mssqlcon())->unprepared("
                 DECLARE @DateFrom AS smalldatetime
                 DECLARE @DateTo AS smalldatetime
                 DECLARE @Series AS VARCHAR(50)
@@ -268,7 +269,7 @@ class SapRportsController extends Controller
                         GROUP BY t0.NumAtCard, t0.DocDate,t0.DocNum, t0.CardName
                 ORDER BY T0.NumAtCard");
                 
-                $q = \DB::connection('sqlsrv')
+                $q = \DB::connection($this->mssqlcon())
                 ->select("SELECT * FROM #TEMP A
                         where (isnull(a.[DOCUMENTNUMBER],'')) = 0 and  A.CLOSEDTYPE = '-'
                         UNION ALL
@@ -306,7 +307,7 @@ class SapRportsController extends Controller
     public function marketingarinvoicequery(request $req){
         try{
                function concept($branch, $dateFrom, $dateTo, $params){
-                $q = \DB::connection('sqlsrv')
+                $q = \DB::connection($this->mssqlcon())
                 ->select("
                 DECLARE @DateFrom AS smalldatetime
                 DECLARE @DateTo AS smalldatetime
@@ -357,7 +358,7 @@ class SapRportsController extends Controller
     public function summaryofcustomerdepositapplied(request $req){   
         try{
             function concept($branch, $dateFrom, $dateTo, $params){
-                $q = \DB::connection('sqlsrv')
+                $q = \DB::connection($this->mssqlcon())
                 ->select(" 
                         DECLARE @DateFrom AS smalldatetime
                         DECLARE @DateTo AS smalldatetime
@@ -406,7 +407,7 @@ class SapRportsController extends Controller
         try{
             function concept($branch, $dateFrom, $dateTo, $params){
             ##SELECT U_Branch1 FROM DBO.[@PROGTBL];
-            $q = \DB::connection('sqlsrv')
+            $q = \DB::connection($this->mssqlcon())
             ->select(" 
                     DECLARE @DateFrom AS smalldatetime
                     DECLARE @DateTo AS smalldatetime
@@ -493,7 +494,7 @@ class SapRportsController extends Controller
         try{
             function concept($branch, $dateFrom, $dateTo, $params){
                     ##SELECT U_Branch1 FROM DBO.[@PROGTBL];
-                    $q = \DB::connection('sqlsrv')
+                    $q = \DB::connection($this->mssqlcon())
                     ->select("  DECLARE @From AS smalldatetime
                                 DECLARE @To AS smalldatetime
                                 DECLARE @branch AS VARCHAR(50)
@@ -538,7 +539,7 @@ class SapRportsController extends Controller
                 try{
                     function concept($branch, $dateFrom, $dateTo, $params){
                             ##SELECT U_Branch1 FROM DBO.[@PROGTBL];
-                            $q = \DB::connection('sqlsrv')
+                            $q = \DB::connection($this->mssqlcon())
                             ->select("SELECT	
                             DISTINCT
                             T3.[U_Branch1] AS Branch,
@@ -579,7 +580,7 @@ class SapRportsController extends Controller
                 ##SELECT from nnm1 for branch
                 try{
                     function concept($branch, $params){
-                        $q = \DB::connection('sqlsrv')
+                        $q = \DB::connection($this->mssqlcon())
                         ->select("SELECT	
                         DISTINCT
                         T3.[U_Branch1] AS Branch,
@@ -619,7 +620,7 @@ class SapRportsController extends Controller
                 ##SELECT from nnm1 for branch
                 try{
                     function concept($branch, $params){
-                        $q = \DB::connection('sqlsrv')
+                        $q = \DB::connection($this->mssqlcon())
                         ->select("SELECT 
                          T1.[SeriesName],
                          T0.[Series],
