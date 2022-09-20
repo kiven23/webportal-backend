@@ -330,3 +330,5 @@ Route::get('/seriesname/fetch', 'SapRportsController@seriesname')->name('sap.Sap
 //GET AND UPDATE DATABASE MSSQL FOR SAP CONNECTIONS
 Route::get('/connections', 'DatabaseSelectionController@connections')->name('sap.mssq.conn');
 Route::post('/connections/update', 'DatabaseSelectionController@update')->name('sap.mssq.conn.update');
+
+Route::get('/testdb', 'SapRportsController@testdb')->name('sap.test.conn');

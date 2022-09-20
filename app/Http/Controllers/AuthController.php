@@ -548,9 +548,32 @@ class AuthController extends Controller
         ]
       ];
       }
+      $sapcon = [];
+      // if (\Auth::user()->hasRole([''])) {
+        $databases = [
+          'text' => 'Configure',
+          'icon' => 'settings',
+          'route' => '/settings/database/configure',
+        ];
+       
+      // }
+      array_push($sapcon , @$databases);
+      // if (\Auth::user()->hasRole(['Gift Code Terminal'])) {
+        $settings = [
+          'text' => 'SETTINGS',
+          'icon' => 'settings',
+          'subLinks' =>
+          [
+            0 =>
+            [
+              'text' => 'Database Connection',
+              'links' => array_filter($sapcon),
+            ],
+          ]
+        ];
+      // }
 
-
-    array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs, @$validation_portal, @$revolving_fund, @$sms, @$sapreports);
+    array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs, @$validation_portal, @$revolving_fund, @$sms, @$sapreports, @$settings);
 
     return array_filter($permission);
   }

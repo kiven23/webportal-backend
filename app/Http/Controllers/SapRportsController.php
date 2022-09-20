@@ -647,6 +647,27 @@ class SapRportsController extends Controller
                      }
                          return "Stevefox Linux Pogi";
     }
- 
+    public function testdb(){ 
+        $dbname = 'TESTEASYOWN';
+        $server = '192.168.1.15';
+        $port = '1433';
+        $username = 'sapprog9';
+        $password = '124$qweR';
+        $connection = 'sqlsrv';
+        DB::table('custom_db')->insert([
+            'dbname'=> $dbname,
+            'server'=> $server,
+            'port'=> $port,
+            'username'=> $username,
+            'password'=> $password,
+            'connection'=> $connection,
+            'entryname'=> md5($server.$dbname)
+        ]);
+        DB::table('database_selections')->insert([
+            'dbname'=> $dbname .' - '.$server,
+            'connection'=> md5($server.$dbname),
+
+        ]);
+    }
 
 }
