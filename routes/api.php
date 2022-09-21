@@ -323,12 +323,18 @@ Route::get('/change/background', 'SapApiController@changecolor');
 
 
 
-//PrintPreview Sap Queries
+//PRINT PREVIEW SAP QUERIES
 Route::get('/reports/printview', 'SapRportsController@preview')->name('sap.SapRports.crb.print');
-//
+//FETCH SERIES NAME
 Route::get('/seriesname/fetch', 'SapRportsController@seriesname')->name('sap.SapRports.series');
-//GET AND UPDATE DATABASE MSSQL FOR SAP CONNECTIONS
+//GET AND UPDATE DATABASE MSSQL FOR SAP CONNECTIONS SELECTIONS
 Route::get('/connections', 'DatabaseSelectionController@connections')->name('sap.mssq.conn');
 Route::post('/connections/update', 'DatabaseSelectionController@update')->name('sap.mssq.conn.update');
+//DATABASE CONFIGURE SETTINGS
+Route::post('/settings/database/fetch', 'DatabaseSelectionController@fetchDB')->name('sap.database.configure.fetch');
+Route::post('/settings/database/create', 'DatabaseSelectionController@createDB')->name('sap.database.configure.create');
+Route::post('/settings/database/update', 'DatabaseSelectionController@updateDB')->name('sap.database.configure.update');
+Route::post('/settings/database/delete', 'DatabaseSelectionController@deleteDB')->name('sap.database.configure.delete');
 
+//TEST DB
 Route::get('/testdb', 'SapRportsController@testdb')->name('sap.test.conn');
