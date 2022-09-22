@@ -9,12 +9,10 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 class SapRportsController extends Controller
 {
-    // public function test(){
-    //     return \Auth::user()->dbselection->connection;
-    // }
+    
+
     public function mssqlcon(){
-        return "6ec2ce98492d5e9898885fe186e50653";
-       // return \Auth::user()->dbselection->connection;
+        return \Auth::user()->dbselection->connection;
     }
     public function seriesname(request $req){
         if($req){
@@ -165,21 +163,21 @@ class SapRportsController extends Controller
     public function searchofvehicleparts(request $req){
         try {
             ## QUERIES FOR ITEMS
-            function items($items){
+            function items($items, $server){
                 if($items == 'type'){
-                       $q = \DB::connection($this->mssqlcon())
+                       $q = \DB::connection($server)
                              ->select(DB::raw("select DISTINCT U_vRMExpTyp from [@VRMPARTROWS]"));
                              return response()->json($q);
                 }
                 if($items == 'parts'){
-                       $q = \DB::connection($this->mssqlcon())
+                       $q = \DB::connection($server)
                              ->select(DB::raw("select name from [@VRMPARTS]"));
                              return response()->json($q);
                 }
             }
             ## QUERIES GENERATIONS
-            function queries($part, $type){
-                $q = \DB::connection($this->mssqlcon())
+            function queries($part, $type, $server){
+                $q = \DB::connection($server)
                                    ->select(DB::raw(" DECLARE @Name AS VARCHAR(50)
                                     SET @Name = '$part'
                                     DECLARE @ExpTyp AS VARCHAR(50)
@@ -196,8 +194,8 @@ class SapRportsController extends Controller
                 return response()->json($q);
             }
             ## PRINTING PRINT PREVIEW 
-            function printpreview($part,$type){
-                $q = \DB::connection($this->mssqlcon())
+            function printpreview($part,$type, $server){
+                $q = \DB::connection($server)
                                    ->select(DB::raw(" DECLARE @Name AS VARCHAR(50)
                                     SET @Name = '$part'
                                     DECLARE @ExpTyp AS VARCHAR(50)
@@ -215,14 +213,16 @@ class SapRportsController extends Controller
                 
                 return view('sap_reportsprint.vehicleparts.search_for_vehicleparts', compact('q'));
             }
+            $server = $this->mssqlcon();
             if($req->q == 'items'){
-                return items($req->req);
+                
+                return items($req->req, $server);
             }
             if($req->q == 'queries'){
-                return  queries($req->part, $req->type);
+                return  queries($req->part, $req->type, $server);
             }
             if($req->q == 'printing'){
-                return printpreview($req->part, $req->type);
+                return printpreview($req->part, $req->type, $server);
             }
            return 'Stevefox Linux';
         }catch(Exception $e){
@@ -236,8 +236,8 @@ class SapRportsController extends Controller
           
        try{
  
-            function concept($branch, $dateFrom, $dateTo, $params){
-                $get = \DB::connection($this->mssqlcon())->unprepared("
+            function concept($branch, $dateFrom, $dateTo, $params, $server){
+                $get = \DB::connection($server)->unprepared("
                 DECLARE @DateFrom AS smalldatetime
                 DECLARE @DateTo AS smalldatetime
                 DECLARE @Series AS VARCHAR(50)
@@ -272,7 +272,7 @@ class SapRportsController extends Controller
                         GROUP BY t0.NumAtCard, t0.DocDate,t0.DocNum, t0.CardName
                 ORDER BY T0.NumAtCard");
                 
-                $q = \DB::connection($this->mssqlcon())
+                $q = \DB::connection($server)
                 ->select("SELECT * FROM #TEMP A
                         where (isnull(a.[DOCUMENTNUMBER],'')) = 0 and  A.CLOSEDTYPE = '-'
                         UNION ALL
@@ -296,7 +296,8 @@ class SapRportsController extends Controller
                         $dateTo = $req->dateto;
                         $seriesName = $req->series;
                         $params = $req->q;
-                        return concept($seriesName,$dateFrom,$dateTo, $params);
+                        $server = $this->mssqlcon();
+                        return concept($seriesName,$dateFrom,$dateTo, $params, $server);
                 }
                 }catch(Exception $e){
                         return response()->json('something wrong');
@@ -309,9 +310,8 @@ class SapRportsController extends Controller
     //Martketing AR Invoice Query
     public function marketingarinvoicequery(request $req){
         try{
-           
-               function concept($branch, $dateFrom, $dateTo, $params, $database){
-                $q = \DB::connection($database)
+               function concept($branch, $dateFrom, $dateTo, $params, $server){
+                $q = \DB::connection($server)
                 ->select("
                 DECLARE @DateFrom AS smalldatetime
                 DECLARE @DateTo AS smalldatetime
@@ -350,8 +350,8 @@ class SapRportsController extends Controller
                         $dateTo = $req->dateto;
                         $seriesName = $req->series;
                         $params = $req->q;
-                        $mssqlcon = $this->mssqlcon();
-                        return concept($seriesName,$dateFrom,$dateTo, $params,  $mssqlcon);
+                        $server = $this->mssqlcon();
+                        return concept($seriesName,$dateFrom,$dateTo, $params, $server);
                 }
                 }catch(Exception $e){
                         return response()->json('something wrong');
@@ -362,8 +362,8 @@ class SapRportsController extends Controller
     //Summary of Customer DepositApplied
     public function summaryofcustomerdepositapplied(request $req){   
         try{
-            function concept($branch, $dateFrom, $dateTo, $params){
-                $q = \DB::connection($this->mssqlcon())
+            function concept($branch, $dateFrom, $dateTo, $params, $server){
+                $q = \DB::connection($server)
                 ->select(" 
                         DECLARE @DateFrom AS smalldatetime
                         DECLARE @DateTo AS smalldatetime
@@ -398,7 +398,8 @@ class SapRportsController extends Controller
                      $dateTo = $req->dateto;
                      $seriesName = $req->series;
                      $params = $req->q;
-                     return concept($seriesName,$dateFrom,$dateTo, $params);
+                     $server = $this->mssqlcon();
+                     return concept($seriesName,$dateFrom,$dateTo, $params, $server);
              }
              }catch(Exception $e){
                      return response()->json('something wrong');
@@ -410,9 +411,9 @@ class SapRportsController extends Controller
     //Adjustments Sales Discount
     public function adjustmentsalesdiscount(request $req){
         try{
-            function concept($branch, $dateFrom, $dateTo, $params){
+            function concept($branch, $dateFrom, $dateTo, $params, $server){
             ##SELECT U_Branch1 FROM DBO.[@PROGTBL];
-            $q = \DB::connection($this->mssqlcon())
+            $q = \DB::connection($server)
             ->select(" 
                     DECLARE @DateFrom AS smalldatetime
                     DECLARE @DateTo AS smalldatetime
@@ -486,7 +487,8 @@ class SapRportsController extends Controller
                      $dateTo = $req->dateto;
                      $seriesName = $req->series;
                      $params = $req->q;
-                     return concept($seriesName,$dateFrom,$dateTo, $params);
+                     $server = $this->mssqlcon();
+                     return concept($seriesName,$dateFrom,$dateTo, $params, $server);
              }
              }catch(Exception $e){
                      return response()->json('something wrong');
@@ -497,9 +499,9 @@ class SapRportsController extends Controller
      //Recomputed Account
      public function recomputedaccount(request $req){
         try{
-            function concept($branch, $dateFrom, $dateTo, $params){
+            function concept($branch, $dateFrom, $dateTo, $params, $server){
                     ##SELECT U_Branch1 FROM DBO.[@PROGTBL];
-                    $q = \DB::connection($this->mssqlcon())
+                    $q = \DB::connection($server)
                     ->select("  DECLARE @From AS smalldatetime
                                 DECLARE @To AS smalldatetime
                                 DECLARE @branch AS VARCHAR(50)
@@ -529,7 +531,8 @@ class SapRportsController extends Controller
                      $dateTo = $req->dateto;
                      $seriesName = $req->series;
                      $params = $req->q;
-                     return concept($seriesName,$dateFrom,$dateTo, $params);
+                     $server = $this->mssqlcon();
+                     return concept($seriesName,$dateFrom,$dateTo, $params,$server);
              }
              }catch(Exception $e){
                      return response()->json('something wrong');
@@ -542,9 +545,9 @@ class SapRportsController extends Controller
     //Ar Invoice Open Balance 
     public function arinvoiceopenbalance(request $req){
                 try{
-                    function concept($branch, $dateFrom, $dateTo, $params){
+                    function concept($branch, $dateFrom, $dateTo, $params, $server){
                             ##SELECT U_Branch1 FROM DBO.[@PROGTBL];
-                            $q = \DB::connection($this->mssqlcon())
+                            $q = \DB::connection($server)
                             ->select("SELECT	
                             DISTINCT
                             T3.[U_Branch1] AS Branch,
@@ -573,7 +576,8 @@ class SapRportsController extends Controller
                              $dateTo = $req->dateto;
                              $seriesName = $req->series;
                              $params = $req->q;
-                             return concept($seriesName,$dateFrom,$dateTo, $params);
+                             $server = $this->mssqlcon();
+                             return concept($seriesName,$dateFrom,$dateTo, $params, $server);
                      }
                      }catch(Exception $e){
                              return response()->json('something wrong');
@@ -584,8 +588,8 @@ class SapRportsController extends Controller
     public function incomingpaymentcustomerdeposit(request $req){
                 ##SELECT from nnm1 for branch
                 try{
-                    function concept($branch, $params){
-                        $q = \DB::connection($this->mssqlcon())
+                    function concept($branch, $params, $server){
+                        $q = \DB::connection($server)
                         ->select("SELECT	
                         DISTINCT
                         T3.[U_Branch1] AS Branch,
@@ -612,7 +616,8 @@ class SapRportsController extends Controller
                      if($req->q){
                              $seriesName = $req->series;
                              $params = $req->q;
-                             return concept($seriesName, $params);
+                             $server = $this->mssqlcon();
+                             return concept($seriesName, $params, $server);
                      }
                      }catch(Exception $e){
                              return response()->json('something wrong');
@@ -622,10 +627,11 @@ class SapRportsController extends Controller
  
     //Incoming Payment open Balamce
     public function incomingpaymentopenbalance(request $req){
+             
                 ##SELECT from nnm1 for branch
                 try{
-                    function concept($branch, $params){
-                        $q = \DB::connection($this->mssqlcon())
+                    function concept($branch, $params, $server){
+                        $q = \DB::connection($server)
                         ->select("SELECT 
                          T1.[SeriesName],
                          T0.[Series],
@@ -641,11 +647,12 @@ class SapRportsController extends Controller
                          if($params == 'printing'){
                              return view('sap_reportsprint.incomingpaymentopenbalance.incoming_payment_openbalance', compact('q'));
                          }
-                 }
+                      }
                      if($req->q){
                              $seriesName = $req->series;
                              $params = $req->q;
-                             return concept($seriesName, $params);
+                             $server = $this->mssqlcon();
+                             return concept($seriesName, $params, $server);
                      }
                      }catch(Exception $e){
                              return response()->json('something wrong');

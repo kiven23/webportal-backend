@@ -214,7 +214,7 @@ Route::group(['prefix' => 'branches'], function () {
 });
 //, 'middleware' => ['jwt.auth', 'sapapi_clearance']
 //SAP API
-Route::group(['prefix' => 'public' ], function () {
+Route::group(['prefix' => 'public' , 'middleware' => ['jwt.auth', 'sapapi_clearance']], function () {
 	//INSTALLMENT DUE
 	Route::post('/index', 'SapApiController@index')->name('sap.index');
 	Route::post('/installment', 'SapApiController@installment')->name('sap.installment');
