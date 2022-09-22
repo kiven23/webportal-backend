@@ -90,7 +90,16 @@ class SapApi
                     
                 }
                 //BRANCH SAP ACCESS CRB
-                if ($request->is('api/public/reports/incoming/crb')) {
+                if ($request->is('api/public/reports/incoming/crb') || 
+                    $request->is('api/public/reports/queries/searchofvehicleparts') || 
+                    $request->is('api/public/reports/queries/invoicequeryseriesrevised') ||
+                    $request->is('api/public/reports/queries/marketingarinvoicequery') || 
+                    $request->is('api/public/reports/queries/summaryofcustomerdepositapplied') ||
+                    $request->is('api/public/reports/queries/adjustmentsalesdiscount') ||
+                    $request->is('api/public/reports/queries/recomputedaccount')||
+                    $request->is('api/public/reports/queries/arinvoiceopenbalance') ||
+                    $request->is('api/public/reports/queries/incomingpaymentcustomerdeposit') ||
+                    $request->is('api/public/reports/queries/incomingpaymentopenbalance') ) {
                     if (\Auth::user()->hasPermissionTo('SapApiAccess Branch')) {
                         return $next($request);
                     } else {

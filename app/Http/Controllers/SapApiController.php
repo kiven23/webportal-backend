@@ -10,10 +10,14 @@ use Carbon\Carbon;
  
 class SapApiController extends Controller
 {
+
+    public function mssqlcon(){
+        return \Auth::user()->dbselection->connection;
+    }
     public function index(request $req){
    
         if($req->sapcode){
-            $data = \DB::connection('sqlsrv')->table('oinv')
+            $data = \DB::connection($this->mssqlcon())->table('oinv')
             ->select(DB::raw('Address as Address'),
             'oinv.NumAtCard as InvoiceNumber',
             'oinv.CardCode as CustomerNumber',
@@ -33,7 +37,7 @@ class SapApiController extends Controller
            ->get();
         } else{
             
-            $data = \DB::connection('sqlsrv')->table('oinv')
+            $data = \DB::connection($this->mssqlcon())->table('oinv')
             ->select(DB::raw('Address as Address'),
             'oinv.NumAtCard as InvoiceNumber',
             'oinv.CardCode as CustomerNumber',
@@ -56,7 +60,7 @@ class SapApiController extends Controller
     }
     public function installment(request $req){
        
-        $data = \DB::connection('sqlsrv')->table('inv6')
+        $data = \DB::connection($this->mssqlcon())->table('inv6')
                  ->select(DB::raw('InstlmntID as InstallmentMonth'),
                                   'InsTotal as InstallmentTotal',
                                   'PaidToDate as Paid',
@@ -133,7 +137,7 @@ class SapApiController extends Controller
    
         if($req->sapcode){
            
-            $data = \DB::connection('sqlsrv')->table('oinv')
+            $data = \DB::connection($this->mssqlcon())->table('oinv')
             ->select(DB::raw('Address as Address'),
             'oinv.NumAtCard as InvoiceNumber',
             'oinv.CardCode as CustomerNumber',
@@ -154,7 +158,7 @@ class SapApiController extends Controller
 
       
         } else{
-            $data = \DB::connection('sqlsrv')->table('oinv')
+            $data = \DB::connection($this->mssqlcon())->table('oinv')
             ->select(DB::raw('Address as Address'),
             'oinv.NumAtCard as InvoiceNumber',
             'oinv.CardCode as CustomerNumber',
@@ -180,7 +184,7 @@ class SapApiController extends Controller
 
     public function installment_Bal(request $req){
         
-       $data = \DB::connection('sqlsrv')->table('inv6')
+       $data = \DB::connection($this->mssqlcon())->table('inv6')
                  ->select(DB::raw('InstlmntID as InstallmentMonth'),
                                   'InsTotal as InstallmentTotal',
                                   'PaidToDate as Paid',
@@ -270,7 +274,7 @@ class SapApiController extends Controller
             return 'ok';
         }	
         public function getBranchSegment(){
-           return  \DB::connection('sqlsrv')->table('OASC')->get();
+           return  \DB::connection($this->mssqlcon())->table('OASC')->get();
         }
         public function changecolor(){
             $arr = [
@@ -662,6 +666,38 @@ class SapApiController extends Controller
        
         }
         public function Rsync_branchsegment(){
+
+            function remaping($series){
+                $q  = DB::table('branches')->where('name', 'like', '%'.$series.'%')->pluck('name','id')->first();
+                return $q;
+            }
+            $q = DB::connection('sqlsrv')->select("SELECT distinct SeriesName from nnm1");
+   
+            foreach($q as $d){
+                $arr [] = remaping(substr($d->SeriesName, 0, 4)) .'---> '. $d->SeriesName;
+            }
+            return $arr;
+            
+
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            return '';
             // $segmentCode = \DB::connection('sqlsrv')->table('OASC')->get();
             // foreach($segmentCode as $d){
             //     $res[] =  DB::table('branches')->where('name', 'like' , '%'.$d['Name'].'%')->update([
@@ -29312,7 +29348,7 @@ class SapApiController extends Controller
             //     DB::table('branches')->where('name', zinc($q['Remark']))
             //     ->update(['seriesname'=> null]); 
             // }
-      
+            
             }
             return 'ok';
         }
