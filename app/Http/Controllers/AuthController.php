@@ -549,16 +549,16 @@ class AuthController extends Controller
       ];
       }
       $sapcon = [];
-      // if (\Auth::user()->hasRole([''])) {
+       if (\Auth::user()->hasRole(['Database Administrator'])) {
         $databases = [
           'text' => 'Configure',
           'icon' => 'settings',
           'route' => '/settings/database/configure',
         ];
        
-      // }
+        }
       array_push($sapcon , @$databases);
-      // if (\Auth::user()->hasRole(['Gift Code Terminal'])) {
+       if (\Auth::user()->hasRole(['Database Administrator'])) {
         $settings = [
           'text' => 'SETTINGS',
           'icon' => 'settings',
@@ -571,7 +571,7 @@ class AuthController extends Controller
             ],
           ]
         ];
-      // }
+     }
 
     array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs, @$validation_portal, @$revolving_fund, @$sms, @$sapreports, @$settings);
 

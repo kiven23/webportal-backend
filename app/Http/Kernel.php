@@ -187,5 +187,8 @@ class Kernel extends HttpKernel
 
         // Gift Code
         'gift_code' => \App\Http\Middleware\GiftCode::class,
+
+         // Settings
+         'settings' => \App\Http\Middleware\Settings::class,
     ];
 }

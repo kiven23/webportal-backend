@@ -330,11 +330,13 @@ Route::get('/seriesname/fetch', 'SapRportsController@seriesname')->name('sap.Sap
 //GET AND UPDATE DATABASE MSSQL FOR SAP CONNECTIONS SELECTIONS
 Route::get('/connections', 'DatabaseSelectionController@connections')->name('sap.mssq.conn');
 Route::post('/connections/update', 'DatabaseSelectionController@update')->name('sap.mssq.conn.update');
+
+
 //DATABASE CONFIGURE SETTINGS
-Route::post('/settings/database/fetch', 'DatabaseSelectionController@fetchDB')->name('sap.database.configure.fetch');
-Route::post('/settings/database/create', 'DatabaseSelectionController@createDB')->name('sap.database.configure.create');
-Route::post('/settings/database/update', 'DatabaseSelectionController@updateDB')->name('sap.database.configure.update');
-Route::post('/settings/database/delete', 'DatabaseSelectionController@deleteDB')->name('sap.database.configure.delete');
-Route::post('/settings/database/testdb', 'DatabaseSelectionController@testDB')->name('sap.testdb.conn');
- 
- 
+Route::group(['prefix' => '/settings', 'middleware' => ['jwt.auth', 'settings']], function () {
+Route::post('/database/fetch', 'DatabaseSelectionController@fetchDB')->name('sap.database.configure.fetch');
+Route::post('/database/create', 'DatabaseSelectionController@createDB')->name('sap.database.configure.create');
+Route::post('/database/update', 'DatabaseSelectionController@updateDB')->name('sap.database.configure.update');
+Route::post('/database/delete', 'DatabaseSelectionController@deleteDB')->name('sap.database.configure.delete');
+Route::post('/database/testdb', 'DatabaseSelectionController@testDB')->name('sap.testdb.conn');
+});
