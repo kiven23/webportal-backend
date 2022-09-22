@@ -335,6 +335,6 @@ Route::post('/settings/database/fetch', 'DatabaseSelectionController@fetchDB')->
 Route::post('/settings/database/create', 'DatabaseSelectionController@createDB')->name('sap.database.configure.create');
 Route::post('/settings/database/update', 'DatabaseSelectionController@updateDB')->name('sap.database.configure.update');
 Route::post('/settings/database/delete', 'DatabaseSelectionController@deleteDB')->name('sap.database.configure.delete');
-
-//TEST DB
-Route::get('/testdb', 'SapRportsController@testdb')->name('sap.test.conn');
+Route::post('/settings/database/testdb', 'DatabaseSelectionController@testDB')->name('sap.testdb.conn');
+ 
+ 

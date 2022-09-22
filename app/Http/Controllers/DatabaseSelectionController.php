@@ -4,12 +4,26 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
- 
+use App\Exec\DatabaseTester;
 use DB;
 
  
 class DatabaseSelectionController extends Controller
 {
+
+  private $db = null;
+
+  public function __construct(){
+    $this->db = new DatabaseTester();
+  }
+  public function testDB(Request $req){
+      $exec = ['server'=> $req['server'], 
+               'dbname'=> $req['dbname'], 
+               'uid'=> $req['username'],
+               'pwd'=> $req['password']
+              ];
+      return  $this->db->testdatabase($exec);
+  }
   public function connections(){
     $user = DB::table('users')->where('id', \Auth::user()->id)->pluck('sqldb')->first();
     $db = DB::table('database_selections')->get();
@@ -49,7 +63,15 @@ class DatabaseSelectionController extends Controller
       'password' => ['required'],
       'connection' => ['required'],
     ]);
+    DB::beginTransaction();
     try {
+      $result = $this->db->testdatabase([
+        'server'=> $req->host, 
+        'dbname'=> $req->dbname, 
+        'uid'=> $req->username,
+        'pwd'=> $req->password
+      ]);
+      if($result["success"]) {
         DB::table('custom_db')->insert([
           'dbname'=> $req->dbname,
           'server'=> $req->host,
@@ -58,14 +80,19 @@ class DatabaseSelectionController extends Controller
           'password'=> $req->password,
           'connection'=> $req->connection,
           'entryname'=> md5($req->host.$req->dbname)
-      ]);
-      DB::table('database_selections')->insert([
-          'dbname'=> $req->dbname .' - '.$req->host,
-          'connection'=> md5($req->host.$req->dbname),
+        ]);
+        DB::table('database_selections')->insert([
+            'dbname'=> $req->dbname .' - '.$req->host,
+            'connection'=> md5($req->host.$req->dbname),
 
-      ]);
-      $msg = ['msg'=> 'Database successfully created.'];
-    }catch(Exception $e){
+        ]);
+        $msg = ['msg'=> 'Database successfully created.'];
+        DB::commit();
+      } else {
+        $msg = ['msg'=> $result["message"]];
+      }
+    }catch(\Exception $e){
+      DB::rollback();
       $msg = ['msg'=> $e];
     }
     return response()->json($msg);
@@ -79,20 +106,34 @@ class DatabaseSelectionController extends Controller
       'password' => ['required'],
       'connection' => ['required'],
     ]);
+    DB::beginTransaction();
     try {
-      DB::table('custom_db')->where('id', $req->id)->update([
-        'dbname' => $req->dbname,
-        'server' => $req->host,
-        'port' => $req->port,
-        'username' => $req->username,
-        'password' => $req->password,
-        'connection' => $req->connection,
+      $result = $this->db->testdatabase([
+        'server'=> $req->host, 
+        'dbname'=> $req->dbname, 
+        'uid'=> $req->username,
+        'pwd'=> $req->password
       ]);
-      DB::table('database_selections')->where('connection', $req->entry)->update([
-        'dbname'=> $req->dbname.' - '.$req->host
-      ]);
-      $msg = ['msg'=> 'Database successfully updated.'];
-    }catch(Exception $e){
+      if($result["success"]) {
+            DB::table('custom_db')->where('id', $req->id)->update([
+              'dbname' => $req->dbname,
+              'server' => $req->host,
+              'port' => $req->port,
+              'username' => $req->username,
+              'password' => $req->password,
+              'connection' => $req->connection,
+            ]);
+            DB::table('database_selections')->where('connection', $req->entry)->update([
+              'dbname'=> $req->dbname.' - '.$req->host
+            ]);
+           $msg = ['msg'=> 'Database successfully updated.'];
+           DB::commit();
+           
+      } else {
+        $msg = ['msg'=> $result["message"]];
+      }
+    }catch(\Exception $e){
+      DB::rollback();
       $msg = ['msg'=> $e];
     }
     return response()->json($msg);
@@ -123,6 +164,7 @@ class DatabaseSelectionController extends Controller
     return response()->json($msg);
       
   }
+
   
 }
  
