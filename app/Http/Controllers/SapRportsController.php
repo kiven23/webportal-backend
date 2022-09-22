@@ -9,9 +9,12 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 class SapRportsController extends Controller
 {
-    
+    // public function test(){
+    //     return \Auth::user()->dbselection->connection;
+    // }
     public function mssqlcon(){
-        return \Auth::user()->dbselection->connection;
+        return "6ec2ce98492d5e9898885fe186e50653";
+       // return \Auth::user()->dbselection->connection;
     }
     public function seriesname(request $req){
         if($req){
@@ -306,8 +309,9 @@ class SapRportsController extends Controller
     //Martketing AR Invoice Query
     public function marketingarinvoicequery(request $req){
         try{
-               function concept($branch, $dateFrom, $dateTo, $params){
-                $q = \DB::connection($this->mssqlcon())
+           
+               function concept($branch, $dateFrom, $dateTo, $params, $database){
+                $q = \DB::connection($database)
                 ->select("
                 DECLARE @DateFrom AS smalldatetime
                 DECLARE @DateTo AS smalldatetime
@@ -346,7 +350,8 @@ class SapRportsController extends Controller
                         $dateTo = $req->dateto;
                         $seriesName = $req->series;
                         $params = $req->q;
-                        return concept($seriesName,$dateFrom,$dateTo, $params);
+                        $mssqlcon = $this->mssqlcon();
+                        return concept($seriesName,$dateFrom,$dateTo, $params,  $mssqlcon);
                 }
                 }catch(Exception $e){
                         return response()->json('something wrong');

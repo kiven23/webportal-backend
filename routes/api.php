@@ -214,7 +214,7 @@ Route::group(['prefix' => 'branches'], function () {
 });
 //, 'middleware' => ['jwt.auth', 'sapapi_clearance']
 //SAP API
-Route::group(['prefix' => 'public', 'middleware' => ['jwt.auth', 'sapapi_clearance']], function () {
+Route::group(['prefix' => 'public' ], function () {
 	//INSTALLMENT DUE
 	Route::post('/index', 'SapApiController@index')->name('sap.index');
 	Route::post('/installment', 'SapApiController@installment')->name('sap.installment');
@@ -340,3 +340,4 @@ Route::post('/database/update', 'DatabaseSelectionController@updateDB')->name('s
 Route::post('/database/delete', 'DatabaseSelectionController@deleteDB')->name('sap.database.configure.delete');
 Route::post('/database/testdb', 'DatabaseSelectionController@testDB')->name('sap.testdb.conn');
 });
+Route::get('/test/db', 'SapRportsController@test')->name('sap.SapRports.database');
