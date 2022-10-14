@@ -187,5 +187,8 @@ class Kernel extends HttpKernel
 
         // Gift Code
         'gift_code' => \App\Http\Middleware\GiftCode::class,
+
+        //Revolving Fund
+        'revolving_funds_clearance' => \App\Http\Middleware\RevolvingFundsClearance::class,
     ];
 }

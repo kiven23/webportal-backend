@@ -298,7 +298,7 @@ class ValidationPortalController extends Controller
                     foreach ($comparisonArr[$comparisonArrKey][$key] as $comparisonKey => $comparison) {
                         foreach ($baseArr[$baseArrKey][$innerKey] as $baseKey => $base) {
                             if ($comparisonKey == $baseKey) {
-                                if ($comparison !== $base) {
+                                if ($comparison != $base) {
                                     $notEqualColumnsErrCnt++;
                                     $notEqualColumns[] = [
                                         "no" => $notEqualColumnsErrCnt,

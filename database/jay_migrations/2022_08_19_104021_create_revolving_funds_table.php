@@ -19,6 +19,7 @@ class CreateRevolvingFundsTable extends Migration
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
             $table->decimal('fund', 8, 2);
             $table->decimal('cash_advances', 8, 2);
+            $table->decimal('avail_fund_on_hand', 8, 2);
             $table->date('as_of');
             $table->timestamps();
         });
