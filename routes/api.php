@@ -209,8 +209,10 @@ Route::get('/date', 'DateController@get_date')->name('getDate');
 //BRANCH PUBLIC API
 Route::group(['prefix' => 'branches'], function () {
 	Route::get('/public', 'CustomerDigitizedReqController@branches')->name('digitizedcustomer.branches');
+	//REUPLOADBRANCHCODE
+	Route::get('/public/uploadbranchcode', 'CustomerDigitizedReqController@reuploadBranchCode')->name('digitizedcustomer.reuploadBranchCode');
 });
-
+//, 'middleware' => ['jwt.auth', 'sapapi_clearance']
 //SAP API
 Route::group(['prefix' => 'public', 'middleware' => ['jwt.auth', 'sapapi_clearance']], function () {
 	//INSTALLMENT DUE
@@ -227,6 +229,29 @@ Route::group(['prefix' => 'public', 'middleware' => ['jwt.auth', 'sapapi_clearan
 	Route::get('/calculate/grade', 'SapApiController@compute_grade')->name('sap.compute_grade');
 	//GET BRANCH SEGMENTCODE
 	Route::get('/branch/segment', 'SapApiController@getBranchSegment')->name('sap.getBranchSegment');
+
+	//SAPREPORTS
+	Route::post('/reports/incoming/crb', 'SapRportsController@incoming_crb_generate')->name('sap.SapRports.crb');
+
+	//Query Searching of Vehicles parts
+	Route::get('/reports/queries/searchofvehicleparts', 'SapRportsController@searchofvehicleparts')->name('sap.SapRports.searchofvehicleparts');
+	//Invoice Query Series Revised
+	Route::get('/reports/queries/invoicequeryseriesrevised', 'SapRportsController@invoicequeryseriesrevised')->name('sap.SapRports.invoicequeryseriesrevised');
+	//Martketing AR Invoice Query
+	Route::get('/reports/queries/marketingarinvoicequery', 'SapRportsController@marketingarinvoicequery')->name('sap.SapRports.marketingarinvoicequery');
+	//Summary of Customer DepositApplied
+	Route::get('/reports/queries/summaryofcustomerdepositapplied', 'SapRportsController@summaryofcustomerdepositapplied')->name('sap.SapRports.summaryofcustomerdepositapplied');
+	//Adjustments Sales Discount
+	Route::get('/reports/queries/adjustmentsalesdiscount', 'SapRportsController@adjustmentsalesdiscount')->name('sap.SapRports.adjustmentsalesdiscount');
+	//Recomputed Account
+	Route::get('/reports/queries/recomputedaccount', 'SapRportsController@recomputedaccount')->name('sap.SapRports.recomputedaccount');
+	//Ar Invoice Open Balance
+	Route::get('/reports/queries/arinvoiceopenbalance', 'SapRportsController@arinvoiceopenbalance')->name('sap.SapRports.arinvoiceopenbalance');
+	//Incoming Payment Customer Deposit
+	Route::get('/reports/queries/incomingpaymentcustomerdeposit', 'SapRportsController@incomingpaymentcustomerdeposit')->name('sap.SapRports.incomingpaymentcustomerdeposit');
+	//Incoming Payment open Balamce
+	Route::get('/reports/queries/incomingpaymentopenbalance', 'SapRportsController@incomingpaymentopenbalance')->name('sap.SapRports.incomingpaymentopenbalance');
+
 });
 Route::get('/sql/test', 'SapApiController@index')->name('sap.installment.index2');
 //DIGITIZED REQUIREMENT
@@ -326,3 +351,30 @@ Route::get('/sms/giftcode/sync', 'GiftCodeController@sync');
 Route::get('/sms/giftcode/send', 'GiftCodeController@send');
 //GIFT CODE LOGS 
 Route::get('/sms/giftcode/fetch', 'GiftCodeLogsController@index');
+
+//resync
+ 
+Route::get('/re/sysnc', 'SapApiController@Rsync_branchsegment');
+//Change Background
+Route::get('/change/background', 'SapApiController@changecolor');
+ 
+
+
+
+//PRINT PREVIEW SAP QUERIES
+Route::get('/reports/printview', 'SapRportsController@preview')->name('sap.SapRports.crb.print');
+//FETCH SERIES NAME
+Route::get('/seriesname/fetch', 'SapRportsController@seriesname')->name('sap.SapRports.series');
+//GET AND UPDATE DATABASE MSSQL FOR SAP CONNECTIONS SELECTIONS
+Route::get('/connections', 'DatabaseSelectionController@connections')->name('sap.mssq.conn');
+Route::post('/connections/update', 'DatabaseSelectionController@update')->name('sap.mssq.conn.update');
+
+
+//DATABASE CONFIGURE SETTINGS
+Route::group(['prefix' => '/settings', 'middleware' => ['jwt.auth', 'settings']], function () {
+Route::post('/database/fetch', 'DatabaseSelectionController@fetchDB')->name('sap.database.configure.fetch');
+Route::post('/database/create', 'DatabaseSelectionController@createDB')->name('sap.database.configure.create');
+Route::post('/database/update', 'DatabaseSelectionController@updateDB')->name('sap.database.configure.update');
+Route::post('/database/delete', 'DatabaseSelectionController@deleteDB')->name('sap.database.configure.delete');
+Route::post('/database/testdb', 'DatabaseSelectionController@testDB')->name('sap.testdb.conn');
+});

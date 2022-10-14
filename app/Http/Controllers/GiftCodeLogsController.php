@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use DB;
+use Carbon\Carbon;
 class GiftCodeLogsController extends Controller
 {
     public function index(request $req){
@@ -12,7 +13,8 @@ class GiftCodeLogsController extends Controller
     $data = DB::table('gift_code_logs')->where('code', 'LIKE', '%'.$req->search.'%')
         ->get()->toArray();
         function check($d){
-            $month = date_format(date_create('1957-01-21 00:00:00.000'), "m");
+            $month = Carbon::now()->month;
+            
             $bd = date_format(date_create($d), "m");
             if($month == $bd){
                 $s = 'VALID';

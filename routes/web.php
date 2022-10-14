@@ -36,7 +36,7 @@ Route::group(['prefix' => 'reports'], function () {
 		'uses' => 'ReportController@employee_list_print',
 		'as' => 'report.employee_list_print',
 	]);
-
+  
 	Route::get('/employee-per-position-print', [
 		'uses' => 'ReportController@employee_per_position_print',
 		'as' => 'report.employee_per_position_print',
@@ -1867,3 +1867,4 @@ Route::group(['prefix' => 'announcements'], function () {
 		'as' => 'announcement.delete',
 	]);
 });
+ 

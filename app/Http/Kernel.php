@@ -190,5 +190,8 @@ class Kernel extends HttpKernel
 
         //Revolving Fund
         'revolving_funds_clearance' => \App\Http\Middleware\RevolvingFundsClearance::class,
+
+        // Settings
+        'settings' => \App\Http\Middleware\Settings::class,
     ];
 }

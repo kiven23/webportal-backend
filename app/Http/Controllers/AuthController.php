@@ -492,15 +492,20 @@ class AuthController extends Controller
     }
 
     $smsystem = [];
-    if (\Auth::user()->hasRole(['Gift Coded Terminal'])) {
+    if (\Auth::user()->hasRole(['Gift Code Terminal'])) {
       $giftcodes = [
         'text' => 'HBD Gift Codes',
         'icon' => 'search',
         'route' => '/giftcodes/index',
       ];
+      $raffle = [
+        'text' => 'Raffle Draw',
+        'icon' => 'mdi-cash-check',
+        'route' => '/raffle',
+      ];
     }
-    array_push($smsystem, @$giftcodes);
-    if (\Auth::user()->hasRole(['Gift Coded Terminal'])) {
+    array_push($smsystem, @$giftcodes, @$raffle);
+    if (\Auth::user()->hasRole(['Gift Code Terminal'])) {
       $sms = [
         'text' => 'SMS SYSTEM',
         'icon' => 'file_download',
@@ -515,8 +520,102 @@ class AuthController extends Controller
       ];
     }
 
+    $sapb1Reports = [];
+     if (\Auth::user()->hasRole(['SapApiAccess'])) {
+      $incomingPaymentcrb = [
+        'text' => 'Incoming Payments CRB',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/index',
+      ];
+      $q1 = [
+        'text' => 'Invoice Query Series Revised',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/query/series/revised',
+      ];
+      $q2 = [
+        'text' => 'Marketing AR Invoice',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/query/marketing/ar/invoice',
+      ];
+      $q3 = [
+        'text' => 'Summary of Customer Deposit Applied',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/query/summary/customer/depositapplied',
+      ];
+      $q4 = [
+        'text' => 'Adjustment Sales Discount',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/query/adjustment/sales/discount',
+      ];
+      $q5 = [
+        'text' => 'Recomputed Account',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/query/recomputed/account',
+      ];
+      $q6 = [
+        'text' => 'Searching of vehicles parts',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/query/searching/vehicles/parts',
+      ];
+      $q7 = [
+        'text' => 'AR Invoice Open Balance',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/ar/openbalance',
+      ];
+      $q8 = [
+        'text' => 'Incoming Payment Customer Deposit',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/incomingpayment/customerdeposit',
+      ];
+      $q9 = [
+        'text' => 'Incoming Payment Open Balance',
+        'icon' => 'description',
+        'route' => '/sapb1/reports/incomingpayment/openbalance',
+      ];
+     }
+    array_push($sapb1Reports,
+     @$incomingPaymentcrb,
+      @$q1,@$q2,@$q3,@$q4,@$q5,@$q6,@$q7,@$q8,@$q9);
+    if (\Auth::user()->hasRole(['SapApiAccess'])) {
+      $sapreports = [
+        'text' => 'SAP B1 REPORTS',
+        'icon' => 'description',
+        'subLinks' =>
+        [
+          0 =>
+          [
+            'text' => 'Sap Queries',
+            'links' => array_filter($sapb1Reports),
+          ],
+        ]
+      ];
+      }
+      $sapcon = [];
+       if (\Auth::user()->hasRole(['Database Administrator'])) {
+        $databases = [
+          'text' => 'Configure',
+          'icon' => 'settings',
+          'route' => '/settings/database/configure',
+        ];
+       
+        }
+      array_push($sapcon , @$databases);
+       if (\Auth::user()->hasRole(['Database Administrator'])) {
+        $settings = [
+          'text' => 'SETTINGS',
+          'icon' => 'settings',
+          'subLinks' =>
+          [
+            0 =>
+            [
+              'text' => 'Database Connection',
+              'links' => array_filter($sapcon),
+            ],
+          ]
+        ];
+     }
 
-    array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs, @$validation_portal, @$revolving_fund, @$sms);
+    array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs, @$validation_portal, @$revolving_fund, @$sms, @$sapreports, @$settings);
 
     return array_filter($permission);
   }
