@@ -287,10 +287,48 @@ Route::group(['prefix' => 'validation-portal', 'middleware' => ['jwt.auth', 'val
 });
 
 //REVOLVING FUND
-Route::group(['prefix' => 'revolving-fund', 'middleware' => ['jwt.auth']], function () {
+Route::group(['prefix' => 'revolving-fund', 'middleware' => ['jwt.auth', 'revolving_funds_clearance']], function () {
 	Route::get('/index', 'RevolvingFundController@index')->name('revolving_fund.index');
-	Route::post('/create', 'RevolvingFundController@create')->name('revolving_fund.create');
+	//Route::post('/create', 'RevolvingFundController@create')->name('revolving_fund.create');
+	Route::get('/view/{id}', 'RevolvingFundController@view')->name('revolving_fund.view');
+	Route::post('/update/{id}/cash-advances', 'RevolvingFundController@updateCashAdvances')->name('revolving_fund.update_cash_advances');
+	//Route::post('/delete/items', 'RevolvingFundController@deleteItems')->name('revolving_fund.delete_items');
+	Route::get('/print/{id}', "RevolvingFundController@print")->name('revolving_fund.print');
+	Route::post('/update-avail-rf-on-hand/{id}', "RevolvingFundController@updateAvailRevolvingFundOnHand")->name('revolving_fund.update_avail_rf_on_hand');
+
+	Route::group(['prefix' => 'check-voucher-verification'], function () {
+		Route::post('/create', 'RvFundCheckVoucherVerificationController@create')->name('rv_fund.check_voucher_verification.create');
+		Route::put('/update/{id}', 'RvFundCheckVoucherVerificationController@update')->name('rv_fund.check_voucher_verification.update');
+		Route::put('/update-status/{id}', 'RvFundCheckVoucherVerificationController@updateStatus')->name('rv_fund.check_voucher_verification.update_status');
+		Route::delete('/destroy/{id}', 'RvFundCheckVoucherVerificationController@destroy')->name('rv_fund.check_voucher_verification.destroy');
+	});
+
+	Route::group(['prefix' => 'check-voucher-for-transmittal'], function () {
+		Route::post('/create', 'RvFundCheckVoucherForTransmittalController@create')->name('rv_fund.check_voucher_for_transmittal.create');
+		Route::put('/update/{id}', 'RvFundCheckVoucherForTransmittalController@update')->name('rv_fund.check_voucher_for_transmittal.update');
+		Route::delete('/destroy/{id}', 'RvFundCheckVoucherForTransmittalController@destroy')->name('rv_fund.check_voucher_for_transmittal.destroy');
+		Route::post('/transmit', 'RvFundCheckVoucherForTransmittalController@transmit')->name('rv_fund.check_voucher_for_transmittal.transmit');
+	});
+
+	Route::group(['prefix' => 'expenses-for-check-preparation'], function () {
+		Route::post('/create', 'RvFundExpensesForCheckPreparationController@create')->name('rv_fund.expenses_for_check_preparation.create');
+		Route::put('/update/{id}', 'RvFundExpensesForCheckPreparationController@update')->name('rv_fund.expenses_for_check_preparation.update');
+		Route::delete('/destroy/{id}', 'RvFundExpensesForCheckPreparationController@destroy')->name('rv_fund.expenses_for_check_preparation.destroy');
+		Route::post('/replenish', 'RvFundExpensesForCheckPreparationController@replenish')->name('rv_fund.expenses_for_check_preparation.replenish');
+	});
+
+	Route::group(['prefix' => 'avail-rv-fund-on-hand'], function () {
+		Route::get('/index', 'RvFundAvailOnHandController@index')->name('revolving_fund.avail_rv_fund_on_hand.index');
+		Route::post('/updateOrCreate', 'RvFundAvailOnHandController@updateOrCreate')->name('revolving_fund.avail_rv_fund_on_hand.update_or_create');
+		Route::get('/print', 'RvFundAvailOnHandController@print')->name('revolving_fund.avail_rv_fund_on_hand.print');
+	});
 });
+
+Route::get("revolving-fund/update-daily", "RvFundAvailOnHandController@updateRevolvingFundsDaily");
+
+//For Testing
+Route::get("revolving-fund/preview/{id}", "RevolvingFundController@preview");
+Route::get("revolving-fund/avail-rv-fund-on-hand/preview", "RvFundAvailOnHandController@preview");
 
 //to be removed
 Route::get('/credit-dunning/download-letters/{branch}/{aging}', 'CreditDungLettersController@downloadLettersGet');

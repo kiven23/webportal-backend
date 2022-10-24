@@ -443,11 +443,53 @@ class AuthController extends Controller
       ];
     }
 
-    $revolving_fund = [
-      'text' => 'Revolving Fund',
-      'icon' => 'mdi-cash-check',
-      'route' => '/revolving-fund'
-    ];
+    $rf_sublinks = [];
+    if (\Auth::user()->hasRole([
+      'Revolving Funds User',
+      'Revolving Funds BM',
+      'Revolving Funds Main Office'
+    ])) {
+      $rf_sublinks[] = [
+        'text' => 'List of Revolving Funds',
+        'links' =>
+        [
+          0 =>
+          [
+            'text' => 'Dashboard',
+            'icon' => 'description',
+            'route' => '/revolving-fund/list',
+          ]
+        ],
+      ];
+    }
+
+    if (\Auth::user()->hasRole([
+      'Revolving Funds Admin',
+    ])) {
+      $rf_sublinks[] = [
+        'text' => 'Available Revolving Fund on Hand',
+        'links' => [
+          0 => [
+            'text' => 'Summary',
+            'icon' => 'mdi-chart-bar',
+            'route' => '/revolving-fund/avail-revolving-fund-on-hand-reports',
+          ]
+        ]
+      ];
+    }
+
+    if (\Auth::user()->hasRole([
+      'Revolving Funds Admin',
+      'Revolving Funds User',
+      'Revolving Funds BM',
+      'Revolving Funds Main Office'
+    ])) {
+      $revolving_fund = [
+        'text' => 'Revolving Fund',
+        'icon' => 'mdi-cash-check',
+        'subLinks' => $rf_sublinks,
+      ];
+    }
 
     $smsystem = [];
     if (\Auth::user()->hasRole(['Gift Code Terminal'])) {
