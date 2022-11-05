@@ -35,28 +35,28 @@ $connections = [
         'sslmode' => 'prefer',
     ],
     'sqlsrv' => [
-    'driver' => env('DB_CONNECTION_SECOND'),
-    'url' => env('DATABASE_URL_SECOND'),
-    'host' => env('DB_HOST_SECOND'),
-    'port' => env('DB_PORT_SECOND'),
-    'database' => env('DB_DATABASE_SECOND'),
-    'username' => env('DB_USERNAME_SECOND'),
-    'password' => env('DB_PASSWORD_SECOND'),
-    'charset' => 'utf8',
-    'prefix' => '',
-    'prefix_indexes' => true,
-     ],
+        'driver' => env('DB_CONNECTION_SECOND'),
+        'url' => env('DATABASE_URL_SECOND'),
+        'host' => env('DB_HOST_SECOND'),
+        'port' => env('DB_PORT_SECOND'),
+        'database' => env('DB_DATABASE_SECOND'),
+        'username' => env('DB_USERNAME_SECOND'),
+        'password' => env('DB_PASSWORD_SECOND'),
+        'charset' => 'utf8',
+        'prefix' => '',
+        'prefix_indexes' => true,
+    ],
     'sqlsrv2' => [
-    'driver' => env('DB_CONNECTION_THIRD'),
-    'url' => env('DATABASE_URL'),
-    'host' => env('DB_HOST_THIRD', 'localhost'),
-    'port' => env('DB_PORT_THIRD', '1433'),
-    'database' => env('DB_DATABASE_THIRD', 'forge'),
-    'username' => env('DB_USERNAME_THIRD', 'forge'),
-    'password' => env('DB_PASSWORD_THIRD', ''),
-    'charset' => 'utf8',
-    'prefix' => '',
-    'prefix_indexes' => true,
+        'driver' => env('DB_CONNECTION_THIRD'),
+        'url' => env('DATABASE_URL'),
+        'host' => env('DB_HOST_THIRD', 'localhost'),
+        'port' => env('DB_PORT_THIRD', '1433'),
+        'database' => env('DB_DATABASE_THIRD', 'forge'),
+        'username' => env('DB_USERNAME_THIRD', 'forge'),
+        'password' => env('DB_PASSWORD_THIRD', ''),
+        'charset' => 'utf8',
+        'prefix' => '',
+        'prefix_indexes' => true,
     ],
     'sqlsrv3' => [
         'driver' => env('DB_CONNECTION_FOURTH'),
@@ -84,7 +84,7 @@ $connections = [
     ],
 ];
 
-foreach($database_list as  $dbs){
+foreach ($database_list as  $dbs) {
     $entryname = $dbs['entryname'];
     $connections[$entryname] =  [
         'driver' => $dbs['connection'],
@@ -131,7 +131,7 @@ return [
     |
     */
 
-    'connections' => $connections, 
+    'connections' => $connections,
     //[
 
     //     'sqlite' => [
@@ -203,13 +203,13 @@ return [
     //         'prefix' => '',
     //         'prefix_indexes' => true,
     //     ],
-        
-            
-    
 
 
 
-        
+
+
+
+
 
     // ],
 
