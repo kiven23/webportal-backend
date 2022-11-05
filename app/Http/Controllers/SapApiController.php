@@ -134,7 +134,7 @@ class SapApiController extends Controller
         return response()->json($final);
     }
     public function installment_ledger(request $req){
-   
+ 
         if($req->sapcode){
            
             $data = \DB::connection($this->mssqlcon())->table('oinv')

@@ -12,14 +12,14 @@ class GiftCodeController extends Controller
 {
     public function sync(){
     
-           $SQL = DB::connection('sqlsrv')
-            ->select('SELECT TOP 3 OINV.CARDNAME, OINV.CARDCODE, COUNT(*) AS REPEAT, OINV.CREATEDATE, OCRD.U_BDAY, OCRD.CELLULAR
+           $SQL = DB::connection('sqlsrvLIVESAP')
+            ->select('SELECT OINV.CARDNAME, OINV.CARDCODE, COUNT(*) AS REPEAT, OINV.CREATEDATE, OCRD.U_BDAY, OCRD.CELLULAR
                         FROM OINV 
                         
                         JOIN OCRD ON OINV.CARDCODE = OCRD.CARDCODE
                         WHERE OCRD.U_BDAY IS NOT NULL AND OCRD.CELLULAR IS NOT NULL AND OINV.CARDNAME IS NOT NULL
-                        
-                        AND YEAR(OINV.CREATEDATE) >= 2019
+                         AND OINV.GroupNum != -1
+                        AND YEAR(OINV.CREATEDATE) >= 2019 AND YEAR(OINV.CREATEDATE) <= 2022
                         GROUP BY
                         OINV.CARDNAME, OINV.CARDCODE, OINV.CREATEDATE,OCRD.U_BDAY, OCRD.CELLULAR
                         HAVING 
@@ -48,7 +48,7 @@ class GiftCodeController extends Controller
                         'branch'=> remap_branch($in->CARDCODE),
                         'cardname'=> $in->CARDNAME,
                         'cardcode'=> $in->CARDCODE,
-                        'mobile'=> '09152212673',
+                        'mobile'=> filterMb($in->CELLULAR),
                         'birthmonth'=> $in->U_BDAY,
                         'status'=> 0,
                     ]);
@@ -57,7 +57,9 @@ class GiftCodeController extends Controller
         return response()->json('sync');
     }
     public function send(){
+       return 'TEST';
        $month = Carbon::now()->month;
+      
        $sql = DB::table('gift_codes')
                 ->whereMonth('birthmonth', $month)
                 ->where('status', 0)
@@ -70,7 +72,7 @@ class GiftCodeController extends Controller
         function msg($name, $cardcode){
             $ex = explode(',', $name);
             $s = "'";
-            $message = 'It'.$s.'s your birth month, '.$ex[0].'! We'.$s.'d like to greet you a happy birthday in advance. We assure you that Addessa will forever be your partner towards the way to comfort living, and as our way celebrating your life, here is your gift code '.giftcode($cardcode).' to get your surprise!  Please present the code to any Addessa branch near you within 30 days upon receipt of this message to claim your gift. Happy Birthday Suki, from your Addessa Family';             return  $message;
+            $message = 'It'.$s.'s your birth month, '.$ex[0].'! We'.$s.'d like to greet you a happy birthday in advance. We assure you that Addessa will forever be your partner towards more comfortable living, and as our way celebrating your life, here is your gift code '.giftcode($cardcode).' to get your surprise!  Please present the code to any Addessa branch near you within 30 days upon receipt of this message to claim your gift. Happy Birthday Suki, from your Addessa Family';             return  $message;
         }
         function sendtoApi($cardname ,$n ,$cardcode){
             $full_link = 'http://mcpro1.sun-solutions.ph/mc/send.aspx?user=ADDESSA&pass=MPoq5g7y&from=ADDESSA&to='.$n.'&msg='.msg($cardname,$cardcode).'';
@@ -79,7 +81,8 @@ class GiftCodeController extends Controller
             return $n .' ok '.$cardname;
         }
         foreach($sql as $data){
-                sendtoApi($data->cardname,$data->mobile, $data->cardcode);
+            //LOCK FOR SAFETY REASON
+                //sendtoApi($data->cardname,$data->mobile, $data->cardcode);
                 DB::table('gift_codes')
                         ->where('id', $data->id)->update([
                         'status'=> 1

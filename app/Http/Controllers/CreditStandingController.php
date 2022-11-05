@@ -7,6 +7,10 @@ use App\Http\Controllers\Controller;
 use DB;
 class CreditStandingController extends Controller
 {
+
+    public function mssqlcon(){
+        return \Auth::user()->dbselection->connection;
+    }
     public function index(){ 
          $table = ['Branch' => 'No Data Please Generate'];
                     return response()->json($table);
@@ -22,7 +26,7 @@ class CreditStandingController extends Controller
             //LEGAL CUSTOMER
             $date3 = $req->legal[0];
             $date4 = $req->legal[1];
-            $createTempTables = \DB::connection('sqlsrv')
+            $createTempTables = \DB::connection($this->mssqlcon())
                     ->unprepared(
                             DB::raw("
                             DECLARE @x1 as datetime
@@ -78,7 +82,7 @@ class CreditStandingController extends Controller
 "));
 
  
-$table = \DB::connection('sqlsrv')->select(DB::raw("
+$table = \DB::connection($this->mssqlcon())->select(DB::raw("
                                                     DECLARE @x1 as datetime
                                                     DECLARE @x2 as datetime
                                                     DECLARE @x3 as datetime

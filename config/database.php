@@ -70,6 +70,18 @@ $connections = [
         'prefix' => '',
         'prefix_indexes' => true,
     ],
+    'sqlsrvLIVESAP' => [
+        'driver' => env('DB_CONNECTION_LIVE'),
+        'url' => env('DATABASE_URL'),
+        'host' => env('DB_HOST_LIVE', 'localhost'),
+        'port' => env('DB_PORT_LIVE', '1433'),
+        'database' => env('DB_DATABASE_LIVE', 'forge'),
+        'username' => env('DB_USERNAME_LIVE', 'forge'),
+        'password' => env('DB_PASSWORD_LIVE', ''),
+        'charset' => 'utf8',
+        'prefix' => '',
+        'prefix_indexes' => true,
+    ],
 ];
 
 foreach($database_list as  $dbs){

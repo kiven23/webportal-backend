@@ -9,6 +9,9 @@ use DB;
 use Excel;
 class BlackListedController extends Controller
 {
+    public function mssqlcon(){
+        return \Auth::user()->dbselection->connection;
+    }
     public function index (){
         if(\Auth::user()->hasRole('BlackListed Customer Portal Admin')){
             
@@ -53,7 +56,7 @@ class BlackListedController extends Controller
 }
 public function search(request $req){
  
-    $table = \DB::connection('sqlsrv')
+    $table = \DB::connection($this->mssqlcon())
     ->select(
             DB::raw("
             /*SELECT FROM [dbo].[OINV] T1*/
