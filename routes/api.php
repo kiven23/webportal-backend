@@ -325,7 +325,7 @@ Route::group(['prefix' => 'revolving-fund', 'middleware' => ['jwt.auth', 'revolv
 });
 
 Route::get("revolving-fund/update-daily", "RvFundAvailOnHandController@updateRevolvingFundsDaily");
-
+Route::get("revolving-fund/gl/account", "RvFundAvailOnHandController@glaccount");
 //For Testing
 Route::get("revolving-fund/preview/{id}", "RevolvingFundController@preview");
 Route::get("revolving-fund/avail-rv-fund-on-hand/preview", "RvFundAvailOnHandController@preview");

@@ -13,11 +13,13 @@ class RvFundExpensesForCheckPreparationController extends Controller
 {
     public function create(Request $request)
     {
+         
         $data = $request->validate([
             'rv_fund_id' => 'required',
             'pcv_date' => 'required|date',
             'particulars' => 'required',
-            'amount' => 'required|numeric'
+            'amount' => 'required|numeric',
+            'glaccounts'=> 'required'
         ]);
 
         if (!$item = RvFundExpensesForCheckPreparation::create($data)) {

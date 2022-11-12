@@ -149,6 +149,13 @@ class RvFundAvailOnHandController extends Controller
 
         return $pdf->stream();
     }
+    
+    public function glaccount(){
+        $q = DB::connection("fc1474ae7c224d8ff2a96f9bcd1dc9b4")
+                           ->select(\DB::raw("select FormatCode,AcctName FROM OACT"));
+        return response()->json($q);
+    }
+
     // private function getAvailOnHandForToday($rv_fund_id)
     // {
     //     return RevolvingFund::where('id', $rv_fund_id)

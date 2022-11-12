@@ -63,7 +63,7 @@
     <div>
         <div class="clearfix" style="width:100%">
             <div class="bold-letter" style="float:left">
-                ADDESSA CORPORATION
+               {{strtoupper($company)}}
             </div>
             <div style="float:right">
                 <span class="bold-letter">DATE SUBMITTED:</span> {{ $submitted_date }}
@@ -150,6 +150,7 @@
         <table class="expenses_for_chk_prep_table">
             <tr>
                 <th style="width:85px;">PCV Date</th>
+                <th style="width: 222px;">GL Account</th>
                 <th style="width: 222px;">Particulars</th>
                 <th style="width: 135px;">Amount</th>
                 <th></th>
@@ -158,6 +159,7 @@
             @forelse ($expenses_for_check_preparations as $expenses_for_chk_prep)
             <tr>
                 <td>{{ $expenses_for_chk_prep['pcv_date'] }} </td>
+                <td>{{ $expenses_for_chk_prep['glaccounts'] }} </td>
                 <td>{{ $expenses_for_chk_prep['particulars'] }} </td>
                 <td>{{ number_format($expenses_for_chk_prep['amount'], 2) }} </td>
                 <td style="text-align:right">
@@ -181,6 +183,11 @@
                 <td style="width:130px; padding-top: 12px; border-bottom: double thick black">{{ number_format($avail_fund_on_hand, 2) }}</td>
             </tr>
         </table>
+    </div>
+
+    <div>
+        <p>Prepared By: <strong>{{ $preparedverifiedby }}</strong></p>
+        <p>Verified By: <strong>{{ $preparedverifiedby }}</strong></p>
     </div>
 </body>
 

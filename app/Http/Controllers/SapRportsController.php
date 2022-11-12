@@ -232,10 +232,8 @@ class SapRportsController extends Controller
  
 
     //Invoice Query Series Revised
-    public function invoicequeryseriesrevised(request $req){
-          
+    public function invoicequeryseriesrevised(request $req){ 
        try{
- 
             function concept($branch, $dateFrom, $dateTo, $params, $server){
                 $get = \DB::connection($server)->unprepared("
                 DECLARE @DateFrom AS smalldatetime

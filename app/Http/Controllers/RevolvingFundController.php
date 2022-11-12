@@ -16,7 +16,7 @@ use App\Http\Resources\RvFundWithExpenseItems;
 use App\Http\Controllers\AvailRvFundOnHandHelper\AvailRvFundOnHandHelper;
 
 use PDF;
-
+use DB;
 class RevolvingFundController extends Controller
 {
     public function index()
@@ -54,7 +54,8 @@ class RevolvingFundController extends Controller
 
     public function view($id)
     {
-        $rvFund = RevolvingFund::find($id);
+     
+       $rvFund = RevolvingFund::find($id);
         if (!$rvFund) {
             return response()->json([
                 'message' => 'Record not found.'
@@ -130,6 +131,9 @@ class RevolvingFundController extends Controller
 
     public function print($id)
     {
+        $company_id = \Auth::user()->company_id;
+        $whereCompany = DB::table('companies')->where('id', $company_id)->pluck('name')->first();
+        $preparedverifiedby = \Auth::user()->first_name ." ".\Auth::user()->last_name;
         $rvFund = RevolvingFund::find($id);
         if (!$rvFund) {
             return response()->json([
@@ -143,6 +147,11 @@ class RevolvingFundController extends Controller
         $data['submitted_date'] = date_format($rvFund->created_at, "M d, Y");
 
         $data['avail_fund_on_hand'] = $rvFund->avail_fund_on_hand;
+        $data['preparedverifiedby'] = $preparedverifiedby;
+        $data['company'] = $whereCompany;
+
+
+
 
         $pdf = PDF::loadView("revolving_funds.summary.revolving_fund_summary", $data);
 

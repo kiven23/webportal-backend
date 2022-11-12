@@ -10,6 +10,7 @@ class RvFundExpensesForCheckPreparation extends Model
         'rv_fund_id',
         'pcv_date',
         'particulars',
+        'glaccounts',
         'amount',
     ];
 }

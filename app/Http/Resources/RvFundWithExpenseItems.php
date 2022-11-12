@@ -25,7 +25,7 @@ class RvFundWithExpenseItems extends JsonResource
             'cash_advances' => $this->cash_advances,
             'as_of' => $this->as_of,
             'submitted_date' => date_format($this->created_at, "M d, Y"),
-            'check_voucher_verifications' => $checkVoucherVerifications->get(),
+            'check_voucher_verifications' => $checkVoucherVerifications->where('verify', NULL)->get(),
             'check_voucher_verifications_total' => $checkVoucherVerifications->sum('amount'),
             'check_voucher_for_transmittals' => $checkVoucherForTransmittals->get(),
             'check_voucher_for_transmittals_total' => $checkVoucherForTransmittals->sum('amount'),

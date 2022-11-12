@@ -98,12 +98,14 @@ class RvFundCheckVoucherVerificationController extends Controller
                 'message' => 'Record not found.'
             ], 500);
         }
-
-        if (!$rvChkVoucherVerification->delete()) {
-            return response()->json([
-                'message' => 'Failed in deleting data.'
-            ], 500);
-        }
+       $verify = RvFundCheckVoucherVerification::find($id);
+       $verify->verify = 1;
+       $verify->update();
+        // if (!$rvChkVoucherVerification->delete()) {
+        //     return response()->json([
+        //         'message' => 'Failed in deleting data.'
+        //     ], 500);
+        // }
 
         return response()->json([
             'total' => $this->getAmtTotal($rvChkVoucherVerification->rv_fund_id),

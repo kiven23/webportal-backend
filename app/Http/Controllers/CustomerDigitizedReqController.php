@@ -13,8 +13,12 @@ use App\Branch;
 class CustomerDigitizedReqController extends Controller
 {
     public function index(){
+        $branch = \Auth::user()->branch->name;
         $data = cdr::select('*')->with('dl_data')
         ->with('branch')
+        ->whereHas('branch',function($q){
+        $q->where('name',\Auth::user()->branch->name);
+        })
         ->get();
         return $data;
     }
@@ -133,7 +137,7 @@ class CustomerDigitizedReqController extends Controller
             }
         }
         for ($x = 0; $x <= 10; $x++) {
-            if($req->file('file-proof-billing'.$x)){
+            if(@$req->file('file-proof-billing'.$x)){
                 $proof_of_billing[] = ['filename' => $req->file('file-proof-billing'.$x)->getClientOriginalName(),
                                'size'=> $req->file('file-proof-billing'.$x)->getSize(),
                                'key'=> 'file-proof-billing'.$x];
@@ -146,10 +150,10 @@ class CustomerDigitizedReqController extends Controller
                          'size'=> $req->file('file-application-form')->getSize(),
                          'key'=> 'file-application-form'];
         $data[] = [
-            'VALID'=> $valid_id,
-            'PROOFOFBILLING'=> $proof_of_billing,
-            'PICTURE' => $picture_file,
-            'APPLICATIONFORM' => $file_application_form
+            'VALID'=> @$valid_id,
+            'PROOFOFBILLING'=> @$proof_of_billing,
+            'PICTURE' => @$picture_file,
+            'APPLICATIONFORM' => @$file_application_form
         ];
         $insert = new cdr;
         $insert->doc_id = $random;
