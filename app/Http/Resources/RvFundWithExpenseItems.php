@@ -14,9 +14,10 @@ class RvFundWithExpenseItems extends JsonResource
      */
     public function toArray($request)
     {
-        $checkVoucherVerifications = $this->checkVoucherVerifications()->whereRaw('DATE(created_at) = DATE(?)', [date('Y-m-d')]);
-        $checkVoucherForTransmittals = $this->checkVoucherForTransmittals()->whereRaw('DATE(created_at) = DATE(?)', [date('Y-m-d')]);
-        $expensesForCheckPreparations = $this->expensesForCheckPreparations()->whereRaw('DATE(created_at) = DATE(?)', [date('Y-m-d')]);
+        // ->whereRaw('DATE(created_at) = DATE(?)', [date('Y-m-d')]
+        $checkVoucherVerifications = $this->checkVoucherVerifications();
+        $checkVoucherForTransmittals = $this->checkVoucherForTransmittals();
+        $expensesForCheckPreparations = $this->expensesForCheckPreparations();
 
         return [
             'id' => $this->id,

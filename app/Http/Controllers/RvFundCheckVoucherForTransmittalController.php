@@ -8,9 +8,16 @@ use Illuminate\Support\Facades\DB;
 
 use App\RvFundCheckVoucherForTransmittal;
 use App\RvFundCheckVoucherVerification;
-
+use App\Exec\RevolvingFund\checkAvailableBudget;
+ 
 class RvFundCheckVoucherForTransmittalController extends Controller
 {
+    private $check = null;
+
+    public function __construct(){
+      $this->check = new checkAvailableBudget();
+    }
+
     public function create(Request $request)
     {
         $data = $request->validate([
@@ -21,10 +28,19 @@ class RvFundCheckVoucherForTransmittalController extends Controller
         ], [
             'ck_no.integer' => 'Check no. must me be a digits',
         ]);
-
-        if (!$item = RvFundCheckVoucherForTransmittal::create($data)) {
+        $budget = DB::table('revolving_funds')
+                ->where('branch_id', $this->check->getBranchID())
+                ->pluck('avail_fund_on_hand')
+                ->first();
+       if($this->check->checkAmount($budget, $request->amount) == 1){
+            if (!$item = RvFundCheckVoucherForTransmittal::create($data)) {
+                return response()->json([
+                    'message' => 'Failed in saving data.'
+                ], 500);
+            }
+        }else{
             return response()->json([
-                'message' => 'Failed in saving data.'
+                'message' => 'Failed in saving data Due to Negative Balance, Please Contact Addessa Admin.'
             ], 500);
         }
 

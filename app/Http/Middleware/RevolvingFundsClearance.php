@@ -21,7 +21,7 @@ class RevolvingFundsClearance
         $checkForTransUrl = "$routeUrl/check-voucher-for-transmittal";
         $expensesForChkPrepUrl = "$routeUrl/expenses-for-check-preparation";
         $availRvFundOnHandUrl = "$routeUrl/avail-rv-fund-on-hand";
-
+        $PreparingUrlHistory = "$routeUrl/preparation";
         if ($request->is("$routeUrl/index")) {
             $authUser = \Auth::user();
             if ($authUser->hasPermissionTo("Show Revolving Funds") || $authUser->hasPermissionTo("Show All Revolving Funds")) {
@@ -137,6 +137,13 @@ class RevolvingFundsClearance
 
         if ($request->is("$availRvFundOnHandUrl/index")) {
             if (\Auth::user()->hasPermissionTo("Show Available Revolving Fund On Hand")) {
+                return $next($request);
+            } else {
+                abort('403');
+            }
+        }
+        if ($request->is("$PreparingUrlHistory/history")) {
+            if (\Auth::user()->hasPermissionTo("View Revolving Funds")) {
                 return $next($request);
             } else {
                 abort('403');

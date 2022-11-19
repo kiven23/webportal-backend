@@ -6,25 +6,50 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
+ 
 use App\RvFundExpensesForCheckPreparation;
 use App\RvFundCheckVoucherForTransmittal;
-
+use App\Exec\RevolvingFund\checkAvailableBudget;
+use App\Exec\RevolvingFund\ReplenishmentHistory;
+//use DB;
 class RvFundExpensesForCheckPreparationController extends Controller
 {
+  
+    private $check = null, $history = null;
+
+    public function __construct(){
+      $this->check = new checkAvailableBudget();
+      $this->history = new ReplenishmentHistory();
+    }
+
     public function create(Request $request)
     {
-         
+     
         $data = $request->validate([
             'rv_fund_id' => 'required',
             'pcv_date' => 'required|date',
-            'particulars' => 'required',
+            // 'particulars' => 'required',
             'amount' => 'required|numeric',
+            'tin'=> 'required',
             'glaccounts'=> 'required'
         ]);
+        
+        $budget = DB::table('revolving_funds')
+                ->where('branch_id', $this->check->getBranchID())
+                ->pluck('avail_fund_on_hand')
+                ->first();
 
-        if (!$item = RvFundExpensesForCheckPreparation::create($data)) {
+        if($this->check->checkAmount($budget, $request->amount) == 1){
+            if (!$item = RvFundExpensesForCheckPreparation::create($data)) {
+                return response()->json([
+                    'message' => 'Failed in saving data.'
+                ], 500);
+            }
+ 
+            $this->history->createHistory($request,  $item->id);
+        }else{
             return response()->json([
-                'message' => 'Failed in saving data.'
+                'message' => 'Failed in saving data Due to Negative Balance, Please Contact Addessa Admin.'
             ], 500);
         }
 
@@ -88,6 +113,7 @@ class RvFundExpensesForCheckPreparationController extends Controller
 
     public function replenish(Request $request)
     {
+      
         $request->validate([
             'check_voucher_date' => 'required|date',
             'ck_no' => 'required|integer',
@@ -97,6 +123,7 @@ class RvFundExpensesForCheckPreparationController extends Controller
         try {
             $data = $request->except('items');
             $newItem =  RvFundCheckVoucherForTransmittal::create($data);
+            $this->history->updateHistory($request);
             foreach ($request->items as $item) {
                 RvFundExpensesForCheckPreparation::destroy($item['id']);
             }

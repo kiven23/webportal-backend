@@ -14,7 +14,7 @@ class AvailRevolvingFundOnHandSummaryResource extends JsonResource
      */
     public function toArray($request)
     {
-        $rv_fund = $this->revolving_funds()->whereRaw('DATE(created_at) = DATE(?)', [date('Y-m-d')])->first();
+        $rv_fund = $this->revolving_funds()->first();
         return [
             'id' => $this->id,
             'rv_fund_id' => $rv_fund ? $rv_fund->id : null,

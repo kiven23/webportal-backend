@@ -21,11 +21,29 @@ class RevolvingFundController extends Controller
 {
     public function index()
     {
-        $rvFundsQuery = RevolvingFund::whereRaw('DATE(created_at) = DATE(?)', [date('Y-m-d')]);
+      
+        $rvFundsQuery = RevolvingFund::first();
+      
         if (!Auth::user()->hasPermissionTo("Show All Revolving Funds")) {
             $rvFundsQuery->where('branch_id', $this->getBranch()->id);
+            
         }
         return RevolvingFundResource::collection($rvFundsQuery->get());
+    }
+    public function history(Request $req){
+ 
+        if($req->id == 1){
+            
+           $history = DB::table("rv_fund_expenses_for_check_preparations_history")
+            ->where("tin", $req->id)
+            ->get();
+        }else{  
+           $history = DB::table("rv_fund_expenses_for_check_preparations_history")
+            ->get();
+        }
+        return $history;
+      
+
     }
 
     // public function create(Request $request)
