@@ -22,12 +22,13 @@ class RevolvingFundController extends Controller
     public function index()
     {
       
-        $rvFundsQuery = RevolvingFund::first();
-      
+      $rvFundsQuery = RevolvingFund::first();
+  
         if (!Auth::user()->hasPermissionTo("Show All Revolving Funds")) {
-            $rvFundsQuery->where('branch_id', $this->getBranch()->id);
-            
+        //$rvFundsQuery->where('branch_id', 2);
+        return RevolvingFundResource::collection($rvFundsQuery->where('branch_id', $this->getbranch()->id)->get());
         }
+      // return $rvFundsQuery->where('branch_id', 4)->get();
         return RevolvingFundResource::collection($rvFundsQuery->get());
     }
     public function history(Request $req){
@@ -42,9 +43,9 @@ class RevolvingFundController extends Controller
             ->get();
         }
         return $history;
-      
-
     }
+    
+ 
 
     // public function create(Request $request)
     // {
@@ -163,7 +164,7 @@ class RevolvingFundController extends Controller
         $data = $rvFundResouce->toArray(app('request'));
 
         $data['submitted_date'] = date_format($rvFund->created_at, "M d, Y");
-
+        $data['tin'] = $rvFund->tin;
         $data['avail_fund_on_hand'] = $rvFund->avail_fund_on_hand;
         $data['preparedverifiedby'] = $preparedverifiedby;
         $data['company'] = $whereCompany;

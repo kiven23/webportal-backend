@@ -1,8 +1,10 @@
 <?php
 namespace App\Exec\RevolvingFund;
 use DB;
+use Auth;
 class ReplenishmentHistory{
     function createHistory($data, $id){
+            
             DB::table('rv_fund_expenses_for_check_preparations_history')->INSERT([
                 "mapid"=> $id,
                 "rv_fund_id" => $data->rv_fund_id,
@@ -10,7 +12,8 @@ class ReplenishmentHistory{
                 "amount" => $data->amount,
                 "tin" => $data->tin,
                 "glaccounts" => $data->glaccounts,
-                "status" => 'None'
+                "status" => 'None',
+                "branch_id"=> \Auth::user()->branch_id
             ]); 
         return "save history";
     }
@@ -23,7 +26,7 @@ class ReplenishmentHistory{
                     "tin"=> $content['tin'],
                     "glaccounts"=> $content['glaccounts'],
                     "status"=> "Transfer To Expenses For Check Preparation"
-                ]
+                     ]
                     );
         }
         return "update history";

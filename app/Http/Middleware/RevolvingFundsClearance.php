@@ -149,6 +149,13 @@ class RevolvingFundsClearance
                 abort('403');
             }
         }
+        if ($request->is("$availRvFundOnHandUrl/history")) {
+            if (\Auth::user()->hasPermissionTo("View Revolving Funds")) {
+                return $next($request);
+            } else {
+                abort('403');
+            }
+        }
 
         if ($request->is("$availRvFundOnHandUrl/updateOrCreate")) {
             $authUser = \Auth::user();

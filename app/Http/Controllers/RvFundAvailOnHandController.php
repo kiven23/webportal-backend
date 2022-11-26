@@ -14,36 +14,50 @@ use App\RvFundCheckVoucherVerification;
 use App\RvFundCheckVoucherForTransmittal;
 use App\RvFundExpensesForCheckPreparation;
 
+use App\Exec\RevolvingFund\RevolvingFundOnHandHistory;
+
+
 use App\Http\Resources\AvailRevolvingFundOnHandSummaryResource;
 
 use PDF;
 
 class RvFundAvailOnHandController extends Controller
 {
+    private $history = null;
+
+    public function __construct(){
+      $this->history = new RevolvingFundOnHandHistory();
+    }
+
     public function updateOrCreate(Request $request)
     {
+
+       
+
         $request->validate(
             [
                 'fund' => 'required|numeric|min:1',
                 'cash_advances' => 'required|numeric|min:1',
+             
             ],
             [
                 'fund.min' => "Revolving Fund must be not equal to zero",
                 'cash_advances.min' => "Cash Advances must be not equal to zero"
             ]
         );
-
+ 
         $hasChange = false;
         $data = $request->all();
         if (empty($data["rv_fund_id"])) {
             //$data["cash_advances"] = 0;
             $data["avail_fund_on_hand"] = ($data["fund"] + $data["cash_advances"]);
 
-            if (!$availRVFundOnHand = $this->createAvailOnHandForToday($data)) {
+            if (!$availRVFundOnHand = $this->createAvailOnHandForToday($data) ) {
                 return response()->json([
                     'message' => 'Failed in saving data.'
                 ], 500);
             }
+             
             $hasChange = true;
         } else {
             $rv_fund_id = $data['rv_fund_id'];
@@ -59,6 +73,7 @@ class RvFundAvailOnHandController extends Controller
                         'message' => 'Failed in updating data.'
                     ], 500);
                 }
+         
                 $hasChange = true;
             }
         }
@@ -68,7 +83,7 @@ class RvFundAvailOnHandController extends Controller
             $totalData = RevolvingFund::selectRaw("SUM(fund) as rfTotal, SUM(cash_advances) as caTotal, SUM(avail_fund_on_hand) as availRfTotal")->whereRaw('DATE(created_at) = DATE(?)', [date('Y-m-d')])->first();
             //$totalData = $query->first();
         }
-
+        $this->history->createHistory($request);
         return response()->json([
             'totalData' => $totalData,
             'availRVFundOnHand' => $availRVFundOnHand,
@@ -135,7 +150,11 @@ class RvFundAvailOnHandController extends Controller
         $data["as_of"] = date("Y-m-d");
         return RevolvingFund::create($data);
     }
-
+    public function onHandHistory(request $req){
+       //$name = DB::table("branches")->where("name", $req->b)->pluck('name')->first();
+        $branchid = DB::table("branches")->where("name", $req->b)->pluck('id')->first();
+        return DB::table("onhand_history")->where("branch_id", $branchid)->get();
+    }
     public function print()
     {
         $pdf = PDF::loadView("revolving_funds.reports.avail_rf_reports", $this->index());

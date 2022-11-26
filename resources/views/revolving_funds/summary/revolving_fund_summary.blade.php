@@ -150,8 +150,9 @@
         <table class="expenses_for_chk_prep_table">
             <tr>
                 <th style="width:85px;">PCV Date</th>
+                <th style="width: 222px;">w/BIR</th>
                 <th style="width: 222px;">GL Account</th>
-                <th style="width: 222px;">Particulars</th>
+                
                 <th style="width: 135px;">Amount</th>
                 <th></th>
                 <th></th>
@@ -159,8 +160,9 @@
             @forelse ($expenses_for_check_preparations as $expenses_for_chk_prep)
             <tr>
                 <td>{{ $expenses_for_chk_prep['pcv_date'] }} </td>
+                <td>{{ $expenses_for_chk_prep['tin'] == 1? "Yes":'None'  }} </td>
                 <td>{{ $expenses_for_chk_prep['glaccounts'] }} </td>
-                <td>{{ $expenses_for_chk_prep['particulars'] }} </td>
+    
                 <td>{{ number_format($expenses_for_chk_prep['amount'], 2) }} </td>
                 <td style="text-align:right">
                     @if($loop->last)

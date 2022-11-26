@@ -24,13 +24,12 @@ class RvFundExpensesForCheckPreparationController extends Controller
 
     public function create(Request $request)
     {
-     
         $data = $request->validate([
             'rv_fund_id' => 'required',
             'pcv_date' => 'required|date',
             // 'particulars' => 'required',
             'amount' => 'required|numeric',
-            'tin'=> 'required',
+             
             'glaccounts'=> 'required'
         ]);
         
@@ -46,7 +45,7 @@ class RvFundExpensesForCheckPreparationController extends Controller
                 ], 500);
             }
  
-            $this->history->createHistory($request,  $item->id);
+            $this->history->createHistory($request,  $item->id, );
         }else{
             return response()->json([
                 'message' => 'Failed in saving data Due to Negative Balance, Please Contact Addessa Admin.'
@@ -95,16 +94,10 @@ class RvFundExpensesForCheckPreparationController extends Controller
         $rvExpensesForChkPreparation = RvFundExpensesForCheckPreparation::find($id);
         if (!$rvExpensesForChkPreparation) {
             return response()->json([
-                'message' => 'Record not found.'
+                'message' => 'error.'
             ], 500);
         }
-
-        if (!$rvExpensesForChkPreparation->delete()) {
-            return response()->json([
-                'message' => 'Failed in deleting data.'
-            ], 500);
-        }
-
+        RvFundExpensesForCheckPreparation::destroy($id);
         return response()->json([
             'total' => $this->getAmtTotal($rvExpensesForChkPreparation->rv_fund_id),
             'message' => 'Record status has been successfully deleted'

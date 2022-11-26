@@ -321,6 +321,7 @@ Route::group(['prefix' => 'revolving-fund', 'middleware' => ['jwt.auth', 'revolv
 	Route::group(['prefix' => 'avail-rv-fund-on-hand'], function () {
 		Route::get('/index', 'RvFundAvailOnHandController@index')->name('revolving_fund.avail_rv_fund_on_hand.index');
 		Route::post('/updateOrCreate', 'RvFundAvailOnHandController@updateOrCreate')->name('revolving_fund.avail_rv_fund_on_hand.update_or_create');
+		Route::get('/history', 'RvFundAvailOnHandController@onHandHistory')->name('revolving_fund.avail_rv_fund_on_hand.History');
 		Route::get('/print', 'RvFundAvailOnHandController@print')->name('revolving_fund.avail_rv_fund_on_hand.print');
 	});
 });
