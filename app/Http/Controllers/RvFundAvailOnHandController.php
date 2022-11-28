@@ -170,8 +170,10 @@ class RvFundAvailOnHandController extends Controller
     }
     
     public function glaccount(){
+        $branchID = \Auth::user()->branch_id;
+        $getBranch = DB::table("branches")->where("id" , $branchID)->pluck('name')->first();
         $q = DB::connection("fc1474ae7c224d8ff2a96f9bcd1dc9b4")
-                           ->select(\DB::raw("select FormatCode,AcctName FROM OACT"));
+                           ->select("select FormatCode,AcctName FROM OACT where AcctName LIKE '%$getBranch%'");
         return response()->json($q);
     }
 

@@ -12,6 +12,7 @@ class ReplenishmentHistory{
                 "amount" => $data->amount,
                 "tin" => $data->tin,
                 "glaccounts" => $data->glaccounts,
+                "payee" => $data->payee,
                 "status" => 'None',
                 "branch_id"=> \Auth::user()->branch_id
             ]); 
@@ -25,6 +26,7 @@ class ReplenishmentHistory{
                     "amount"=> $content['amount'],
                     "tin"=> $content['tin'],
                     "glaccounts"=> $content['glaccounts'],
+                    "payee"=> $content['payee'],
                     "status"=> "Transfer To Expenses For Check Preparation"
                      ]
                     );

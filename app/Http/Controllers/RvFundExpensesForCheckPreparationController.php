@@ -24,20 +24,22 @@ class RvFundExpensesForCheckPreparationController extends Controller
 
     public function create(Request $request)
     {
+ 
         $data = $request->validate([
             'rv_fund_id' => 'required',
             'pcv_date' => 'required|date',
             // 'particulars' => 'required',
+            'tin'=> '',
             'amount' => 'required|numeric',
-             
-            'glaccounts'=> 'required'
+            'glaccounts'=> 'required',
+            'payee' => 'required'
         ]);
-        
+         
         $budget = DB::table('revolving_funds')
                 ->where('branch_id', $this->check->getBranchID())
                 ->pluck('avail_fund_on_hand')
                 ->first();
-
+        
         if($this->check->checkAmount($budget, $request->amount) == 1){
             if (!$item = RvFundExpensesForCheckPreparation::create($data)) {
                 return response()->json([

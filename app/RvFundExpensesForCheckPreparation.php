@@ -12,5 +12,6 @@ class RvFundExpensesForCheckPreparation extends Model
         'tin',
         'glaccounts',
         'amount',
+        'payee'
     ];
 }
