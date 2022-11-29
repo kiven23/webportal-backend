@@ -37,8 +37,8 @@ class RvFundAvailOnHandController extends Controller
         $request->validate(
             [
                 'fund' => 'required|numeric|min:1',
-                'cash_advances' => 'required|numeric|min:1',
-             
+                'cash_advances' => 'required|numeric|min:0',
+                'ornumber'=> '',
             ],
             [
                 'fund.min' => "Revolving Fund must be not equal to zero",

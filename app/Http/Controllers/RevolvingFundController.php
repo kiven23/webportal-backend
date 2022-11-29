@@ -33,16 +33,50 @@ class RevolvingFundController extends Controller
     }
     public function history(Request $req){
  
+        $branchID = \Auth::user()->branch_id;
         if($req->id == 1){
-            
-           $history = DB::table("rv_fund_expenses_for_check_preparations_history")
-            ->where("tin", $req->id)
-            ->get();
+            if($req->date){
+                $explode = explode("-", $req->date);
+                $history = DB::table("rv_fund_expenses_for_check_preparations_history")
+                ->where("tin", $req->id)
+                ->where('branch_id', $branchID)
+                ->whereYear("pcv_date",  $explode[0])
+                ->whereMonth("pcv_date",  $explode[1])
+                ->get();
+            }
         }else{  
            $history = DB::table("rv_fund_expenses_for_check_preparations_history")
+            ->where("branch_id", $branchID)
             ->get();
         }
+      
         return $history;
+    }
+    public function printBIR(request $req){
+ 
+        $branchID = \Auth::user()->branch_id;
+        if($req->id == 1){
+            if($req->date){
+                $explode = explode("-", $req->date);
+                $history = DB::table("rv_fund_expenses_for_check_preparations_history")
+                ->where("tin", $req->id)
+                ->where('branch_id', $branchID)
+                ->whereYear("pcv_date",  $explode[0])
+                ->whereMonth("pcv_date",  $explode[1])
+                ->get();
+         }
+        }else{  
+           $history = DB::table("rv_fund_expenses_for_check_preparations_history")
+            ->where("branch_id", $branchID)
+            ->get();
+        }
+      
+
+        return $history;
+
+        $pdf = PDF::loadView("revolving_funds.reports.withtin", $history);
+                return $pdf->download("WithTIN.pdf")
+                       ->header('Access-Control-Expose-Headers', 'Content-Disposition');
     }
     
  

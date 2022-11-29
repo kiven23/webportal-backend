@@ -290,6 +290,7 @@ Route::group(['prefix' => 'validation-portal', 'middleware' => ['jwt.auth', 'val
 Route::group(['prefix' => 'revolving-fund', 'middleware' => ['jwt.auth', 'revolving_funds_clearance']], function () {
 	Route::get('/index', 'RevolvingFundController@index')->name('revolving_fund.index');
 	Route::get('/preparation/history', 'RevolvingFundController@history')->name('revolving_fund.history');
+	Route::get('/preparation/history/print', 'RevolvingFundController@printBIR')->name('revolving_fund.bir');
 	//Route::post('/create', 'RevolvingFundController@create')->name('revolving_fund.create');
 	Route::get('/view/{id}', 'RevolvingFundController@view')->name('revolving_fund.view');
 	Route::post('/update/{id}/cash-advances', 'RevolvingFundController@updateCashAdvances')->name('revolving_fund.update_cash_advances');
