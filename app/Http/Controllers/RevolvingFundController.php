@@ -57,6 +57,7 @@ class RevolvingFundController extends Controller
         $branchID = \Auth::user()->branch_id;
         if($req->id == 1){
             if($req->date){
+                
                 $explode = explode("-", $req->date);
                 $history = DB::table("rv_fund_expenses_for_check_preparations_history")
                 ->where("tin", $req->id)
@@ -64,19 +65,19 @@ class RevolvingFundController extends Controller
                 ->whereYear("pcv_date",  $explode[0])
                 ->whereMonth("pcv_date",  $explode[1])
                 ->get();
-         }
+                
+             }
         }else{  
            $history = DB::table("rv_fund_expenses_for_check_preparations_history")
             ->where("branch_id", $branchID)
             ->get();
         }
-      
-
-        return $history;
-
-        $pdf = PDF::loadView("revolving_funds.reports.withtin", $history);
-                return $pdf->download("WithTIN.pdf")
-                       ->header('Access-Control-Expose-Headers', 'Content-Disposition');
+        $asof = $req->date;
+       
+        //return view("revolving_funds.reports.withtin", compact("history", "asof"));
+         $pdf = PDF::loadView("revolving_funds.reports.withtin", compact("history", "asof"));
+                return $pdf->stream();
+                        
     }
     
  

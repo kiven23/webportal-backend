@@ -33,6 +33,20 @@ class ReplenishmentHistory{
         }
         return "update history";
     }
+    function updateHistoryByID($data){
+        
+            DB::table('rv_fund_expenses_for_check_preparations_history')->where('mapid', $data['id'])
+            ->update(
+                        [
+                        "amount"=> $data['amount'],
+                        "tin"=> $data['tin'],
+                        "glaccounts"=> $data['glaccounts'],
+                        "payee"=> $data['payee'],
+                        ]
+                    );
+       
+        return "update history";
+    }
 }
  
 ?>

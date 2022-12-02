@@ -68,7 +68,7 @@ class RvFundExpensesForCheckPreparationController extends Controller
             'particulars' => 'required',
             'amount' => 'required|numeric'
         ]);
-
+        
         $rvExpensesForChkPreparation = RvFundExpensesForCheckPreparation::find($id);
         if (!$rvExpensesForChkPreparation) {
             return response()->json([
@@ -77,13 +77,13 @@ class RvFundExpensesForCheckPreparationController extends Controller
         }
 
         $data = $request->except('id');
-
+       
         if (!$rvExpensesForChkPreparation->update($data)) {
             return response()->json([
                 'message' => 'Failed in saving data.'
             ], 500);
         }
-
+        $this->history->updateHistoryByID($request);
         return response()->json([
             'item' => $rvExpensesForChkPreparation,
             'total' => $this->getAmtTotal($rvExpensesForChkPreparation->rv_fund_id),

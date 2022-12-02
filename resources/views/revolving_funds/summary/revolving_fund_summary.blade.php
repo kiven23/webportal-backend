@@ -150,16 +150,19 @@
         <table class="expenses_for_chk_prep_table">
             <tr>
                 <th style="width:85px;">PCV Date</th>
-                <th style="width: 222px;">w/BIR</th>
-                <th style="width: 222px;">GL Account</th>
+                <th style="width: 118px;">PAYEE</th>
+                <th style="width: 118px;">w/BIR</th>
+                <th style="width: 135px;">GL Account</th>
                 
                 <th style="width: 135px;">Amount</th>
+                
                 <th></th>
                 <th></th>
             </tr>
             @forelse ($expenses_for_check_preparations as $expenses_for_chk_prep)
             <tr>
                 <td>{{ $expenses_for_chk_prep['pcv_date'] }} </td>
+                <td>{{ $expenses_for_chk_prep['payee'] }} </td>
                 <td>{{ $expenses_for_chk_prep['tin'] == 1? "Yes":'None'  }} </td>
                 <td>{{ $expenses_for_chk_prep['glaccounts'] }} </td>
     
@@ -169,7 +172,7 @@
                     {{ number_format($expenses_for_check_preparations_total, 2) }}
                     @endif
                 </td>
-                <td style="width: 130px;"> @if($loop->last) {{ number_format(($check_voucher_verifications_total + $check_voucher_for_transmittals_total + $expenses_for_check_preparations_total), 2)}} @endif</td>
+                <td style="width: 300px;"> @if($loop->last) {{ number_format(($check_voucher_verifications_total + $check_voucher_for_transmittals_total + $expenses_for_check_preparations_total), 2)}} @endif</td>
             </tr>
             @empty
             <tr>

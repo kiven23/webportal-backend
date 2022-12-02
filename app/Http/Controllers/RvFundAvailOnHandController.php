@@ -31,20 +31,40 @@ class RvFundAvailOnHandController extends Controller
 
     public function updateOrCreate(Request $request)
     {
+        if($request->cash_advances == 0){
+            
+            $request->validate(
+                [
+                    'fund' => 'required|numeric|min:1',
+                    'cash_advances' => 'required|numeric|min:0',
+                    'cash_advances_or'=> 'required|numeric|min:3',
+                    'outgoing'=> '',
+                ],
+                [
+                    'fund.min' => "Revolving Fund must be not equal to zero",
+                    'cash_advances.min' => "Cash Advances must be not equal to zero"
+                ]
+            );
+        }else{
+            
+            $request->validate(
+                [
+                    'fund' => 'required|numeric|min:1',
+                    'cash_advances' => 'required|numeric|min:0',
+                    'cash_advances_or'=> '',
+                    'outgoing'=> 'required|numeric|min:3',
+                ],
+                [
+                    'fund.min' => "Revolving Fund must be not equal to zero",
+                    'cash_advances.min' => "Cash Advances must be not equal to zero"
+                ]
+            );
+        }
+
 
        
-
-        $request->validate(
-            [
-                'fund' => 'required|numeric|min:1',
-                'cash_advances' => 'required|numeric|min:0',
-                'ornumber'=> '',
-            ],
-            [
-                'fund.min' => "Revolving Fund must be not equal to zero",
-                'cash_advances.min' => "Cash Advances must be not equal to zero"
-            ]
-        );
+ 
+   
  
         $hasChange = false;
         $data = $request->all();
