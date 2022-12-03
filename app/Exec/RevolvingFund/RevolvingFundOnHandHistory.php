@@ -10,10 +10,10 @@ class RevolvingFundOnHandHistory{
                 "branch_id"=> $data->branch_id,
                 "revolvingfund" => $data->fund,
                 "cashadvance" => $data->cash_advances,
-                "ornumber" => $data->cash_advances_or,
+                "ornumber" => $data->ex.'-'.$data->or,
                 "balance" => $this->balance($data->fund, $data->cash_advances),
-                "incoming" => $data->incoming,
-                "outgoing" => $data->outgoing,
+                "incoming" => 0,
+                "outgoing" => 0,
                 "created_at" => date("Y-m-d h:i:s"),
                 "updated_at"=>  date("Y-m-d h:i:s")
             ]); 

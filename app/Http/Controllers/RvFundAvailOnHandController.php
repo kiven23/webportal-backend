@@ -31,35 +31,19 @@ class RvFundAvailOnHandController extends Controller
 
     public function updateOrCreate(Request $request)
     {
-        if($request->cash_advances == 0){
-            
+    
+ 
             $request->validate(
                 [
                     'fund' => 'required|numeric|min:1',
                     'cash_advances' => 'required|numeric|min:0',
-                    'cash_advances_or'=> 'required|numeric|min:3',
-                    'outgoing'=> '',
+                    'or'=> 'required|min:8',
                 ],
                 [
                     'fund.min' => "Revolving Fund must be not equal to zero",
                     'cash_advances.min' => "Cash Advances must be not equal to zero"
                 ]
             );
-        }else{
-            
-            $request->validate(
-                [
-                    'fund' => 'required|numeric|min:1',
-                    'cash_advances' => 'required|numeric|min:0',
-                    'cash_advances_or'=> '',
-                    'outgoing'=> 'required|numeric|min:3',
-                ],
-                [
-                    'fund.min' => "Revolving Fund must be not equal to zero",
-                    'cash_advances.min' => "Cash Advances must be not equal to zero"
-                ]
-            );
-        }
 
 
        
@@ -193,7 +177,7 @@ class RvFundAvailOnHandController extends Controller
         $branchID = \Auth::user()->branch_id;
         $getBranch = DB::table("branches")->where("id" , $branchID)->pluck('name')->first();
         $q = DB::connection("fc1474ae7c224d8ff2a96f9bcd1dc9b4")
-                           ->select("select FormatCode,AcctName FROM OACT where AcctName LIKE '%$getBranch%'");
+                           ->select("select FormatCode,AcctName FROM OACT where AcctName LIKE '%$getBranch%' ORDER BY AcctName ASC");
         return response()->json($q);
     }
 

@@ -32,8 +32,17 @@ class RevolvingFundController extends Controller
         return RevolvingFundResource::collection($rvFundsQuery->get());
     }
     public function history(Request $req){
+        
+       
+        if(\Auth::user()->branch_id == 1){
+            $id = DB::table("branches")->where("name", $req->b)->pluck("id")->first();
+            $branchID =  $id;
+          
+        }else{
+            $branchID =  \Auth::user()->branch_id;
+            
+        }
  
-        $branchID = \Auth::user()->branch_id;
         if($req->id == 1){
             if($req->date){
                 $explode = explode("-", $req->date);
