@@ -297,7 +297,7 @@ Route::group(['prefix' => 'revolving-fund', 'middleware' => ['jwt.auth', 'revolv
 	//Route::post('/delete/items', 'RevolvingFundController@deleteItems')->name('revolving_fund.delete_items');
 	Route::get('/print/{id}', "RevolvingFundController@print")->name('revolving_fund.print');
 	Route::post('/update-avail-rf-on-hand/{id}', "RevolvingFundController@updateAvailRevolvingFundOnHand")->name('revolving_fund.update_avail_rf_on_hand');
-
+	Route::get('/ck/history', 'RevolvingFundController@CKhistory')->name('revolving_fund.ck.history');
 	Route::group(['prefix' => 'check-voucher-verification'], function () {
 		Route::post('/create', 'RvFundCheckVoucherVerificationController@create')->name('rv_fund.check_voucher_verification.create');
 		Route::put('/update/{id}', 'RvFundCheckVoucherVerificationController@update')->name('rv_fund.check_voucher_verification.update');
@@ -324,6 +324,7 @@ Route::group(['prefix' => 'revolving-fund', 'middleware' => ['jwt.auth', 'revolv
 		Route::post('/updateOrCreate', 'RvFundAvailOnHandController@updateOrCreate')->name('revolving_fund.avail_rv_fund_on_hand.update_or_create');
 		Route::get('/history', 'RvFundAvailOnHandController@onHandHistory')->name('revolving_fund.avail_rv_fund_on_hand.History');
 		Route::get('/print', 'RvFundAvailOnHandController@print')->name('revolving_fund.avail_rv_fund_on_hand.print');
+	   
 	});
 });
 
@@ -382,3 +383,6 @@ Route::post('/database/delete', 'DatabaseSelectionController@deleteDB')->name('s
 Route::post('/database/testdb', 'DatabaseSelectionController@testDB')->name('sap.testdb.conn');
 });
 Route::get('/test/db', 'SapRportsController@test')->name('sap.SapRports.database');
+
+//tester
+Route::get('/test/history', 'RevolvingFundController@CKhistory')->name('sap.test.history');

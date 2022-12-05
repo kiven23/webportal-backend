@@ -22,6 +22,7 @@ class RevolvingFundsClearance
         $expensesForChkPrepUrl = "$routeUrl/expenses-for-check-preparation";
         $availRvFundOnHandUrl = "$routeUrl/avail-rv-fund-on-hand";
         $PreparingUrlHistory = "$routeUrl/preparation";
+        $CKUrlHistory = "$routeUrl/revolving-fund";
         if ($request->is("$routeUrl/index")) {
             $authUser = \Auth::user();
             if ($authUser->hasPermissionTo("Show Revolving Funds") || $authUser->hasPermissionTo("Show All Revolving Funds")) {
@@ -143,6 +144,13 @@ class RevolvingFundsClearance
             }
         }
         if ($request->is("$PreparingUrlHistory/history")) {
+            if (\Auth::user()->hasPermissionTo("View Revolving Funds")) {
+                return $next($request);
+            } else {
+                abort('403');
+            }
+        }
+        if ($request->is("api/revolving-fund/ck/history")) {
             if (\Auth::user()->hasPermissionTo("View Revolving Funds")) {
                 return $next($request);
             } else {

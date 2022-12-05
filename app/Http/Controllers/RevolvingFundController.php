@@ -32,8 +32,7 @@ class RevolvingFundController extends Controller
         return RevolvingFundResource::collection($rvFundsQuery->get());
     }
     public function history(Request $req){
-        
-       
+
         if(\Auth::user()->branch_id == 1){
             $id = DB::table("branches")->where("name", $req->b)->pluck("id")->first();
             $branchID =  $id;
@@ -61,9 +60,38 @@ class RevolvingFundController extends Controller
       
         return $history;
     }
-    public function printBIR(request $req){
+    public function CKhistory(request $req){
+        if(\Auth::user()->branch_id == 1){
+            $id = DB::table("branches")->where("name", $req->b)->pluck("id")->first();
+            $branchID =  $id;
+          
+        }else{
+            $branchID =  \Auth::user()->branch_id;
+            
+        }
  
-        $branchID = \Auth::user()->branch_id;
+        $history = DB::table("rv_fund_check_voucher_verifications")
+                   ->join("revolving_funds" , "rv_fund_check_voucher_verifications.rv_fund_id", "=", "revolving_funds.id")
+                   ->join("branches" , "revolving_funds.branch_id", "=", "branches.id")
+                   
+                   ->select("date_transmitted as DATETRANSMITTED", "ck_no as ck_no",
+                   "status as status", "amount AS AMOUNT","fund AS fund","name AS BRANCH", "branch_id as branch_id")
+                   ->where("STATUS", "Transmittal")
+                   ->where("branch_id", $branchID)
+                   ->get();
+        return $history ;
+
+    }
+    public function printBIR(request $req){
+        if(\Auth::user()->branch_id == 1){
+            $id = DB::table("branches")->where("name", $req->b)->pluck("id")->first();
+            $branchID =  $id;
+          
+        }else{
+            $branchID =  \Auth::user()->branch_id;
+            
+        }
+         
         if($req->id == 1){
             if($req->date){
                 
