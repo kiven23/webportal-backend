@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-
+ 
 class RvFundWithExpenseItems extends JsonResource
 {
     /**
@@ -18,7 +18,7 @@ class RvFundWithExpenseItems extends JsonResource
         $checkVoucherVerifications = $this->checkVoucherVerifications();
         $checkVoucherForTransmittals = $this->checkVoucherForTransmittals();
         $expensesForCheckPreparations = $this->expensesForCheckPreparations();
-
+    
         return [
             'id' => $this->id,
             'branch' => $this->branch->name,

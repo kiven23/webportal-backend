@@ -24,7 +24,11 @@ class SapRportsController extends Controller
         return  response()->json($q);
     }
     public function incoming_crb_generate(request $req){
+       
         function remapBranch($b){
+              if(\Auth::user()->dbselection->id == 6){
+                    return  DB::table('branches')->where('name', $b)->pluck('seriesnameold')->first();
+              }
                 return  DB::table('branches')->where('name', $b)->pluck('seriesname')->first();
         }
         $getB = remapBranch($req->branch);
@@ -92,7 +96,10 @@ class SapRportsController extends Controller
     }
     public function preview(request $req){
     function remapBranch($b){
-            return  DB::table('branches')->where('name', $b)->pluck('seriesname')->first();
+        if(\Auth::user()->dbselection->id == 6){
+            return  DB::table('branches')->where('name', $b)->pluck('seriesnameold')->first();
+      }
+        return  DB::table('branches')->where('name', $b)->pluck('seriesname')->first();
     }
     $branch = $req->branch;
     $getB = remapBranch($req->branch);

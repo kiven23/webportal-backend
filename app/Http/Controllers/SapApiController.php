@@ -285,7 +285,7 @@ class SapApiController extends Controller
         public function compute_grade($req = ''){
 
             function getbranch($resp){
-                $sql = \DB::connection('sqlsrv2')->select(DB::raw("SELECT * FROM InstallmentReceivableDetailed_LY where CardCode LIKE '%$resp%' UNION SELECT * FROM IRDetailed_ETO where CardCode LIKE '%$resp%'"));
+                $sql = \DB::connection($this->mssqlcon())->select(DB::raw("SELECT * FROM InstallmentReceivableDetailed_LY where CardCode LIKE '%$resp%' UNION SELECT * FROM IRDetailed_ETO where CardCode LIKE '%$resp%'"));
                     // ->where()->get();
                 return $sql;
                 // $sql = \DB::connection('sqlsrv2')->table('InstallmentReceivableDetailed_LY')

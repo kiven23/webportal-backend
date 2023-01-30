@@ -53,9 +53,9 @@
         }
 
         /* table.rv_fund tr:last-child td, */
-        table.expenses_for_chk_prep_table tr:last-child td {
+        /* table.expenses_for_chk_prep_table tr:last-child td {
             border-bottom: solid thin black;
-        }
+        } */
     </style>
 </head>
 
@@ -82,19 +82,22 @@
             </tr>
             <tr>
                 <td>CASH ADVANCES: Marketing Activities:</td>
-                <td style="text-align: right">{{ number_format($cash_advances, 2) }}</td>
-                <td style="text-align: center">{{ number_format(($fund + $cash_advances), 2) }}</td>
+                <td style="text-align: right" >{{ number_format($cash_advances, 2) }}</td>
+                <td style="text-align: center; "><div style="margin-left: 55px">  {{ number_format(($fund + $cash_advances), 2) }}</div></td>
+                
             </tr>
         </table>
+        <div style="margin-left: 500px; width: 90px; border-bottom: solid thin black;"></div>
     </div>
     <div style="margin-top: 15px">
         <div class="bold-letter">CHECK VOUCHER VERIFICATION</div>
         <table>
             <tr>
                 <th style="width:85px;">Date Transmitted</th>
-                <th style="width: 150px;">CK#</th>
-                <th style="width: 70px;">Status</th>
-                <th style="width: 135px;">Amount</th>
+                <th style="width:100px;">CK#</th>
+                <th style="width:100px;">Status</th>
+                <th style="width:185px;"></th>
+                <th style="width: 90px;">Amount</th>
                 <th></th>
             </tr>
             @forelse ($check_voucher_verifications as $chk_voucher_veri)
@@ -102,6 +105,8 @@
                 <td>{{ $chk_voucher_veri['date_transmitted'] }} </td>
                 <td>{{ $chk_voucher_veri['ck_no'] }} </td>
                 <td>{{ $chk_voucher_veri['status']}} </td>
+                <td></td>
+                
                 <td>{{ number_format($chk_voucher_veri['amount'], 2) }} </td>
                 <td style="text-align: right">
                     @if($loop->last)
@@ -116,22 +121,27 @@
             </tr>
             @endforelse
         </table>
+        <div style="margin-left: 487px; width: 70px; border-bottom: solid thin black;"></div>  
     </div>
     <div style="margin-top: 20px">
         <div class="bold-letter">CHECK VOUCHER FOR TRANSMITTAL</div>
         <table>
             <tr>
                 <th style="width:85px;">Check Voucher Date</th>
-                <th style="width: 222px;">CK#</th>
-                <th style="width: 135px;">Amount</th>
+                <th style="width:100px;">CK#</th>
+                <th  style="width:100px;"> </th>
+                <th style="width:185px;" ></th>
+                <th  style="width: 93px;">Amount</th>
                 <th></th>
             </tr>
             @forelse ($check_voucher_for_transmittals as $chk_voucher_for_trans)
             <tr>
                 <td>{{ $chk_voucher_for_trans['check_voucher_date'] }} </td>
                 <td>{{ $chk_voucher_for_trans['ck_no'] }} </td>
-                <td>{{ number_format($chk_voucher_for_trans['amount'], 2) }} </td>
-                <td style="text-align: right">
+                <td></td>
+                <td></td>
+                <td >{{ number_format($chk_voucher_for_trans['amount'], 2) }} </td>
+                <td style="text-align:center">
                     @if($loop->last)
                     {{ number_format($check_voucher_for_transmittals_total, 2) }}
                     @endif
@@ -144,20 +154,19 @@
             </tr>
             @endforelse
         </table>
+         <div style="margin-left: 487px; width: 70px; border-bottom: solid thin black;"></div>  
     </div>
     <div style="margin-top: 20px">
         <div class="bold-letter">EXPENSES FOR CHECK PREPARATION</div>
         <table class="expenses_for_chk_prep_table">
             <tr>
                 <th style="width:85px;">PCV Date</th>
-                <th style="width: 118px;">PAYEE</th>
-                <th style="width: 118px;">w/BIR</th>
-                <th style="width: 135px;">GL Account</th>
-                
-                <th style="width: 135px;">Amount</th>
-                
-                <th></th>
-                <th></th>
+                <th>PAYEE</th>
+                <th>w/BIR</th>
+                <th>GL Account</th>
+                <th>Amount</th>
+                <th> </th>
+                <th> </th>
             </tr>
             @forelse ($expenses_for_check_preparations as $expenses_for_chk_prep)
             <tr>
@@ -167,12 +176,12 @@
                 <td>{{ $expenses_for_chk_prep['glaccounts'] }} </td>
     
                 <td>{{ number_format($expenses_for_chk_prep['amount'], 2) }} </td>
-                <td style="text-align:right">
+                <td style="text-align:center">
                     @if($loop->last)
                     {{ number_format($expenses_for_check_preparations_total, 2) }}
                     @endif
                 </td>
-                <td style="width: 300px;"> @if($loop->last) {{ number_format(($check_voucher_verifications_total + $check_voucher_for_transmittals_total + $expenses_for_check_preparations_total), 2)}} @endif</td>
+                <td> @if($loop->last) {{ number_format(($check_voucher_verifications_total + $check_voucher_for_transmittals_total + $expenses_for_check_preparations_total), 2)}} @endif</td>
             </tr>
             @empty
             <tr>
@@ -182,12 +191,16 @@
         </table>
     </div>
     <div class="bold-letter">
+    <div style="width:700px; border-bottom: solid thin black;"></div>
+ 
         <table>
             <tr>
                 <td style="text-align: left; padding-top: 12px;">AVAILABLE REVOLVING FUND ON HAND</td>
-                <td style="width:130px; padding-top: 12px; border-bottom: double thick black">{{ number_format($avail_fund_on_hand, 2) }}</td>
+                <td><div style="margin-left: 370px; border-bottom: double thick blac">{{ number_format($avail_fund_on_hand, 2) }}</div>
             </tr>
         </table>
+         
+        <!-- <p style="border-bottom: double thick black"></p> -->
     </div>
 
     <div>

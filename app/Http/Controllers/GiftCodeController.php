@@ -11,8 +11,8 @@ use GuzzleHttp\Client;
 class GiftCodeController extends Controller
 {
     public function sync(){
-    
-           $SQL = DB::connection('sqlsrvLIVESAP')
+       
+        return   $SQL = DB::connection('sqlsrvLIVESAP')
             ->select('SELECT OINV.CARDNAME, OINV.CARDCODE, COUNT(*) AS REPEAT, OINV.CREATEDATE, OCRD.U_BDAY, OCRD.CELLULAR
                         FROM OINV 
                         
@@ -23,7 +23,7 @@ class GiftCodeController extends Controller
                         GROUP BY
                         OINV.CARDNAME, OINV.CARDCODE, OINV.CREATEDATE,OCRD.U_BDAY, OCRD.CELLULAR
                         HAVING 
-                        COUNT (*) > 1   
+                        COUNT (*) > 2 
             ');
             //FILTERED FUNCTION AND REMAP CARDCODE TO BRANCH
                 function filterMb($mb){
