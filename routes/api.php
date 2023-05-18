@@ -386,3 +386,10 @@ Route::get('/test/db', 'SapRportsController@test')->name('sap.SapRports.database
 
 //tester
 Route::get('/test/history', 'RevolvingFundController@CKhistory')->name('sap.test.history');
+
+//BRANCH PUBLIC API
+Route::group(['prefix' => 'itemmasterdata'], function () {
+	Route::get('/oitm/index', 'SapApiController@render');
+	Route::get('/oitm/fields', 'SapApiController@fields');
+	Route::post('/oitm/create', 'SapApiController@create');
+});

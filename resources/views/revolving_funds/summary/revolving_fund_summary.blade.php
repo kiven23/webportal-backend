@@ -74,20 +74,23 @@
         <div style="margin-top: 2px"><span class="bold-letter">AS OF:</span> {{ date_format(date_create($as_of), "M. d, Y") }}</div>
     </div>
     <div style="margin-top: 15px">
-        <table class="rv_fund">
+        <table class="rv_fund" >
             <tr>
+                 
                 <td>REVOLVING FUND:</td>
-                <td style="text-align: right; width:118px">{{ number_format($fund, 2) }}</td>
-                <td style="width: 130px;"></td>
+                
+                <td style="text-align: right"><div style="margin-right: 50px; ">{{ number_format($fund, 2) }} </div></td>
+                <td style=" "></td>
+                
             </tr>
             <tr>
                 <td>CASH ADVANCES: Marketing Activities:</td>
-                <td style="text-align: right" >{{ number_format($cash_advances, 2) }}</td>
-                <td style="text-align: center; "><div style="margin-left: 55px">  {{ number_format(($fund + $cash_advances), 2) }}</div></td>
+                <td style="text-align: right;"><div style="margin-right: 50px; ">{{ number_format($cash_advances, 2) }} </div></td>
+                <td style="text-align: right;">   {{ number_format(($fund + $cash_advances), 2) }} </td>
                 
             </tr>
         </table>
-        <div style="margin-left: 500px; width: 90px; border-bottom: solid thin black;"></div>
+        <div style="margin-left: 487px; width: 70px; border-bottom: solid thin black;"></div>  
     </div>
     <div style="margin-top: 15px">
         <div class="bold-letter">CHECK VOUCHER VERIFICATION</div>
@@ -164,7 +167,7 @@
                 <th>PAYEE</th>
                 <th>w/BIR</th>
                 <th>GL Account</th>
-                <th>Amount</th>
+                <th style="text-align: right">Amount</th>
                 <th> </th>
                 <th> </th>
             </tr>
@@ -175,11 +178,12 @@
                 <td>{{ $expenses_for_chk_prep['tin'] == 1? "Yes":'None'  }} </td>
                 <td>{{ $expenses_for_chk_prep['glaccounts'] }} </td>
     
-                <td>{{ number_format($expenses_for_chk_prep['amount'], 2) }} </td>
+                <td style="text-align: right">{{ number_format($expenses_for_chk_prep['amount'], 2) }} </td>
                 <td style="text-align:center">
                     @if($loop->last)
                     {{ number_format($expenses_for_check_preparations_total, 2) }}
                     @endif
+                    
                 </td>
                 <td> @if($loop->last) {{ number_format(($check_voucher_verifications_total + $check_voucher_for_transmittals_total + $expenses_for_check_preparations_total), 2)}} @endif</td>
             </tr>

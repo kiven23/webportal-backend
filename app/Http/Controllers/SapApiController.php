@@ -7,13 +7,49 @@ use App\Http\Controllers\Controller;
 use DB;
 use App\InstallMentLedger as ledger;
 use Carbon\Carbon;
- 
+use GuzzleHttp\Client;
+
 class SapApiController extends Controller
 {
 
     public function mssqlcon(){
         return \Auth::user()->dbselection->connection;
     }
+    
+    public function render(request $req){
+        $data = \DB::connection($this->mssqlcon())->table('oitm')->where('ItemCode', 'LIKE', '%'.$req->search.'%')->orderBy('ItemCode', 'desc')->paginate(10);
+        return $data;
+    }
+    public function create(request $req){
+
+        
+        $client = new Client();
+        $arr = json_encode($req->all['data']);
+        $arr1 = json_encode($req->all['prop']);
+        $response = $client->post('http://192.168.1.26:8000/api/add', [
+            'form_params' => [
+                $arr,$arr1
+            ]
+        ]);
+        
+        $body = ($response->getBody());
+        return $body;
+    }
+    public function fields(){
+        $client = new Client();
+        $firmcode = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=firmcode')->getBody()->getContents();
+        $warranty1 = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=warranty1')->getBody()->getContents();
+        $pvendor = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=pvendor')->getBody()->getContents();
+        $oitb = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=oitb')->getBody()->getContents();
+        $oitg = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=oitg')->getBody()->getContents();
+        $arr['preferredv'] = json_decode($pvendor);
+        $arr['warrantyt'] = json_decode($warranty1);
+        $arr['firmcode'] = json_decode($firmcode);
+        $arr['oitb'] = json_decode($oitb);
+        $arr['oitg'] = json_decode($oitg);
+        return response()->json($arr);
+    }
+
     public function index(request $req){
    
         if($req->sapcode){
@@ -285,7 +321,7 @@ class SapApiController extends Controller
         public function compute_grade($req = ''){
 
             function getbranch($resp){
-                $sql = \DB::connection($this->mssqlcon())->select(DB::raw("SELECT * FROM InstallmentReceivableDetailed_LY where CardCode LIKE '%$resp%' UNION SELECT * FROM IRDetailed_ETO where CardCode LIKE '%$resp%'"));
+                $sql = \DB::connection("sqlsrv2")->select(DB::raw("SELECT * FROM InstallmentReceivableDetailed_LY where CardCode LIKE '%$resp%' UNION SELECT * FROM IRDetailed_ETO where CardCode LIKE '%$resp%'"));
                     // ->where()->get();
                 return $sql;
                 // $sql = \DB::connection('sqlsrv2')->table('InstallmentReceivableDetailed_LY')

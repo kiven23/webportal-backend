@@ -13,7 +13,7 @@ use App\Branch;
 class CustomerDigitizedReqController extends Controller
 {
     public function index(){
-        $branch = \Auth::user()->branch->name;
+      $branch = \Auth::user()->branch->name;
         $data = cdr::select('*')->with('dl_data')
         ->with('branch')
         ->whereHas('branch',function($q){

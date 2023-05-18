@@ -29,7 +29,7 @@ class RvFundExpensesForCheckPreparationController extends Controller
             'rv_fund_id' => 'required',
             'pcv_date' => 'required|date',
             // 'particulars' => 'required',
-            'tin'=> '',
+            'tin'=> 'required',
             'amount' => 'required|numeric',
             'glaccounts'=> 'required',
             'payee' => 'required'

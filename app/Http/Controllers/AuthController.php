@@ -614,8 +614,25 @@ class AuthController extends Controller
           ]
         ];
      }
-
-    array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs, @$validation_portal, @$revolving_fund, @$sms, @$sapreports, @$settings);
+     $itemMasterData = [
+      'text' => 'INVENTORY',
+      'icon' => 'description',
+      'subLinks' =>
+      [
+        0 =>
+        [
+          'text' => 'Item Master Data',
+          'links' =>  [
+            0 => [
+              'text' => 'Create',
+              'icon' => 'mdi-chart-bar',
+              'route' => '/sapb1/itmmasterdata/create',
+            ]
+          ]
+        ],
+      ]
+    ];
+    array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs, @$validation_portal, @$revolving_fund, @$sms, @$sapreports,@$itemMasterData, @$settings);
 
     return array_filter($permission);
   }
