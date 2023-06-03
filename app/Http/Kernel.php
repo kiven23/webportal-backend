@@ -193,5 +193,7 @@ class Kernel extends HttpKernel
 
         // Settings
         'settings' => \App\Http\Middleware\Settings::class,
+        // Item Master Data  
+        'item_master_data' => \App\Http\Middleware\ItemMasterData::class,
     ];
 }

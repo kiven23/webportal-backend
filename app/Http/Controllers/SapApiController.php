@@ -15,9 +15,23 @@ class SapApiController extends Controller
     public function mssqlcon(){
         return \Auth::user()->dbselection->connection;
     }
+    public function getBrandId($firmcode){
+        return DB::connection($this->mssqlcon())->table('OMRC')->where('FirmCode', $firmcode)->pluck('FirmName')->first();
+    }
     
     public function render(request $req){
-        $data = \DB::connection($this->mssqlcon())->table('oitm')->where('ItemCode', 'LIKE', '%'.$req->search.'%')->orderBy('ItemCode', 'desc')->paginate(10);
+   
+        $data = \DB::connection($this->mssqlcon())->table('oitm')->where('FirmCode', $req->search)->orderBy('ItemCode', 'desc')->paginate(10);
+        $ar =  ["data"=> $data, "brand"=> $this->getBrandId($req->search)];
+        return $ar;
+    }
+    public function vendor(){
+        $data = \DB::connection($this->mssqlcon())->table('ocrd')
+                ->select("CardCode","CardName")->where("CardType", 'S')->get() ;
+        return $data;
+    }
+    public function oitg(){
+        $data = \DB::connection($this->mssqlcon())->table('oitg')->take(8)->get() ;
         return $data;
     }
     public function create(request $req){
@@ -35,19 +49,42 @@ class SapApiController extends Controller
         $body = ($response->getBody());
         return $body;
     }
+    public function update(request $req){
+
+        
+        $client = new Client();
+        $arr = json_encode($req->all['data']);
+        //$arr1 = json_encode($req->all['prop']);
+        $response = $client->post('http://192.168.1.26:8000/api/update', [
+            'form_params' => [
+                $arr 
+            ]
+        ]);
+        
+        $body = ($response->getBody());
+        return $body;
+    }
     public function fields(){
+        $oitg = $this->oitg();
+        $vendor =  $this->vendor();
         $client = new Client();
         $firmcode = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=firmcode')->getBody()->getContents();
         $warranty1 = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=warranty1')->getBody()->getContents();
-        $pvendor = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=pvendor')->getBody()->getContents();
+        //$pvendor = $client->request('GET', 'http://192.168.1.19:7771/api/fields?data=pvendor')->getBody()->getContents();
         $oitb = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=oitb')->getBody()->getContents();
-        $oitg = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=oitg')->getBody()->getContents();
-        $arr['preferredv'] = json_decode($pvendor);
+        //$oitg = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=oitg')->getBody()->getContents();
+        $arr['preferredv'] = json_decode($vendor);
         $arr['warrantyt'] = json_decode($warranty1);
         $arr['firmcode'] = json_decode($firmcode);
         $arr['oitb'] = json_decode($oitb);
         $arr['oitg'] = json_decode($oitg);
         return response()->json($arr);
+    }
+    public function progress(Request $req){
+        $client = new Client();
+        $data = $client->request('GET', 'http://192.168.1.26:8000/api/progress?data='.$req->uniqueid)->getBody()->getContents();
+        $p['status'] = json_decode($data);
+        return response()->json($p);
     }
 
     public function index(request $req){

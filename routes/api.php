@@ -388,8 +388,10 @@ Route::get('/test/db', 'SapRportsController@test')->name('sap.SapRports.database
 Route::get('/test/history', 'RevolvingFundController@CKhistory')->name('sap.test.history');
 
 //BRANCH PUBLIC API
-Route::group(['prefix' => 'itemmasterdata'], function () {
+Route::group(['prefix' => 'itemmasterdata', 'middleware' => ['jwt.auth', 'item_master_data']], function () {
 	Route::get('/oitm/index', 'SapApiController@render');
 	Route::get('/oitm/fields', 'SapApiController@fields');
+	Route::get('/oitm/progress', 'SapApiController@progress');
 	Route::post('/oitm/create', 'SapApiController@create');
+	Route::post('/oitm/update', 'SapApiController@update');
 });
