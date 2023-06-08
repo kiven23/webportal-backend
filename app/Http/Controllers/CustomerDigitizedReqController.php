@@ -13,13 +13,21 @@ use App\Branch;
 class CustomerDigitizedReqController extends Controller
 {
     public function index(){
-      $branch = \Auth::user()->branch->name;
-        $data = cdr::select('*')->with('dl_data')
-        ->with('branch')
-        ->whereHas('branch',function($q){
-        $q->where('name',\Auth::user()->branch->name);
-        })
-        ->get();
+        if(\Auth::user()->branch->machine_number == 103){
+            $data = cdr::select('*')->with('dl_data')
+            ->with('branch')
+             
+            ->get();
+        }else{
+            $data = cdr::select('*')->with('dl_data')
+            ->with('branch')
+            ->whereHas('branch',function($q){
+            $q->where('name',\Auth::user()->branch->name);
+            })
+            ->get();
+        }
+        $branch = \Auth::user()->branch->name;
+           
         return $data;
     }
     public function reuploadBranchCode(){

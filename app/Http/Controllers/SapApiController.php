@@ -37,12 +37,13 @@ class SapApiController extends Controller
     public function create(request $req){
 
         
-        $client = new Client();
+        $client = new Client(['timeout' => 300000]);
         $arr = json_encode($req->all['data']);
         $arr1 = json_encode($req->all['prop']);
+        $arr2 = json_encode($req->all['database']);
         $response = $client->post('http://192.168.1.26:8000/api/add', [
             'form_params' => [
-                $arr,$arr1
+                $arr,$arr1,$arr2
             ]
         ]);
         
@@ -52,13 +53,15 @@ class SapApiController extends Controller
     public function update(request $req){
 
         
-        $client = new Client();
+        $client = new Client(['timeout' => 300000]);
         $arr = json_encode($req->all['data']);
         //$arr1 = json_encode($req->all['prop']);
         $response = $client->post('http://192.168.1.26:8000/api/update', [
+            'Connection' => 'keep-alive',
             'form_params' => [
                 $arr 
-            ]
+            ],
+             
         ]);
         
         $body = ($response->getBody());
