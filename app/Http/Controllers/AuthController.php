@@ -634,7 +634,39 @@ class AuthController extends Controller
           ]
         ];
     }
-    array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs, @$validation_portal, @$revolving_fund, @$sms, @$sapreports,@$itemMasterData, @$settings);
+
+
+
+    $motorpool = [];
+    if (\Auth::user()->hasRole(['Gift Code Terminal'])) {
+      $pdf = [
+        'text' => 'Monitoring',
+        'icon' => 'description',
+        'route' => '/expressway/monitoring',
+      ];
+      $pdf2 = [
+        'text' => 'Uploading',
+        'icon' => 'description',
+        'route' => '/expressway/upload',
+      ];
+     
+    }
+    array_push($motorpool, @$pdf, @$pdf2 );
+    if (\Auth::user()->hasRole(['Gift Code Terminal'])) {
+      $motorpoolsys = [
+        'text' => 'Expressway Usage Trip',
+        'icon' => 'description',
+        'subLinks' =>
+        [
+          0 =>
+          [
+            'text' => 'Dashboard',
+            'links' => array_filter($motorpool),
+          ],
+        ]
+      ];
+    }
+    array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs, @$validation_portal, @$revolving_fund, @$sms, @$sapreports,@$itemMasterData, $motorpoolsys,@$settings);
 
     return array_filter($permission);
   }

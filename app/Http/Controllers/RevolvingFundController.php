@@ -222,6 +222,7 @@ class RevolvingFundController extends Controller
 
     public function print($id)
     {
+         
         $company_id = \Auth::user()->company_id;
         $whereCompany = DB::table('companies')->where('id', $company_id)->pluck('name')->first();
         $preparedverifiedby = \Auth::user()->first_name ." ".\Auth::user()->last_name;
@@ -234,8 +235,9 @@ class RevolvingFundController extends Controller
 
         $rvFundResouce = (new RvFundWithExpenseItems($rvFund));
         $data = $rvFundResouce->toArray(app('request'));
-
-        $data['submitted_date'] = date_format($rvFund->created_at, "M d, Y");
+        //date_format($rvFund->created_at, "M d, Y")
+         
+        $data['submitted_date'] =  date("M d, Y");
         $data['tin'] = $rvFund->tin;
         $data['avail_fund_on_hand'] = $rvFund->avail_fund_on_hand;
         $data['preparedverifiedby'] = $preparedverifiedby;

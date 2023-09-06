@@ -18,14 +18,14 @@ class RvFundWithExpenseItems extends JsonResource
         $checkVoucherVerifications = $this->checkVoucherVerifications();
         $checkVoucherForTransmittals = $this->checkVoucherForTransmittals();
         $expensesForCheckPreparations = $this->expensesForCheckPreparations();
-    
+       // date_format($this->created_at, "M d, Y")
         return [
             'id' => $this->id,
             'branch' => $this->branch->name,
             'fund' => $this->fund,
             'cash_advances' => $this->cash_advances,
-            'as_of' => $this->as_of,
-            'submitted_date' => date_format($this->created_at, "M d, Y"),
+            'as_of' => date_format($this->updated_at, "M d, Y"),
+            'submitted_date' => date("M d, Y"),
             'check_voucher_verifications' => $checkVoucherVerifications->where('verify', NULL)->get(),
             'check_voucher_verifications_total' => $checkVoucherVerifications->sum('amount'),
             'check_voucher_for_transmittals' => $checkVoucherForTransmittals->get(),

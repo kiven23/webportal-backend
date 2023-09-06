@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Exec\DatabaseTester;
+use App\Exec\ReportsSpeedUp;
 use DB;
 
  
@@ -15,6 +16,8 @@ class DatabaseSelectionController extends Controller
 
   public function __construct(){
     $this->db = new DatabaseTester();
+    $this->creditportal = ReportsSpeedUp::creditportal();
+    $this->blacklisted = ReportsSpeedUp::blacklisted();
   }
   public function testDB(Request $req){
       $exec = ['server'=> $req['server'], 
@@ -163,6 +166,22 @@ class DatabaseSelectionController extends Controller
     }
     return response()->json($msg);
       
+  }
+  public function syncing(request $req){
+    if($req->q){
+      if($req->q == "credit"){
+        return $this->creditportal->sync();
+        return response()->json("credit");
+      }elseif($req->q == "blacklisted"){
+        //return response()->json("blacklisted");
+        return $this->blacklisted->sync();
+      }else{
+        return "Invalid Request";
+      }
+    }else{
+      return "do this like this api/sync/reports?q=";
+    }
+     
   }
 
   

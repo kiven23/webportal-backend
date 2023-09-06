@@ -8,7 +8,8 @@ use DB;
 use App\InstallMentLedger as ledger;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Crypt;
 class SapApiController extends Controller
 {
 
@@ -18,10 +19,36 @@ class SapApiController extends Controller
     public function getBrandId($firmcode){
         return DB::connection($this->mssqlcon())->table('OMRC')->where('FirmCode', $firmcode)->pluck('FirmName')->first();
     }
-    
+    public function checkbrand($id){
+            //steadfordDB
+            // ec24fd9907a1aed316b1a1509351a91b
+            if($this->mssqlcon() == 'cf118c5fc6ce30b08894f11f54f1ac0a'){
+                $db = 'ec24fd9907a1aed316b1a1509351a91b';
+                $omrc =  \DB::connection($db)->table('OMRC')->where('FirmCode', $id)
+                ->pluck('FirmName')->first();
+              return  \DB::connection($this->mssqlcon())->table('OMRC')->where('FirmName', $omrc)->pluck('FirmCode')->first();
+            }else{
+              return  $id;
+            }
+            
+            return $finale;
+         }
     public function render(request $req){
-   
-        $data = \DB::connection($this->mssqlcon())->table('oitm')->where('FirmCode', $req->search)->orderBy('ItemCode', 'desc')->paginate(10);
+       
+        if($req->search2 == 2){
+            
+            $data = \DB::connection($this->mssqlcon())->table('oitm')
+            ->where('FirmCode', $this->checkbrand($req->search))
+            // ->where('ItemName', $req->search2)
+            ->orderBy('ItemCode', 'desc')->paginate(10);
+        }else{
+
+            $data = \DB::connection($this->mssqlcon())->table('oitm')
+            ->where('FirmCode', $req->search)
+            ->where('ItemName', "like", '%'.$req->search2.'%')
+            ->orderBy('ItemCode', 'desc')->paginate(10); 
+        }
+         
         $ar =  ["data"=> $data, "brand"=> $this->getBrandId($req->search)];
         return $ar;
     }
@@ -55,11 +82,12 @@ class SapApiController extends Controller
         
         $client = new Client(['timeout' => 300000]);
         $arr = json_encode($req->all['data']);
+        $arr1 = json_encode($req->all['prop']);
         //$arr1 = json_encode($req->all['prop']);
         $response = $client->post('http://192.168.1.26:8000/api/update', [
             'Connection' => 'keep-alive',
             'form_params' => [
-                $arr 
+                $arr ,$arr1
             ],
              
         ]);
@@ -352,6 +380,9 @@ class SapApiController extends Controller
         public function getBranchSegment(){
            return  \DB::connection($this->mssqlcon())->table('OASC')->get();
         }
+        public function getBranchSeries(){
+            return  \DB::connection($this->mssqlcon())->table('@Progtbl')->get();
+         }
         public function changecolor(){
             $arr = [
                 'color'=> true
@@ -29428,6 +29459,74 @@ class SapApiController extends Controller
             }
             return 'ok';
         }
+     public function callback(request $request){
+       //return $encrypt = Crypt::encrypt('09152212673');
+     
+         
+        $client3 = new Client();
+
+        $response = $client3->post('https://4mq6kn.api.infobip.com/viber/1/message/text', [
+            'headers' => [
+                'Authorization' => 'App 3cf8ac559160bc1325d4c4a34f7933f7-48c6a53a-20f7-46c1-b758-5d8b304a23c6',
+                'Content-Type' => 'application/json',
+            ],
+            'json' => [
+                'messages' => [
+                    [
+                        'from' => 'DemoCompany',
+                        'to' => '639152212673',
+                        'content' => [
+                            'text' => 'ADDESSA TESTING API',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+        
+        $responseBody = $response->getBody()->getContents();
+         return $responseBody;
+
+
+        $data = array(
+            "receiver" => @$request['sender']['id'],
+            "message" => @$request['message']
+          );
+          
+          $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+          $file_name = "data.json";
+          $fp = fopen($file_name, "a");
+          fwrite($fp, $json . ",");
+          fclose($fp);
+        return "ok";
+    //     $event_type = $payload['event'];
+    //     $message = $payload['message'] ?? null;
+    //     $sender_id = $message['sender']['id'] ?? null;
+    //     return   $message_text = $message['text'] ?? null;
+        //return "ok";
+       
+        $client2 = new Client();
+        
+        $response = $client2->post('https://chatapi.viber.com/pa/send_message', [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'X-Viber-Auth-Token' => '51492d100227e580-e65c89afc1c8de78-cfbed0e1184c76c',
+            ],
+            'json' => [
+                'receiver' => @$request['sender']['id'],
+                'min_api_version' => 1,
+                'sender' => [
+                    'name' => 'ADDESSA URDANETA',
+                    'avatar' => 'http://avatar.example.com'
+                ],
+                'tracking_data' => 'tracking data',
+                'type' => 'text',
+                'text' => "Thank you for interacting with us!"
+            ]
+        ]);
+       return "ok";
+       #return $responseBody = $response->getBody()->getContents();
+         
+     }
         
     }
  

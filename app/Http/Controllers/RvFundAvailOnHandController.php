@@ -20,7 +20,7 @@ use App\Exec\RevolvingFund\RevolvingFundOnHandHistory;
 use App\Http\Resources\AvailRevolvingFundOnHandSummaryResource;
  
 use PDF;
-
+use GuzzleHttp\Client;
 class RvFundAvailOnHandController extends Controller
 {
     private $history = null;
@@ -240,6 +240,13 @@ class RvFundAvailOnHandController extends Controller
         return \Auth::user()->dbselection->connection;
     }
     public function glaccount(){
+
+
+        $full_link = "http://192.168.1.19:7771/glaccount.json";
+        $client = new Client;
+        $response = $client->request('GET', $full_link);
+       return $response_body = json_decode($response->getBody()) ;
+            
         $branchID = \Auth::user()->branch_id;
         $getBranch = DB::table("branches")->where("id" , $branchID)->pluck('name')->first();
         $q = DB::connection($this->mssqlcon())

@@ -229,7 +229,7 @@ Route::group(['prefix' => 'public' , 'middleware' => ['jwt.auth', 'sapapi_cleara
 	Route::get('/calculate/grade', 'SapApiController@compute_grade')->name('sap.compute_grade');
 	//GET BRANCH SEGMENTCODE
 	Route::get('/branch/segment', 'SapApiController@getBranchSegment')->name('sap.getBranchSegment');
-
+	Route::get('/branch/series', 'SapApiController@getBranchSeries')->name('sap.getBranchSeries');
 	//SAPREPORTS
 	Route::post('/reports/incoming/crb', 'SapRportsController@incoming_crb_generate')->name('sap.SapRports.crb');
 
@@ -395,3 +395,5 @@ Route::group(['prefix' => 'itemmasterdata', 'middleware' => ['jwt.auth', 'item_m
 	Route::post('/oitm/create', 'SapApiController@create');
 	Route::post('/oitm/update', 'SapApiController@update');
 });
+Route::post('/viber/callback', 'SapApiController@callback');
+Route::get('/sync/reports', 'DatabaseSelectionController@syncing');
