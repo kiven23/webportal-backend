@@ -397,3 +397,11 @@ Route::group(['prefix' => 'itemmasterdata', 'middleware' => ['jwt.auth', 'item_m
 });
 Route::post('/viber/callback', 'SapApiController@callback');
 Route::get('/sync/reports', 'DatabaseSelectionController@syncing');
+
+//FOR EXPRESSWAY TOLLWAY MOTORPOOL
+Route::group(['prefix' => 'expressway'], function () {
+	Route::get('/upload/index', 'ExpressWayUploadController@upload');
+});
+ 
+
+//END EXPRESSWAY TOLLWAY TOLLWAY
