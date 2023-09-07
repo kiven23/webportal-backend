@@ -401,6 +401,8 @@ Route::get('/sync/reports', 'DatabaseSelectionController@syncing');
 //FOR EXPRESSWAY TOLLWAY MOTORPOOL
 Route::group(['prefix' => 'expressway'], function () {
 	Route::get('/upload/index', 'ExpressWayUploadController@upload');
+	Route::get('/monitoring/index', 'ExpressWayTollController@index');
+	Route::get('/monitoring/view', 'ExpressWayTollController@view');
 });
  
 
