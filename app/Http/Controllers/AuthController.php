@@ -638,7 +638,7 @@ class AuthController extends Controller
 
 
     $motorpool = [];
-    if (\Auth::user()->hasRole(['Gift Code Terminal'])) {
+    if (\Auth::user()->hasRole(['SapApiAccess'])) {
       $pdf = [
         'text' => 'Monitoring',
         'icon' => 'description',
@@ -652,7 +652,7 @@ class AuthController extends Controller
      
     }
     array_push($motorpool, @$pdf, @$pdf2 );
-    if (\Auth::user()->hasRole(['Gift Code Terminal'])) {
+    if (\Auth::user()->hasRole(['SapApiAccess'])) {
       $motorpoolsys = [
         'text' => 'Expressway Usage Trip',
         'icon' => 'description',
