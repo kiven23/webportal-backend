@@ -31,7 +31,7 @@ class ExpressWayUploadController extends Controller
                     "Posted": "2023-08-04",
                     "Date": "14:23:27",
                     "Transaction": "Toll",
-                    "Description": "2023-08-04 14:23:27 Toll CONCEPCION-X01 NLEX 302.00 0.00",
+                    "Description": "2023-08-04 14:23:27 Toll CONCEPCION-X01 CAVITEX 302.00 0.00",
                     "Tollway": "NLEX",
                     "Debit": "302.00",
                     "Credit": "0.00",
@@ -42,7 +42,7 @@ class ExpressWayUploadController extends Controller
                     "Posted": "2023-08-04",
                     "Date": "16:05:00",
                     "Transaction": "Toll",
-                    "Description": "2023-08-04 16:05:00 Toll TARLAC-X03 NLEX 167.00 0.00",
+                    "Description": "2023-08-04 16:05:00 Toll TARLAC-X03 CALAX 167.00 0.00",
                     "Tollway": "NLEX",
                     "Debit": "167.00",
                     "Credit": "0.00",
@@ -53,7 +53,7 @@ class ExpressWayUploadController extends Controller
                     "Posted": "2023-08-09",
                     "Date": "13:19:52",
                     "Transaction": "Toll",
-                    "Description": "2023-08-09 13:19:52 Toll CONCEPCION-X01 NLEX 167.00 0.00",
+                    "Description": "2023-08-09 13:19:52 Toll CONCEPCION-X01 SLEX 167.00 0.00",
                     "Tollway": "NLEX",
                     "Debit": "167.00",
                     "Credit": "0.00",
@@ -64,7 +64,7 @@ class ExpressWayUploadController extends Controller
                     "Posted": "2023-08-09",
                     "Date": "15:07:04",
                     "Transaction": "Toll",
-                    "Description": "2023-08-09 15:07:04 Toll TARLAC-X05 NLEX 167.00 0.00",
+                    "Description": "2023-08-09 15:07:04 Toll TARLAC-X05 SKYWAY 167.00 0.00",
                     "Tollway": "NLEX",
                     "Debit": "167.00",
                     "Credit": "0.00",
@@ -75,7 +75,7 @@ class ExpressWayUploadController extends Controller
                     "Posted": "2023-08-12",
                     "Date": "15:14:00",
                     "Transaction": "Toll",
-                    "Description": "2023-08-12 15:14:00 Toll ANGELES-X03 NLEX 383.00 0.00",
+                    "Description": "2023-08-12 15:14:00 Toll ANGELES-X03 NAIAX 383.00 0.00",
                     "Tollway": "NLEX",
                     "Debit": "383.00",
                     "Credit": "0.00",
@@ -86,7 +86,7 @@ class ExpressWayUploadController extends Controller
                     "Posted": "2023-08-12",
                     "Date": "17:38:23",
                     "Transaction": "Toll",
-                    "Description": "2023-08-12 17:38:23 Toll TARLAC-X04 NLEX 309.00 0.00",
+                    "Description": "2023-08-12 17:38:23 Toll TARLAC-X04 STAR 309.00 0.00",
                     "Tollway": "NLEX",
                     "Debit": "309.00",
                     "Credit": "0.00",
@@ -97,7 +97,7 @@ class ExpressWayUploadController extends Controller
                     "Posted": "2023-08-14",
                     "Date": "10:37:05",
                     "Transaction": "Toll",
-                    "Description": "2023-08-14 10:37:05 Toll MEXICO-X01 NLEX 469.00 0.00",
+                    "Description": "2023-08-14 10:37:05 Toll MEXICO-X01 TPLEX 469.00 0.00",
                     "Tollway": "NLEX",
                     "Debit": "469.00",
                     "Credit": "0.00",
@@ -108,11 +108,11 @@ class ExpressWayUploadController extends Controller
                     "Posted": "2023-08-14",
                     "Date": "13:47:43",
                     "Transaction": "Toll",
-                    "Description": "2023-08-14 13:47:43 Toll TARLAC-X03 NLEX 469.00 0.00",
+                    "Description": "2023-08-14 13:47:43 Toll TARLAC-X03 CLLEX 469.00 0.00",
                     "Tollway": "NLEX",
                     "Debit": "469.00",
                     "Credit": "0.00",
-                    "datas": "2023-08-14 13:54:42 2023-08-14 13:47:43 Toll TARLAC-X03 NLEX 469.00 0.00",
+                    "datas": "2023-08-14 13:54:42 2023-08-14 13:47:43 Toll TARLAC-X04 NLEX 469.00 0.00",
                     "Total": "4,582.00 0.00"
                 },
                 {
@@ -677,7 +677,7 @@ class ExpressWayUploadController extends Controller
                     "Tollway": "BARRIER",
                     "Debit": "CS-X10",
                     "Credit": "NLEX",
-                    "datas": "2023-08-16 09:16:42 2023-08-16 09:05:25 Toll BOCAUE BARRIER CS-X10 NLEX 487.00 0.00",
+                    "datas": "2023-08-16 09:16:42 2023-08-16 09:05:25 Toll BOCAUE BARRIER CS-X10 NAIAX 487.00 0.00",
                     "Total": "3,048.00 0.00"
                 },
                 {
@@ -688,7 +688,7 @@ class ExpressWayUploadController extends Controller
                     "Tollway": "NLEX",
                     "Debit": "399.00",
                     "Credit": "0.00",
-                    "datas": "2023-08-16 22:15:45 2023-08-16 22:07:00 Toll TARLAC-X03 NLEX 399.00 0.00",
+                    "datas": "2023-08-16 22:15:45 2023-08-16 22:07:00 Toll TARLAC-X03 STAR 399.00 0.00",
                     "Total": "3,048.00 0.00"
                 },
                 {
@@ -718,18 +718,18 @@ class ExpressWayUploadController extends Controller
                     "Posted": "2023-08-07",
                     "Date": "07:45:11",
                     "Transaction": "Toll",
-                    "Description": "2023-08-07 07:45:11 Toll BOCAUE BARRIER CS-X17 NLEX 1,138.00 0.00",
+                    "Description": "2023-08-07 07:45:11 Toll BOCAUE BARRIER CS-X17 STAR 1,138.00 0.00",
                     "Tollway": "BARRIER",
                     "Debit": "CS-X17",
                     "Credit": "NLEX",
-                    "datas": "2023-08-07 07:55:42 2023-08-07 07:45:11 Toll BOCAUE BARRIER CS-X17 NLEX 1,138.00 0.00",
+                    "datas": "2023-08-07 07:55:42 2023-08-07 07:45:11 Toll BOCAUE BARRIER CS-X17 STAR 1,138.00 0.00",
                     "Total": "2,276.00 0.00"
                 },
                 {
                     "Posted": "2023-08-08",
                     "Date": "11:32:39",
                     "Transaction": "Toll",
-                    "Description": "2023-08-08 11:32:39 Toll BALINTAWAK-N13 NLEX 172.00 0.00",
+                    "Description": "2023-08-08 11:32:39 Toll BALINTAWAK-N13 STAR 172.00 0.00",
                     "Tollway": "NLEX",
                     "Debit": "172.00",
                     "Credit": "0.00",
@@ -774,7 +774,7 @@ class ExpressWayUploadController extends Controller
                     "Posted": "2023-08-02",
                     "Date": "08:29:19",
                     "Transaction": "Toll",
-                    "Description": "2023-08-02 08:29:19 Toll SAN FERNANDO SB-X01 NLEX 248.00 0.00",
+                    "Description": "2023-08-02 08:29:19 Toll SAN FERNANDO SB-X01 CLLEX 248.00 0.00",
                     "Tollway": "FERNANDO",
                     "Debit": "SB-X01",
                     "Credit": "NLEX",
@@ -789,7 +789,7 @@ class ExpressWayUploadController extends Controller
                     "Tollway": "NLEX",
                     "Debit": "219.00",
                     "Credit": "0.00",
-                    "datas": "2023-08-02 14:52:03 2023-08-02 14:37:00 Toll TARLAC-X03 NLEX 219.00 0.00",
+                    "datas": "2023-08-02 14:52:03 2023-08-02 14:37:00 Toll TARLAC-X03 CLLEX 219.00 0.00",
                     "Total": "1,917.00 0.00"
                 },
                 {
@@ -855,7 +855,7 @@ class ExpressWayUploadController extends Controller
                     "Tollway": "NLEX",
                     "Debit": "155.00",
                     "Credit": "0.00",
-                    "datas": "2023-08-07 10:44:31 2023-08-07 10:36:52 Toll TARLAC-X05 NLEX 155.00 0.00",
+                    "datas": "2023-08-07 10:44:31 2023-08-07 10:36:52 Toll TARLAC-X05 CLLEX 155.00 0.00",
                     "Total": "1,917.00 0.00"
                 },
                 {
@@ -877,7 +877,7 @@ class ExpressWayUploadController extends Controller
                     "Tollway": "NLEX",
                     "Debit": "84.00",
                     "Credit": "0.00",
-                    "datas": "2023-08-16 14:51:52 2023-08-16 14:35:04 Toll TARLAC-X04 NLEX 84.00 0.00",
+                    "datas": "2023-08-16 14:51:52 2023-08-16 14:35:04 Toll TARLAC-X04 TPLEX 84.00 0.00",
                     "Total": "1,917.00 0.00"
                 },
                 {
@@ -922,7 +922,7 @@ class ExpressWayUploadController extends Controller
                     "Tollway": "NLEX",
                     "Debit": "88.00",
                     "Credit": "0.00",
-                    "datas": "2023-08-02 10:03:32 2023-08-02 09:59:11 Toll TIPO-X02 NLEX 88.00 0.00",
+                    "datas": "2023-08-02 10:03:32 2023-08-02 09:59:11 Toll TIPO-X02 STAR 88.00 0.00",
                     "Total": "672.00 0.00"
                 },
                 {
@@ -1034,7 +1034,7 @@ class ExpressWayUploadController extends Controller
                     "Tollway": "BARRIER",
                     "Debit": "CS-X07",
                     "Credit": "NLEX",
-                    "datas": "2023-08-06 06:58:22 2023-08-06 06:52:46 Toll BOCAUE BARRIER CS-X07 NLEX 487.00 0.00",
+                    "datas": "2023-08-06 06:58:22 2023-08-06 06:52:46 Toll BOCAUE BARRIER CS-X07 SLEX 487.00 0.00",
                     "Total": "Finally, please be informed of the cut-off date which varies from one reloading facility to another."
                 },
                 {
@@ -1045,7 +1045,7 @@ class ExpressWayUploadController extends Controller
                     "Tollway": "NLEX",
                     "Debit": "69.00",
                     "Credit": "0.00",
-                    "datas": "2023-08-10 09:01:11 2023-08-10 08:53:02 Toll BALINTAWAK-N04 NLEX 69.00 0.00",
+                    "datas": "2023-08-10 09:01:11 2023-08-10 08:53:02 Toll BALINTAWAK-N04 CAVITEX 69.00 0.00",
                     "Total": "Finally, please be informed of the cut-off date which varies from one reloading facility to another."
                 },
                 {
@@ -1096,7 +1096,7 @@ class ExpressWayUploadController extends Controller
                     "Posted": "2023-08-16",
                     "Date": "14:32:20",
                     "Transaction": "Toll",
-                    "Description": "2023-08-16 14:32:20 Toll DAU IC NB-X01 NLEX 71.00 0.00",
+                    "Description": "2023-08-16 14:32:20 Toll DAU IC NB-X01 NAIAX 71.00 0.00",
                     "Tollway": "IC",
                     "Debit": "NB-X01",
                     "Credit": "NLEX",
@@ -1118,7 +1118,7 @@ class ExpressWayUploadController extends Controller
                     "Posted": "2023-08-16",
                     "Date": "18:12:35",
                     "Transaction": "Toll",
-                    "Description": "2023-08-16 18:12:35 Toll TARLAC-X05 NLEX 185.00 0.00",
+                    "Description": "2023-08-16 18:12:35 Toll TARLAC-X05 SKYWAY 185.00 0.00",
                     "Tollway": "NLEX",
                     "Debit": "185.00",
                     "Credit": "0.00",
@@ -1324,7 +1324,7 @@ class ExpressWayUploadController extends Controller
                     $toll->toll4 = $express['tollway'] == 'SLEX'? $express['pay'] : NULL;
                     $toll->toll5 = $express['tollway'] == 'SKYWAY'? $express['pay'] : NULL;
                     $toll->toll6 = $express['tollway'] == 'NAIAX'? $express['pay'] : NULL;
-                    $toll->toll7 = $express['tollway'] == 'START'? $express['pay'] : NULL;
+                    $toll->toll7 = $express['tollway'] == 'STAR'? $express['pay'] : NULL;
                     $toll->toll8 = $express['tollway'] == 'TPLEX'? $express['pay'] : NULL;
                     $toll->toll9 = $express['tollway'] == 'CLLEX'? $express['pay'] : NULL;
                     $toll->save();
