@@ -666,7 +666,7 @@ class AuthController extends Controller
         ]
       ];
     }
-    array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs, @$validation_portal, @$revolving_fund, @$sms, @$sapreports,@$itemMasterData, $motorpoolsys,@$settings);
+    array_push($permission, @$home, @$pendingTransaction, @$Administrative, @$Service_Call, @$govengency, @$ccs, @$validation_portal, @$revolving_fund, @$sms, @$sapreports,@$itemMasterData, @$motorpoolsys,@$settings);
 
     return array_filter($permission);
   }

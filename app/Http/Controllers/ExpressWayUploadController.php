@@ -13,7 +13,7 @@ class ExpressWayUploadController extends Controller
 {
 
     public function upload(Request $req){
-        $json = $req;
+        
         // $json = '[  {
         //     "key": "NEB5249",
         //     "row": [
@@ -1202,35 +1202,32 @@ class ExpressWayUploadController extends Controller
         //     }
         // }
         // ] ';
-        //$dd = json_encode($json);
         
-        foreach($json[0] as $datas){
-            $data[] = $datas;
-        }
-        return $data;
+        //$json[1]['additional']['path'];
+        $json = $req;
         function compute($data){
             foreach($data as $tt){
                    $total[] = $tt['pay'];
             }
             return array_sum($total);
         }
-        $pdfname = 'sample.pdf';
-        $path = 'local/path/sample.pdf';
+        $pdfname = $json[1]['additional']['filename'];
+        $path = $json[1]['additional']['path'];
         $idkeymap = md5($json);
        
-        foreach(json_decode($json)  as $data){
-           if(isset($data->info)){
-             $uid = md5($data->info->driver.$data->info->plateno.date('Y-m-d H:i:s').$path.$pdfname);
+        foreach($json[0]['all']  as $data){
+           if(isset($data['info'] )){
+             $uid = md5($data['info']['driver'].$data['info']['plateno'].date('Y-m-d H:i:s').$path.$pdfname);
            }
-           if(isset($data->row)){
+           if(isset($data['row'])){
                 $arr = [];
-                foreach($data->row as $tollway){
-                    if (isset($tollway->Posted) && strtotime($tollway->Posted) !== false) {
-                          $asof[] = $tollway->Posted;
-                          if (preg_match('/\b(\d{1,3}(?:,\d{3})*\.\d{2})\b/', $tollway->Description, $matches)) {
+                foreach($data['row'] as $tollway){
+                    if (isset($tollway['Posted']) && strtotime($tollway['Posted']) !== false) {
+                          $asof[] = $tollway['Posted'];
+                          if (preg_match('/\b(\d{1,3}(?:,\d{3})*\.\d{2})\b/', $tollway['Description'], $matches)) {
                             $pay = str_replace(',', '', $matches[1]); 
                           } 
-                            $parts = explode(' ', $tollway->Description);
+                            $parts = explode(' ', $tollway['Description']);
                             foreach ($parts as $part) {
                                 if ($part === "NLEX") {
                                     $nlex = $part;
@@ -1273,22 +1270,22 @@ class ExpressWayUploadController extends Controller
                                 $toll[] =  $nlex;
                             } 
                             $arr[] = ["uid"=> $uid,
-                                      "posted"=> $tollway->Posted, 
+                                      "posted"=> $tollway['Posted'], 
                                       "pay"=> $pay,
                                       "tollway"=> $nlex,
-                                      "data"=> $tollway->Description,
+                                      "data"=> $tollway['Description'],
                                     ];
                      } 
                 }
            }
-           if(isset($data->info)){
+           if(isset($data['info'])){
            $das[] = ["uid"=> $uid,
                      "map"=> $idkeymap,
-                     "driver"=> $data->info->driver,
-                     "department"=>$data->info->department,
-                     "brand"=>$data->info->brand,
-                     "model"=>$data->info->model,
-                     "plateno"=>$data->info->plateno,
+                     "driver"=> $data['info']['driver'],
+                     "department"=>$data['info']['department'],
+                     "brand"=>$data['info']['brand'],
+                     "model"=>$data['info']['model'],
+                     "plateno"=>$data['info']['plateno'],
                      "total"=>compute($arr),
                      "expressData"=> $arr];  
            }
@@ -1298,7 +1295,7 @@ class ExpressWayUploadController extends Controller
         $lowestDate = $asof[0];
         $highestDate = end($asof);
         $newDate = $lowestDate.' -> '.$highestDate;
-         
+       
         $checked = ExpressWayUpload::where('uid', $idkeymap)->pluck('uid')->first();
         if(!$checked){
             $execute = new ExpressWayUpload();
@@ -1337,9 +1334,9 @@ class ExpressWayUploadController extends Controller
                     $toll->save();
                 }
             }
-            return "save";
+            return 0;
         }else{
-            return "already";
+            return 1;
         }
         
         
