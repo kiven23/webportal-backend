@@ -644,14 +644,10 @@ class AuthController extends Controller
         'icon' => 'description',
         'route' => '/expressway/monitoring',
       ];
-      $pdf2 = [
-        'text' => 'Uploading',
-        'icon' => 'description',
-        'route' => '/expressway/upload',
-      ];
+      
      
     }
-    array_push($motorpool, @$pdf, @$pdf2 );
+    array_push($motorpool, @$pdf );
     if (\Auth::user()->hasRole(['SapApiAccess'])) {
       $motorpoolsys = [
         'text' => 'Expressway Usage Trip',

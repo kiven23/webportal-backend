@@ -403,6 +403,8 @@ Route::group(['prefix' => 'expressway'], function () {
 	Route::post('/upload/index', 'ExpressWayUploadController@upload');
 	Route::get('/monitoring/index', 'ExpressWayTollController@index');
 	Route::get('/monitoring/view', 'ExpressWayTollController@view');
+	Route::get('/monitoring/bin', 'ExpressWayTollController@trash');
+	
 });
  
 

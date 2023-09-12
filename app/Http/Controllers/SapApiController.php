@@ -163,28 +163,41 @@ class SapApiController extends Controller
         return response()->json(@$data);
     }
     public function installment(request $req){
-       
-        $data = \DB::connection($this->mssqlcon())->table('inv6')
+       $basement = $req->CustomerNumber;
+       $data = \DB::connection($this->mssqlcon())->table('inv6')
                  ->select(DB::raw('InstlmntID as InstallmentMonth'),
                                   'InsTotal as InstallmentTotal',
                                   'PaidToDate as Paid',
                                   'DueDate as DueDated',
                                   'Status as DocStat',
                    )->where('DocEntry', $req->DocCode)->get();
+        $ornumber = "SELECT  Duedate,LineMemo  FROM JDT1  WHERE ContraAct = '$basement' AND TransType = '24'  ORDER BY TransId ASC";
+        $jdt1 = \DB::connection($this->mssqlcon())->select($ornumber);
+        $OR[] = $jdt1;
+        function getOR($or, $index2){
+           foreach($or[0] as $index => $data){
+                if($index == $index2){
+                    $X = explode(' ', $data->LineMemo);
+                    return  $X[0];
+                }
+           }
+        }
+    
         $count = count($data);
         if($count){
-            foreach($data as $d){
-                if($d->DocStat === 'O'){
-                $doc = new Carbon($d->DueDated);
-                $ex = explode('-',$doc->diffInDays(now(), false));
-                $datas[] = ['OverDueDays' => $doc->diffInDays(now(), false), 
-                'DocumentNo'=> $req->DocumentNumber, 
-                'Intallment' => $d->InstallmentMonth .' of '.  $count,
-                'Date' => $d->DueDated,
-                'Total' => $d->InstallmentTotal,
-                'check' => $ex[0] ] ;
-            }
-        }
+                foreach($data as $d){
+                    if( $d->DocStat === 'O' ||  $d->DocStat == 'C' ){
+                    $doc = new Carbon($d->DueDated);
+                    $ex = explode('-',$doc->diffInDays(now(), false));
+                    $datas[] = ['OverDueDays' => $doc->diffInDays(now(), false), 
+                    'DocumentNo'=> $req->DocumentNumber, 
+                    'Intallment' => $d->InstallmentMonth .' of '.  $count,
+                    'Date' => $d->DueDated,
+                    'Total' => $d->InstallmentTotal,
+                    'check' => $ex[0]];
+                    }
+         
+         }
         } 
         //GET PRICELIST
         if($req->PriceList == '0% SPL' ||  $req->PriceList == '0% REG'){
@@ -224,6 +237,7 @@ class SapApiController extends Controller
             'Total' => $d['Total'],
             'check' => $d['check'],
             'Interest' => $interest,
+            'OR'=> getOR($OR, $index)
             ];
         }
         $TotalInt = ['OverDueDays'=> 'TOTAL',

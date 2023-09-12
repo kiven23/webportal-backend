@@ -26,7 +26,19 @@ class ExpressWayTollController extends Controller
         }else{
             return "Error Please Contact Stevefox_Linux @ISD addessa";
         }
+  
+    }
+    public function trash(Request $req){
          
- 
+        #check map first
+        ExpressWayUpload::where('uid', $req->id)->delete();
+        $check = ExpressWayDriver::where('map', $req->id)->get();
+        foreach($check as $uid){
+             ExpressWayToll::where('uid', $uid->uid)->delete();
+        }
+        ExpressWayDriver::where('map', $req->id)->delete();
+        
+        return "delete";
+
     }
 }
