@@ -401,11 +401,15 @@ Route::get('/sync/reports', 'DatabaseSelectionController@syncing');
 //FOR EXPRESSWAY TOLLWAY MOTORPOOL
 Route::group(['prefix' => 'expressway'], function () {
 	Route::post('/upload/index', 'ExpressWayUploadController@upload');
+	Route::post('/monitoring/new', 'ExpressWayTollController@new');
 	Route::get('/monitoring/index', 'ExpressWayTollController@index');
 	Route::get('/monitoring/view', 'ExpressWayTollController@view');
 	Route::get('/monitoring/bin', 'ExpressWayTollController@trash');
-	
+	Route::get('/monitoring/drivers', 'ExpressWayDriverController@drivers');
+	Route::get('/monitoring/fetch', 'ExpressWayTollController@queries');
 });
  
+Route::get('/sync/jdt1', 'SapApiController@jdt1extract');
+Route::get('/sync/oinv/execute', 'SapApiController@executionpromax');
 
 //END EXPRESSWAY TOLLWAY TOLLWAY

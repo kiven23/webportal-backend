@@ -152,19 +152,21 @@ class BlackListedReports {
                     $table = ['Branch' => 'No Data Please Generate'];
                     return $table;
                 }
-               
-                foreach($table as $data){
-                    DB::table("black_listeds")->insert([
-                        "branch" => $data->Branch,
-                        "customername" => $data->CustomerName,
-                        "address" => $data->Address,
-                        "balance" => $data->Balance,
-                        "datefrom" => "2009-01-01",
-                        "dateto" => date('Y-m-d'),
-                        "db" => $db 
-                    ]);
-
-        }
+                if($table){
+                    foreach($table as $data){
+                        DB::table("black_listeds")->insert([
+                            "branch" => $data->Branch,
+                            "customername" => $data->CustomerName,
+                            "address" => $data->Address,
+                            "balance" => $data->Balance,
+                            "datefrom" => "2009-01-01",
+                            "dateto" => date('Y-m-d'),
+                            "db" => $db 
+                        ]);
+    
+                    }
+                }
+            
                  $out['status'] = "sync-".$db;
         } catch (\Exception $e) {
                  $out['error'] = $e;

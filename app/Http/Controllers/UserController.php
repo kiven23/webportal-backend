@@ -41,6 +41,7 @@ class UserController extends Controller
     }
 
     public function store_api (Request $req) {
+     
       $validator = Validator::make($req->all(), [
         'first_name' => 'required',
         'last_name' => 'required',

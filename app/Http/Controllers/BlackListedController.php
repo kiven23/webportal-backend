@@ -16,7 +16,9 @@ class BlackListedController extends Controller
         
         if(\Auth::user()->hasRole('BlackListed Customer Portal Admin')){
             
-            $customer = DB::table('black_listeds')->get();
+            $customer = DB::table('black_listeds')->get()->toarray();
+            $data['fromto'] = 'From: '.$customer[1]->datefrom.' - '.'To: Now';
+            $data['customer'] =  $customer;
         }else{
             $branch = '%'.\Auth::user()->branch->name.'%';
             $customer = DB::table('black_listeds')->get()->toarray();
@@ -59,7 +61,20 @@ class BlackListedController extends Controller
     }
 }
 public function search(request $req){
- 
+    
+    if(\Auth::user()->hasRole('BlackListed Customer Portal Admin')){
+        $customer = DB::table('black_listeds')->where('customername', 'LIKE', '%'.@$req->search.'%')->get()->toarray();
+        $data['fromto'] = 'From: '.@$customer[1]->datefrom.' - '.'To: Now';
+        $data['customer'] =  @$customer;
+    }else{
+        $branch = '%'.\Auth::user()->branch->name.'%';
+        $customer = DB::table('black_listeds')->where('customername', 'LIKE', '%'.@$req->search.'%')->get()->toarray();
+        // $customer[1]->dateto
+        $data['fromto'] = 'From: '.@$customer[1]->datefrom.' - '.'To: Now';
+        $data['customer'] =  @$customer;
+    }
+    return $data;
+    
     $table = \DB::connection($this->mssqlcon())
     ->select( \DB::raw("
             declare @x1 as datetime
@@ -117,7 +132,7 @@ public function search(request $req){
             
             f.Segment_0 = N'11212' -- Legal Accounts
             and isnull(b.transcode,'') in (N'LEGL',N'ADJ') 
-            and isnull(c.U_ClosedType,'') not in (N'CANC',N'WRNG')
+            and isnull(c.U_ClosedTtableype,'') not in (N'CANC',N'WRNG')
             and a.transtype = N'30' and a.RefDate BETWEEN @x1 and @x2			
                 
             
@@ -149,7 +164,7 @@ public function search(request $req){
                              inner join ocrd q1 on q1.cardcode = q0.shortname
                              inner join oact q2 on q2.acctcode = q0.contraAct
                              where q2.Segment_0 = '21560'
-                             group by q0.TransId) P3 on p3.transid = a.transid 
+                             tablegroup by q0.TransId) P3 on p3.transid = a.transid 
             /**************** e n d *******************************************/		
             
             -- Get Total Recon Amount
@@ -166,10 +181,7 @@ public function search(request $req){
                         inner join ITR1 d2 on d2.ReconNum = d1.ReconNum 
                         left outer join OINV d3 on d3.TransId = d2.TransId and d3.U_ClosedType = 'CANC' 
                                                    and d3.DocDate <> d3.U_CancDate and d3.U_CancDate is not null
-                        where d1.ReconDate <= getdate() /*@todate*/ and d1.CancelAbs = 0 and d1.iscard <> 'A'
-                        group by d2.TransId) dd on dd.TransId = a.TransId  
-                                
-            where 
+                        where table
             --((isnull(c.u_closedType,'-') in ('RECO','REPO','-',' ')) 
             ((isnull(c.u_closedType,'-') in ('REPO')) 
             /****************************************************************************************************/

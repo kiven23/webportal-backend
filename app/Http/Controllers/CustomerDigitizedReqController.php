@@ -12,6 +12,9 @@ use DB;
 use App\Branch;
 class CustomerDigitizedReqController extends Controller
 {
+    public function mssqlcon(){
+        return \Auth::user()->dbselection->connection;
+    }
     public function index(){
         if(\Auth::user()->branch->machine_number == 103){
             $data = cdr::select('*')->with('dl_data')
@@ -114,7 +117,8 @@ class CustomerDigitizedReqController extends Controller
 
     }
     public function branches(){
-        $branches = Branch::orderBy('name', 'asc')->get();
+        $company = DB::table('custom_db')->where('entryname', $this->mssqlcon())->pluck('company_id')->first();
+        $branches = Branch::orderBy('name', 'asc')->where('companies', $company)->get();
         foreach($branches as $branch){
             // if($branch->sapcode == 'SANJ-NE' || $branch->sapcode == 'GUIM-NE'){
                 $b[] = ['name'=> $branch->name,

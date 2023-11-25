@@ -521,7 +521,7 @@ class AuthController extends Controller
     }
 
     $sapb1Reports = [];
-     if (\Auth::user()->hasRole(['SapApiAccess'])) {
+     if (\Auth::user()->hasRole(['SapB1 Access Queries'])) {
       $incomingPaymentcrb = [
         'text' => 'Incoming Payments CRB',
         'icon' => 'description',
@@ -576,7 +576,7 @@ class AuthController extends Controller
     array_push($sapb1Reports,
      @$incomingPaymentcrb,
       @$q1,@$q2,@$q3,@$q4,@$q5,@$q6,@$q7,@$q8,@$q9);
-    if (\Auth::user()->hasRole(['SapApiAccess'])) {
+    if (\Auth::user()->hasRole(['SapB1 Access Queries'])) {
       $sapreports = [
         'text' => 'SAP B1 REPORTS',
         'icon' => 'description',
@@ -638,17 +638,17 @@ class AuthController extends Controller
 
 
     $motorpool = [];
-    if (\Auth::user()->hasRole(['SapApiAccess'])) {
+    if (\Auth::user()->hasRole(['Motorpool Expressway'])) {
       $pdf = [
-        'text' => 'Monitoring',
+        'text' => 'RFI USAGE',
         'icon' => 'description',
-        'route' => '/expressway/monitoring',
+        'route' => '/expressway/usage',
       ];
       
      
     }
     array_push($motorpool, @$pdf );
-    if (\Auth::user()->hasRole(['SapApiAccess'])) {
+    if (\Auth::user()->hasRole(['Motorpool Expressway'])) {
       $motorpoolsys = [
         'text' => 'Expressway Usage Trip',
         'icon' => 'description',
