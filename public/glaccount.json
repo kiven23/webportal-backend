@@ -8,6 +8,7 @@
     {"FormatCode":"6","AcctName":"ORGANIZATIONAL EXPENSE"},
     {"FormatCode":"6","AcctName":"MARKETING EXPENSES"},
     {"FormatCode":"6","AcctName":"REPRESENTATION & ENTERTAINMENT"},
+    {"FormatCode":"6","AcctName":"SALES DISCOUNT"},
     {"FormatCode":"6","AcctName":"SALARIES & WAGES"},
     {"FormatCode":"6","AcctName":"ACCRUED OBI"},
     {"FormatCode":"6","AcctName":"SALES INCENTIVES"},
@@ -19,6 +20,7 @@
     {"FormatCode":"6","AcctName":"DONATIONS & CONTRIBUTIONS"},
     {"FormatCode":"6","AcctName":"INSURANCE & SURETY PREMIUMS"},
     {"FormatCode":"6","AcctName":"PREPAID EXPENSE"},
+    {"FormatCode":"6","AcctName":"CUSTOMERS DEPOSIT"},
     {"FormatCode":"6","AcctName":"INTEREST EXPENSE & BANK CHARGES"},
     {"FormatCode":"6","AcctName":"MANAGEMENT FEE"},
     {"FormatCode":"6","AcctName":"O/E WELFARE EXPENSE"},
@@ -26,10 +28,12 @@
     {"FormatCode":"6","AcctName":"PROFESSIONAL, LEGAL & AUDIT FEE"},
     {"FormatCode":"6","AcctName":"REGISTRATION FEE - MOTOR VEHICLE"},
     {"FormatCode":"6","AcctName":"RENT EXPENSE"},
+    {"FormatCode":"6","AcctName":"MEAL ALLOWANCE"},
     {"FormatCode":"6","AcctName":"REPAIRS & MAINTENANCE - EQUIPMENT"},
     {"FormatCode":"6","AcctName":"REPAIRS & MAINTENANCE - MOTOR VEHICLE"},
     {"FormatCode":"6","AcctName":"SECURITY SERVICE"},
     {"FormatCode":"6","AcctName":"TAXES & LICENSES"},
+    {"FormatCode":"6","AcctName":"TRAINING EXPENSES"},
     {"FormatCode":"6","AcctName":"TELEPHONE, SUBSCRIPTION & POSTAGE"},
     {"FormatCode":"6","AcctName":"TRAVELLING EXPENSES"},
     {"FormatCode":"6","AcctName":"ACCRUED OBI"},
@@ -44,5 +48,6 @@
     {"FormatCode":"6","AcctName":"DEPRECIATION - CTE"},
     {"FormatCode":"6","AcctName":"COST OF GOODS SOLD"},
     {"FormatCode":"6","AcctName":"ACCOUNTS PAYABLE - SERVICE"},
-    {"FormatCode":"6","AcctName":"ORGANIZATIONAL COST"}
+    {"FormatCode":"6","AcctName":"ORGANIZATIONAL COST"},
+    {"FormatCode":"6","AcctName":"ADVANCES O/E"}
     ]

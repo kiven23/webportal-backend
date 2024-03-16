@@ -173,7 +173,7 @@ class DatabaseSelectionController extends Controller
         return $this->creditportal->sync();
         return response()->json("credit");
       }elseif($req->q == "blacklisted"){
-        //return response()->json("blacklisted");
+        // return response()->json("blacklisted");
         return $this->blacklisted->sync();
       }else{
         return "Invalid Request";

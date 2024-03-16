@@ -21,7 +21,6 @@ class RevolvingFundController extends Controller
 {
     public function index()
     {
-      
       $rvFundsQuery = RevolvingFund::first();
   
         if (!Auth::user()->hasPermissionTo("Show All Revolving Funds")) {
@@ -29,7 +28,19 @@ class RevolvingFundController extends Controller
         return RevolvingFundResource::collection($rvFundsQuery->where('branch_id', $this->getbranch()->id)->get());
         }
       // return $rvFundsQuery->where('branch_id', 4)->get();
-        return RevolvingFundResource::collection($rvFundsQuery->get());
+        foreach($rvFundsQuery->get() as $item){
+           $dd1[] = DB::table('rv_fund_check_voucher_for_transmittals')->where('rv_fund_id', $item->id)->pluck('rv_fund_id')->first();
+           $dd2[] = DB::table('rv_fund_check_voucher_verifications')->where('rv_fund_id', $item->id)->pluck('rv_fund_id')->first();
+           $dd3[] = DB::table('rv_fund_expenses_for_check_preparations')->where('rv_fund_id', $item->id)->pluck('rv_fund_id')->first();
+           
+        }
+          
+         $result = array_merge( $dd1,  $dd2,  $dd3);
+        
+
+        $id = array_filter($result);
+        $rvFundsQuery = RevolvingFund::whereIn('id', $id)->get();
+        return RevolvingFundResource::collection($rvFundsQuery)  ;
     }
     public function history(Request $req){
 
@@ -82,7 +93,34 @@ class RevolvingFundController extends Controller
         return $history ;
 
     }
+    public function toprint(request $req){
+        if($req->stat == true){
+            DB::table('rv_fund_check_voucher_verifications')->where('id', $req->id)->update(
+                ['toprint' => 1]
+            );
+            return 1;
+        }else{
+            DB::table('rv_fund_check_voucher_verifications')->where('id', $req->id)->update(
+                ['toprint' => NULL]
+            );
+           return NULL;
+        }
+    
+         
+    }
     public function printBIR(request $req){
+         
+        if($req->iden == 1){
+            $id = DB::table("branches")->where("name", $req->b)->pluck("id")->first();
+            $revid = DB::table('revolving_funds')->where('branch_id',  $id )->pluck('id')->first();
+            $data = DB::table('rv_fund_check_voucher_verifications')->where('rv_fund_id', $revid)->where('status', 'Transmittal')->where('verify', NULL)->where('toprint', 1)->get();
+            
+            $branch =  $req->b;
+            //return view("revolving_funds.reports.transmittal",compact("branch", "data"));
+            $pdf = PDF::loadView("revolving_funds.reports.transmittal", compact("branch", "data"));
+            return $pdf->stream();
+        }
+ 
         if(\Auth::user()->branch_id == 1){
             $id = DB::table("branches")->where("name", $req->b)->pluck("id")->first();
             $branchID =  $id;
@@ -116,6 +154,7 @@ class RevolvingFundController extends Controller
                 return $pdf->stream();
                         
     }
+    
     
  
 

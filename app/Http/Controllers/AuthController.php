@@ -642,7 +642,7 @@ class AuthController extends Controller
       $pdf = [
         'text' => 'RFI USAGE',
         'icon' => 'description',
-        'route' => '/expressway/usage',
+        'route' => '/expressway/monitoring',
       ];
       
      

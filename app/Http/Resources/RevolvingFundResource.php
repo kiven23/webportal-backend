@@ -16,12 +16,12 @@ class RevolvingFundResource extends JsonResource
     {
       
         return [
-            'id' => $this->id,
-            'branch' => $this->branch->name,
-            'fund' => $this->fund,
-            'cash_advances' => $this->cash_advances,
-            'as_of' => $this->as_of,
-            'submitted_date' => date_format($this->created_at, "M d, Y h:i a"),
+                'id' => $this->id,
+                'branch' => $this->branch->name,
+                'fund' => $this->fund,
+                'cash_advances' => $this->cash_advances,
+                'as_of' => $this->as_of,
+                'submitted_date' => date_format($this->created_at, "M d, Y h:i a"),
         ];
     }
 }

@@ -17,7 +17,7 @@ class BlackListedController extends Controller
         if(\Auth::user()->hasRole('BlackListed Customer Portal Admin')){
             
             $customer = DB::table('black_listeds')->get()->toarray();
-            $data['fromto'] = 'From: '.$customer[1]->datefrom.' - '.'To: Now';
+            $data['fromto'] = 'From: '.$customer[1]->datefrom.' - '.'To: '.$customer[1]->dateto;
             $data['customer'] =  $customer;
         }else{
             $branch = '%'.\Auth::user()->branch->name.'%';
@@ -148,9 +148,9 @@ public function search(request $req){
             
             from JDT1 a 
             inner join OJDT b on b.TransId = a.TransId
-            inner join OINV c on c.transid = a.transid and c.GroupNum <> N'30'
-            inner join OCTG c1 on c1.Groupnum = c.Groupnum  -- dtt 2012-05-18 Payment Terms
-            inner join OACT f on f.AcctCode = a.Account
+            inner join OINV c on c.transid = a.transid  
+            inner join OCTG c1 on c1.Groupnum = c.Groupnum and c1.pymntgroup<>'CreditCard' -- dtt 2012-05-18 Payment Terms
+            inner join OACT f on f.AcctCode = a.Account 
             inner join OACT f1 on f1.AcctCode = a.ContraAct
             left join OCRD h on h.CardCode = c.CardCode and h.CardType = 'C'
             INNER JOIN CRD1 h1 on h1.CardCode = h.CardCode
@@ -192,10 +192,10 @@ public function search(request $req){
             )             
             /****************************************************************************************************/
             
-            and c.GroupNum <> '57'
+            and c1.pymntgroup<>'DebitCard' 
             
             
-            and ((right(i.seriesname,4) = 'CHRG' and c.groupnum not in (-1,17)) or f1.Segment_0 = '71110' or (p3.ContraAct is not null and c.GroupNum = N'31')) 
+            and ((right(i.seriesname,4) = 'CHRG' and c1.pymntgroup not in('CASH','V-Cash')) or f1.Segment_0 = '71110' or (p3.ContraAct is not null and c1.pymntgroup='CHECK')) 
             and (dd.ReconDate >= @x1 and dd.ReconDate <= @x2)  --and p3.ContraAct is null 
             --and left(i.SeriesName,4) = 'ROSS'
             group by a.TransId

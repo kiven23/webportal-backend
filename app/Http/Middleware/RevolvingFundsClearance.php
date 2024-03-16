@@ -150,7 +150,7 @@ class RevolvingFundsClearance
                 abort('403');
             }
         }
-        if ($request->is("api/revolving-fund/ck/history")) {
+        if ($request->is("api/revolving-fund/ck/history") || $request->is("api/revolving-fund/preparation/toprint")) {
             if (\Auth::user()->hasPermissionTo("View Revolving Funds")) {
                 return $next($request);
             } else {

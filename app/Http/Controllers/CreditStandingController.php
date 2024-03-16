@@ -12,11 +12,14 @@ class CreditStandingController extends Controller
         return \Auth::user()->dbselection->connection;
     }
     public function index(request $req){
+       
          if($req->search){
-            $table = DB::table('credit_records')->where("cardname", 'LIKE', '%'.$req->search.'%')->paginate(10); 
+            $table = \DB::connection('8b4de39f72c6a60fd1f452bd099ea094')->table('Credit_Standing')
+                     ->select(\DB::raw('Category as category'),'Branch as branch', 'Cardname as cardname', 'Bday as bday', 'Rebate as rebate', 'Terms as terms', 'Paid Amount as paidamoun', 'DocTotal as doctotal', 'Balance as balance', 'Criteria as criteria')->where("cardname", 'LIKE', '%'.$req->search.'%')->paginate(10); 
             $ar =  ["data"=> $table ];
          }else{
-            $table = DB::table('credit_records')->paginate(10); 
+            $table = \DB::connection('8b4de39f72c6a60fd1f452bd099ea094')->table('Credit_Standing')
+                     ->select(\DB::raw('Category as category'),'Branch as branch', 'Cardname as cardname', 'Bday as bday', 'Rebate as rebate', 'Terms as terms', 'Paid Amount as paidamoun', 'DocTotal as doctotal', 'Balance as balance', 'Criteria as criteria')->paginate(10); 
             $ar =  ["data"=> $table ];
          }
        

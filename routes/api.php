@@ -291,6 +291,7 @@ Route::group(['prefix' => 'revolving-fund', 'middleware' => ['jwt.auth', 'revolv
 	Route::get('/index', 'RevolvingFundController@index')->name('revolving_fund.index');
 	Route::get('/preparation/history', 'RevolvingFundController@history')->name('revolving_fund.history');
 	Route::get('/preparation/history/print', 'RevolvingFundController@printBIR')->name('revolving_fund.bir');
+	Route::post('/preparation/toprint', 'RevolvingFundController@toprint')->name('revolving_fund.toprint');
 	//Route::post('/create', 'RevolvingFundController@create')->name('revolving_fund.create');
 	Route::get('/view/{id}', 'RevolvingFundController@view')->name('revolving_fund.view');
 	Route::post('/update/{id}/cash-advances', 'RevolvingFundController@updateCashAdvances')->name('revolving_fund.update_cash_advances');
@@ -407,6 +408,19 @@ Route::group(['prefix' => 'expressway'], function () {
 	Route::get('/monitoring/bin', 'ExpressWayTollController@trash');
 	Route::get('/monitoring/drivers', 'ExpressWayDriverController@drivers');
 	Route::get('/monitoring/fetch', 'ExpressWayTollController@queries');
+	Route::get('/monitoring/generates/reports', 'ExpressWayTollController@reports');
+});
+ 
+//FOR GRPO INVENTORY
+Route::group(['prefix' => 'inventory' ,'middleware' => ['jwt.auth', 'grpomiddleware']], function () {
+	#SERIAL CREATION
+	Route::post('/grpo/create', 'InventoryGrpoController@createGrpo');
+	#GRPO CREATION
+	Route::post('/grpo/createpo', 'InventoryGrpoController@createGrpo1');
+	#SEARCH PO
+	Route::post('/grpo/search', 'InventoryGrpoController@search');
+	#PROGRESS BAR
+	Route::get('/grpo/progress', 'InventoryGrpoController@progress');
 });
  
 Route::get('/sync/jdt1', 'SapApiController@jdt1extract');

@@ -22,6 +22,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Crypt;
+use Auth;
 class SapApiController extends Controller
 {
 
@@ -69,13 +70,17 @@ class SapApiController extends Controller
             }
             
             return $finale;
-         }
+    }
+    public function getLatestFirmcode(){
+        
+    }
     public function render(request $req){
-       
+         $latestBrand = \DB::connection($this->mssqlcon())->table('OMRC')->where('FirmName', $req->brand)->pluck('FirmCode')->first();
+        
         if($req->search2 == 2){
             
             $data = \DB::connection($this->mssqlcon())->table('oitm')
-            ->where('FirmCode', $this->checkbrand($req->search))
+            ->where('FirmCode',$latestBrand)
             // ->where('ItemName', $req->search2)
             ->orderBy('ItemCode', 'desc')->paginate(10);
         }else{
@@ -86,28 +91,36 @@ class SapApiController extends Controller
             ->orderBy('ItemCode', 'desc')->paginate(10); 
         }
          
-        $ar =  ["data"=> $data, "brand"=> $this->getBrandId($req->search)];
+        $ar =  ["data"=> $data, "brand"=> $req->brand];
         return $ar;
     }
     public function vendor(){
         $data = \DB::connection($this->mssqlcon())->table('ocrd')
-                ->select("CardCode","CardName")->where("CardType", 'S')->get() ;
+                ->select("CardCode","CardName")->where("CardType", 'S')->where('Password', 'S')->get() ;
         return $data;
     }
     public function oitg(){
         $data = \DB::connection($this->mssqlcon())->table('oitg')->take(8)->get() ;
         return $data;
     }
+    public function fimcode(){
+        $data = \DB::connection($this->mssqlcon())->table('omrc')->get() ;
+        return $data;
+    }
     public function create(request $req){
+         
 
-        
+        $sapuser = \Auth::user()->sapuser;
+        // $sappassword = \Auth::user()->sappasword;
         $client = new Client(['timeout' => 300000]);
         $arr = json_encode($req->all['data']);
         $arr1 = json_encode($req->all['prop']);
         $arr2 = json_encode($req->all['database']);
+        // $arr3 = $sapuser;
+        // $arr4 = $sappassword;
         $response = $client->post('http://192.168.1.26:8000/api/add', [
             'form_params' => [
-                $arr,$arr1,$arr2
+                $arr,$arr1,$arr2,$sapuser
             ]
         ]);
         
@@ -115,8 +128,8 @@ class SapApiController extends Controller
         return $body;
     }
     public function update(request $req){
-
-        
+    
+        $sapuser = \Auth::user()->sapuser;
         $client = new Client(['timeout' => 300000]);
         $arr = json_encode($req->all['data']);
         $arr1 = json_encode($req->all['prop']);
@@ -124,7 +137,7 @@ class SapApiController extends Controller
         $response = $client->post('http://192.168.1.26:8000/api/update', [
             'Connection' => 'keep-alive',
             'form_params' => [
-                $arr ,$arr1
+                $arr ,$arr1,$sapuser
             ],
              
         ]);
@@ -136,7 +149,8 @@ class SapApiController extends Controller
         $oitg = $this->oitg();
         $vendor =  $this->vendor();
         $client = new Client();
-        $firmcode = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=firmcode')->getBody()->getContents();
+        $firmcode = $this->fimcode();
+        //$firmcode = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=firmcode')->getBody()->getContents();
         $warranty1 = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=warranty1')->getBody()->getContents();
         //$pvendor = $client->request('GET', 'http://192.168.1.19:7771/api/fields?data=pvendor')->getBody()->getContents();
         $oitb = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=oitb')->getBody()->getContents();
@@ -343,7 +357,7 @@ class SapApiController extends Controller
     public function installment_ledger(request $req){
         
         if($req->sapcode){
-            $data = DB::table('oinv')->where('db', $this->mssqlcon())->where('CustomerNumber', 'like','%'. $req->sapcode .'%')->get();
+            $data = DB::table('oinv')->where('db', $this->mssqlcon())->where('CustomerNumber', 'like','%'. $req->sapcode .'%')->orderBy('DocumentDate', 'desc')->get();
         //     $data = \DB::connection($this->mssqlcon())->table('oinv')
         //     ->select(DB::raw('Address as Address'),
         //     'oinv.NumAtCard as InvoiceNumber',
@@ -612,6 +626,7 @@ class SapApiController extends Controller
                   ->join('octg','oinv.GroupNum','=','octg.GroupNum')
                   ->where('oinv.DocStatus', '!=', 'C' )
                   ->where('octg.PymntGroup', '!=', 'CASH')
+                  ->whereDate('oinv.DocDate', '>=', '2023-09-01')
                   ->get();   
                   
         foreach($data as $oinv){
@@ -635,6 +650,7 @@ class SapApiController extends Controller
        return "ok"; 
 
       }
+      //return sync("cf118c5fc6ce30b08894f11f54f1ac0a");
       function oinv64($code, $db, $id, $lastid, $maxValue){
        $data = \DB::connection($db)->table('inv6 as b')
                 ->distinct()
@@ -688,7 +704,7 @@ class SapApiController extends Controller
       }
      
      
-     $startingId = 98057;
+       $startingId = 1;
        $code = DB::table('oinv')
             ->select('DocCode', 'db', 'id')
             ->where('db', $ids->database)
@@ -701,17 +717,20 @@ class SapApiController extends Controller
       $id = DB::table('syncprogress')->insertGetId([
         'progress'=> count($code)
       ]);
-   
+      
+      //REMAPING
       foreach($code as $datas){
         oinv64($datas->DocCode, $datas->db, $id, $datas->id, count($code));
       }
        
     
-      return "";
-      $db = DB::table('custom_db')->select('entryname')->get();
-      foreach($db as $database){
-        sync($database->entryname);
-      }
+     return "";
+    //   $db = DB::table('custom_db')->select('entryname')->get();
+    //   foreach($db as $database){
+        // sync($database->entryname);
+        //FIRST SYNC
+       // sync("cf118c5fc6ce30b08894f11f54f1ac0a");
+    //   }
 
        
      }

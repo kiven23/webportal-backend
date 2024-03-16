@@ -27,27 +27,31 @@ class CreditDungLettersController extends Controller
     ];
 
     private $letter_storage_path = "letters";
-
+    public function remapDb(){
+          
+         return DB::table('custom_db')->where('entryname', \Auth::user()->dbselection->connection)
+         ->pluck('agingmaptable')->first();
+    }
     public function __construct(){
         $this->sqlCon = DB::connection('sqlsrv2');
 
-        if(Auth::check()) {
+        // if(Auth::check()) {
             $this->userBranch = Auth::user()->branch->name;
 
             if($this->userBranch == "Appletronics-Addessa") {
                 $this->userBranch = "Appletronics";
             }
-        }
+        // }
     }
 
     public function index(Request $request) {
-        
-        $user_branch = $this->userBranch;
+          
+         $user_branch = $this->userBranch;
 
-        $query =  $this->sqlCon->table('InstallmentReceivableDetailed')
+        $query =  $this->sqlCon->table($this->remapDb())
             ->select(DB::raw("Branch + '_' + REPLACE(Aging, ' ', '_') as row_id, Branch as branch, Aging as aging, count(Aging) as aging_count"))
             ->whereIn("Aging", ["02 ONE(1) MONTH", "03 TWO(2) MONTHS", "04 THREE(3) MONTHS", "05 FOUR(4) MONTHS", "09 LAPCON ONE(1) MONTH"]);
-        
+     
         if($user_branch != "Admin") {
             $query->where("Branch", $user_branch);
         }
@@ -55,7 +59,7 @@ class CreditDungLettersController extends Controller
         $query->groupBy("Branch", "Aging")
             ->orderBy("Branch", "ASC")
             ->orderBy("Aging", "ASC");
-
+        
         // $data = [];
         // foreach( as $key => $result) {
         //     $branch =  $result->Branch;
@@ -75,7 +79,7 @@ class CreditDungLettersController extends Controller
 
         $branch = $request->branch;
 
-        $this->checkIfHasAccessInBranch($branch);
+        //$this->checkIfHasAccessInBranch($branch);
         
         $aging = $request->aging;
 
@@ -95,7 +99,7 @@ class CreditDungLettersController extends Controller
 
         // if(! Storage::disk("local")->exists($full_path)) {
 
-        $customers = $this->sqlCon->table('InstallmentReceivableDetailed')
+        $customers = $this->sqlCon->table($this->remapDb())
         ->where([
             "Branch" => $branch,
             "Aging" => $aging,
@@ -370,7 +374,7 @@ class CreditDungLettersController extends Controller
             "full_path" => $full_path,
         ];
 
-        $customers = $this->sqlCon->table('InstallmentReceivableDetailed')->where([
+        $customers = $this->sqlCon->table($this->remapDb())->where([
             "Branch" => $branch,
             "Aging" => $aging,
         ])->orderBy("CardName")->get();

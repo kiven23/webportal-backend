@@ -195,5 +195,7 @@ class Kernel extends HttpKernel
         'settings' => \App\Http\Middleware\Settings::class,
         // Item Master Data  
         'item_master_data' => \App\Http\Middleware\ItemMasterData::class,
+        // MiddleWare for GRPO
+        'grpomiddleware' => \App\Http\Middleware\GrpPo::class,
     ];
 }

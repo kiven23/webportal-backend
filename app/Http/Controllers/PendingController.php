@@ -1128,49 +1128,49 @@ class PendingController extends Controller
 
     public function addall (Request $req) {
      
-      foreach ($req->pendings as $pendingTran) {
-        $branch = Branch::where('id', $req->id)->with('region')->first();
-        $branch_id = $branch->id;
-        $branch_name = $branch->name;
-        $region_name = $branch->region->name;
-
-        $ls_or = 0;
-        $ls_ci = 0;
-        $ls_ch = 0;
-
-        if ($this->inBetween == 1) {
-          $created_date = Carbon::now(); // add today
-        } else { $created_date = Carbon::now()->addDay(-1); } // add to yesterday's date
-
-        $pending = new Pending;
-        $pending->branch_id = $branch_id;
-        $pending->branch = $branch_name;
-        $pending->region = $region_name;
-        $pending->docdate = $pendingTran['docdate'];
-        $pending->ls_or = $ls_or;
-        $pending->por = $pendingTran['por'];
-        $pending->ls_ci = $ls_ci;
-        $pending->ci = $pendingTran['ci'];
-        $pending->ls_ch = $ls_ch;
-        $pending->ch = $pendingTran['ch'];
-        $pending->dep = $pendingTran['dep'];
-        $pending->cla = $pendingTran['cla'];
-        $pending->grpo = $pendingTran['grpo'];
-        $pending->si = $pendingTran['si'];
-        $pending->so = $pendingTran['so'];
-        $pending->sts = $pendingTran['sts'];
-        $pending->disb = $pendingTran['disb'];
-        $pending->arcm = $pendingTran['arcm'];
-        $pending->apcm = $pendingTran['apcm'];
-        $pending->pint = $pendingTran['pint'];
-        $pending->rc_cash = $pendingTran['rc_cash'];
-        $pending->sc = $pendingTran['sc'];
-        $pending->reason = $pendingTran['reason'];
-        $pending->created_at = $created_date;
-        $pending->save();
-      }
-
-    	return response()->json($req->pendings, 200);
+        foreach ($req->pendings as $pendingTran) {
+            $branch = Branch::where('id', $req->id)->with('region')->first();
+            $branch_id = $branch->id;
+            $branch_name = $branch->name;
+            $region_name = $branch->region->name;
+    
+            $ls_or = $pendingTran['ls_or'];
+            $ls_ci = $pendingTran['ls_ci'];
+            $ls_ch = $pendingTran['ls_ch'];
+    
+            if ($this->inBetween == 1) {
+              $created_date = Carbon::now(); // add today
+            } else { $created_date = Carbon::now()->addDay(-1); } // add to yesterday's date
+    
+            $pending = new Pending;
+            $pending->branch_id = $branch_id;
+            $pending->branch = $branch_name;
+            $pending->region = $region_name;
+            $pending->docdate = $pendingTran['docdate'];
+            $pending->ls_or = $ls_or;
+            $pending->por = $pendingTran['por'];
+            $pending->ls_ci = $ls_ci;
+            $pending->ci = $pendingTran['ci'];
+            $pending->ls_ch = $ls_ch;
+            $pending->ch = $pendingTran['ch'];
+            $pending->dep = $pendingTran['dep'];
+            $pending->cla = $pendingTran['cla'];
+            $pending->grpo = $pendingTran['grpo'];
+            $pending->si = $pendingTran['si'];
+            $pending->so = $pendingTran['so'];
+            $pending->sts = $pendingTran['sts'];
+            $pending->disb = $pendingTran['disb'];
+            $pending->arcm = $pendingTran['arcm'];
+            $pending->apcm = $pendingTran['apcm'];
+            $pending->pint = $pendingTran['pint'];
+            $pending->rc_cash = $pendingTran['rc_cash'];
+            $pending->sc = $pendingTran['sc'];
+            $pending->reason = $pendingTran['reason'];
+            $pending->created_at = $created_date;
+            $pending->save();
+          }
+    
+            return response()->json($req->pendings, 200);
     }
 
     public function update_api (Request $req) {
