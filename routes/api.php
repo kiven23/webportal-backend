@@ -421,6 +421,8 @@ Route::group(['prefix' => 'inventory' ,'middleware' => ['jwt.auth', 'grpomiddlew
 	Route::post('/grpo/search', 'InventoryGrpoController@search');
 	#PROGRESS BAR
 	Route::get('/grpo/progress', 'InventoryGrpoController@progress');
+	Route::get('/grpo/viewpos', 'InventoryGrpoController@viewpos');
+	Route::get('/grpo/getlines', 'InventoryGrpoController@getLines');
 });
  
 Route::get('/sync/jdt1', 'SapApiController@jdt1extract');
