@@ -18,7 +18,7 @@ class GrpPo
        // Show Agency
        if ($request->is('api/inventory/grpo/search') 
           || $request->is('api/inventory/grpo/progress')
-          || $request->is('api/inventory/grpo/create')|| $request->is('api/inventory/grpo/viewpos')|| $request->is('api/inventory/grpo/getlines') || $request->is('api/inventory/grpo/createpo')
+          || $request->is('api/inventory/grpo/create')|| $request->is('api/inventory/grpo/viewpos')|| $request->is('api/inventory/grpo/getlines')|| $request->is('api/inventory/grpo/print')|| $request->is('api/inventory/grpo/createpo')
            ) {
         if (\Auth::user()->hasRole(['User GRPO'])) {
             return $next($request);
