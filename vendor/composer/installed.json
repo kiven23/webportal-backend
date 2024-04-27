@@ -3278,6 +3278,59 @@
             "install-path": "../paragonie/random_compat"
         },
         {
+            "name": "peal/laravel-barcode-generator",
+            "version": "1.3.1",
+            "version_normalized": "1.3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/moin786/laravel-barcode-generator.git",
+                "reference": "0e7b8016836142f09f8dafbb7701527003191189"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/moin786/laravel-barcode-generator/zipball/0e7b8016836142f09f8dafbb7701527003191189",
+                "reference": "0e7b8016836142f09f8dafbb7701527003191189",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "5.2.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*|6.*|7.*"
+            },
+            "time": "2020-04-13T08:51:24+00:00",
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "peal\\barcodegenerator\\BarcodeServiceProvider"
+                    ],
+                    "aliases": {
+                        "BarCode": "peal\\BarcodeServiceProvider\\Facades\\BarCode"
+                    }
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "peal\\barcodegenerator\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Moinuddin Chowdhury",
+                    "email": "moinuddin7@gmail.com"
+                }
+            ],
+            "description": "Bar code generate in Laravel",
+            "support": {
+                "issues": "https://github.com/moin786/laravel-barcode-generator/issues",
+                "source": "https://github.com/moin786/laravel-barcode-generator/tree/1.3.1"
+            },
+            "install-path": "../peal/laravel-barcode-generator"
+        },
+        {
             "name": "phar-io/manifest",
             "version": "1.0.3",
             "version_normalized": "1.0.3.0",
@@ -4234,6 +4287,96 @@
                 "xunit"
             ],
             "install-path": "../phpunit/phpunit"
+        },
+        {
+            "name": "picqer/php-barcode-generator",
+            "version": "v2.4.0",
+            "version_normalized": "2.4.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/picqer/php-barcode-generator.git",
+                "reference": "4cec18909dffd86e14beb69b1040f2520c2e1bb1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/picqer/php-barcode-generator/zipball/4cec18909dffd86e14beb69b1040f2520c2e1bb1",
+                "reference": "4cec18909dffd86e14beb69b1040f2520c2e1bb1",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": "^7.3|^8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^9.5"
+            },
+            "suggest": {
+                "ext-bcmath": "Barcode IMB (Intelligent Mail Barcode) needs bcmath extension",
+                "ext-gd": "For JPG and PNG generators, GD or Imagick is required",
+                "ext-imagick": "For JPG and PNG generators, GD or Imagick is required"
+            },
+            "time": "2023-09-16T08:58:52+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Picqer\\Barcode\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Nicola Asuni",
+                    "email": "info@tecnick.com",
+                    "homepage": "http://nicolaasuni.tecnick.com"
+                },
+                {
+                    "name": "Casper Bakker",
+                    "email": "info@picqer.com",
+                    "homepage": "https://picqer.com"
+                }
+            ],
+            "description": "An easy to use, non-bloated, barcode generator in PHP. Creates SVG, PNG, JPG and HTML images from the most used 1D barcode standards.",
+            "homepage": "https://github.com/picqer/php-barcode-generator",
+            "keywords": [
+                "CODABAR",
+                "Code11",
+                "Code93",
+                "EAN13",
+                "KIX",
+                "KIXCODE",
+                "MSI",
+                "POSTNET",
+                "Pharma",
+                "Standard 2 of 5",
+                "barcode",
+                "barcode generator",
+                "code128",
+                "code39",
+                "ean",
+                "html",
+                "jpeg",
+                "jpg",
+                "php",
+                "png",
+                "svg",
+                "upc"
+            ],
+            "support": {
+                "issues": "https://github.com/picqer/php-barcode-generator/issues",
+                "source": "https://github.com/picqer/php-barcode-generator/tree/v2.4.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/casperbakker",
+                    "type": "github"
+                }
+            ],
+            "install-path": "../picqer/php-barcode-generator"
         },
         {
             "name": "psr/container",

@@ -191,7 +191,8 @@ return [
 
         //DomPDF
         Barryvdh\DomPDF\ServiceProvider::class,
-
+        //Barcode Generator
+       // peal\barcodegenerator\BarcodeServiceProvider::class,
     ],
 
     /*
@@ -263,6 +264,7 @@ return [
 
         //Barryvdh DomPDF alias
         'PDF' => Barryvdh\DomPDF\Facade::class,
+        //'BarCode' => peal\barcodegenerator\Facades\BarCode::class,
 
     ],
 

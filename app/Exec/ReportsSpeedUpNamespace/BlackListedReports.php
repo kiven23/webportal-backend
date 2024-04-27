@@ -3,12 +3,12 @@ namespace App\Exec\ReportsSpeedUpNamespace;
 use DB;
 class BlackListedReports {
     public function sync() {
-           $DB = DB::table("custom_db")->where('server', '192.168.1.14')->get();
-           \DB::table("black_listeds")->truncate(); 
-          // $DB = ["e5aaa4e1c2af9db56c79bfa45c7f934b"];
+        //  return  $DB = DB::table("custom_db")->where('server', '192.168.1.14')->get();
+        //    \DB::table("black_listeds")->truncate(); 
+            $DB = ["789c0e4a54cf08dc6023e44cd0104cb6"];
          foreach($DB as $db){
             #SYNC
-            $id[] =  $this->sapquery($db->entryname);
+            $id[] =  $this->sapquery($db);
          }
          return response()->json($id);
     }
@@ -21,7 +21,7 @@ class BlackListedReports {
             $table = \DB::connection($db)
             ->select( \DB::raw("
                     declare @x1 as datetime
-                    set @x1 = '03/01/2024'
+                    set @x1 = '01/01/2009'
                     declare @x2 as datetime
                     set @x2 = '".date('Y-m-d')."'
         
