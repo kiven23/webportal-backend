@@ -426,6 +426,11 @@ Route::group(['prefix' => 'inventory' ,'middleware' => ['jwt.auth', 'grpomiddlew
 	Route::post('/grpo/download', 'InventoryGrpoController@download'); 
 	 
 });
+
+//INVENTORY TRANSFER
+Route::get('/inventory/transfer/printing', 'InventoryTransferController@owtr');
+Route::get('/inventory/transfer/printing/getitem', 'InventoryTransferController@wtr1');
+Route::get('/inventory/transfer/printing/getserial', 'InventoryTransferController@osri');
 Route::get('/grpo/print', 'InventoryGrpoController@print'); 
 Route::get('/sync/jdt1', 'SapApiController@jdt1extract');
 Route::get('/sync/oinv/execute', 'SapApiController@executionpromax');

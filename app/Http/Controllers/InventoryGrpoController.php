@@ -116,9 +116,13 @@ class InventoryGrpoController extends Controller
     foreach($forbr as $br){
       $new[$br] =  ['br'=>barcoders($br, $barcodeGenerator), 'code'=> $br];
     }
+      
+    foreach($forbr as $br){
+      $new2[] =  ['code'=> $br];
+    }
      
     // Pass the generated barcode to the view
-     return  view('grpobarcode.generator1', compact('new','brand', 'model'));
+     return  view('grpobarcode.testing', compact('new','brand', 'model','new2'));
   }
   public function download(request $req){
     $barcodeGenerator = new BarcodeGeneratorHTML();
