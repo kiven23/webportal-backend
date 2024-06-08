@@ -47,7 +47,10 @@ class InventoryTransferController extends Controller
        return $MYARRAY;
     }
     public function osri(request $req){
-      $data = DB::connection($this->mssqlcon())->table('osri')->where('WhsCode', $req->whscode)->where('ItemCode', $req->itemcode)->where('BaseLinNum', $req->baseline)->get();
+      $data = DB::connection($this->mssqlcon())->table('osri')  ->where('ItemCode', $req->itemcode)->where('BaseLinNum', $req->baseline)->get();
+      if(!count($data)){
+        $data = DB::connection($this->mssqlcon())->table('osri')  ->where('ItemCode', $req->itemcode)->where('BaseLinNum', $req->baseline+1)->get();
+      } 
       $barcodeGenerator = new BarcodeGeneratorHTML();
       $forbr = $data;
       $model = $req->model;
@@ -59,6 +62,7 @@ class InventoryTransferController extends Controller
       foreach($forbr as $br){
         $new[$br->IntrSerial] =  ['br'=>barcoders($br->IntrSerial, $barcodeGenerator), 'code'=> $br->IntrSerial];
       }
+     
       foreach($forbr as $br){
         $new2[] =  ['code'=> $br->IntrSerial];
       }
