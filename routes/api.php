@@ -431,6 +431,7 @@ Route::group(['prefix' => 'inventory' ,'middleware' => ['jwt.auth', 'grpomiddlew
 Route::get('/inventory/transfer/printing', 'InventoryTransferController@owtr');
 Route::get('/inventory/transfer/printing/getitem', 'InventoryTransferController@wtr1');
 Route::get('/inventory/transfer/printing/getserial', 'InventoryTransferController@osri');
+Route::get('/inventory/transfer/printing/activate', 'InventoryTransferController@setactivator');
 Route::get('/grpo/print', 'InventoryGrpoController@print'); 
 Route::get('/sync/jdt1', 'SapApiController@jdt1extract');
 Route::get('/sync/oinv/execute', 'SapApiController@executionpromax');
