@@ -1,5 +1,9 @@
 <button onclick="print2()" style="margin: 3px; float: right; color: blue">  <strong>300dpi&#x2399;</strong></button> 
 <button onclick="print203dpi()" style="margin: 3px; float: right; color: blue">  <strong>203dpi &#x2399;</strong></button> 
+<div class="selection"  style="margin: 3px; float: right; color: blue">
+<input type="checkbox"   onclick="checkall()" id="check">  
+<label for="1"  >Select All</label>
+</div>
 <!-- <button onclick="PrintElem()" style="float: right; color: blue">  <strong>PRINT TO EPSON &#x2399;</strong></button>  -->
 <br>
 <br>
@@ -204,6 +208,22 @@
                 alert('Error getting default printer')
                 console.error('Error getting default printer', error);
             });
+  }
+  function checkall(){
+    let iden
+    let checkbox = document.getElementById('check');
+        if (checkbox && !checkbox.checked) {
+          iden = false
+        }else{
+          iden = true
+        }
+    ddd.forEach(res => {
+        console.log(res.code);
+        // Get the checkbox element
+        var checkbox = document.getElementById('select_' + res.code);
+        // Check the checkbox
+        checkbox.checked = iden; // Set to true to check the checkbox
+    });
   }
   function PrintElem()
         {
