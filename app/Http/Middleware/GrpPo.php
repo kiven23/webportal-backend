@@ -20,7 +20,7 @@ class GrpPo
           || $request->is('api/inventory/grpo/progress')
           || $request->is('api/inventory/grpo/create')|| $request->is('api/inventory/grpo/viewpos')|| $request->is('api/inventory/grpo/getlines')|| $request->is('api/inventory/grpo/print')|| $request->is('api/inventory/grpo/download')|| $request->is('api/inventory/grpo/createpo')
            ) {
-        if (\Auth::user()->hasRole(['User GRPO'])) {
+        if (\Auth::user()->hasRole(['User GRPO','Master GRPO'])) {
             return $next($request);
         } else {
             abort('403');

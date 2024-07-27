@@ -11,6 +11,9 @@ use PDF;
 
 class InventoryGrpoController extends Controller
 {
+  public function ip(){
+    return "http://192.168.1.26:8082";
+  }
   public function mssqlcon(){
     return \Auth::user()->dbselection->connection;
   }
@@ -23,7 +26,7 @@ class InventoryGrpoController extends Controller
     // $sappassword = \Auth::user()->sappasword;
     $client = new Client(['timeout' => 300000]);
  
-    $response = $client->post('http://192.168.1.26:8082/api/grpo', [
+    $response = $client->post(($this->ip()).'/api/grpo', [
         'headers' => ['Content-Type' => 'application/json'],
         'body' => json_encode($req->all()),
          
@@ -34,7 +37,7 @@ class InventoryGrpoController extends Controller
   }
   public function getLines(request $req){
     $client = new Client();
-    $data = $client->request('GET', 'http://192.168.1.26:8082/api/document/getlines?data='.$req->data)->getBody()->getContents();
+    $data = $client->request('GET', ($this->ip()).'/api/document/getlines?data='.$req->data)->getBody()->getContents();
      
     return response()->json(json_decode($data));
   }
@@ -47,7 +50,7 @@ class InventoryGrpoController extends Controller
     // $sappassword = \Auth::user()->sappasword;
     $client = new Client(['timeout' => 300000]);
  
-    $response = $client->post('http://192.168.1.26:8082/api/document/grpo', [
+    $response = $client->post(($this->ip()).'/api/document/grpo', [
         'headers' => ['Content-Type' => 'application/json'],
         'body' => json_encode($req->all()),
          
@@ -105,7 +108,7 @@ class InventoryGrpoController extends Controller
       
       $client = new Client(['timeout' => 300000]);
  
-    $response = $client->post('http://192.168.1.26:8082/api/document/getkey', [
+    $response = $client->post(($this->ip()).'/api/document/getkey', [
         'headers' => ['Content-Type' => 'application/json'],
         'body' => json_encode($req->all()),
          
@@ -115,6 +118,7 @@ class InventoryGrpoController extends Controller
     return $all;
   }
   public function viewpos(){
+ 
       function recheckdata($re,$auth){
         
         $user = \Auth::user()->barcoder;
@@ -160,9 +164,17 @@ class InventoryGrpoController extends Controller
      $data = \DB::connection($this->mssqlcon())->select("SELECT  CardCode,CardName,DocEntry
                 FROM OPOR
                 WHERE DocStatus = 'O'
-                -- WHERE YEAR(DocDate) = YEAR(GETDATE())
-                -- WHERE MONTH(DocDate) = MONTH(GETDATE())  
-                ORDER BY DocDate DESC");
+                ORDER BY DocDate DESC
+               
+                ");
+//      $data = \DB::connection($this->mssqlcon())->select("SELECT  CardCode,CardName,DocEntry
+//                 FROM OPOR
+//                 WHERE DocStatus = 'O'
+                
+//                -- WHERE YEAR(DocDate) = YEAR(GETDATE())
+//                -- WHERE MONTH(DocDate) = MONTH(GETDATE())
+//                 WHERE DocEntry = '91205'
+//                 ORDER BY DocDate DESC");
       //RECHECK
     
       foreach($data as $recheck) {
@@ -178,7 +190,7 @@ class InventoryGrpoController extends Controller
   }
   public function progress(Request $req){
     $client = new Client();
-    $data = $client->request('GET', 'http://192.168.1.26:8082/api/progress?data='.$req->data)->getBody()->getContents();
+    $data = $client->request('GET', ($this->ip()).'/api/progress?data='.$req->data)->getBody()->getContents();
     $p['status'] = json_decode($data);
     return response()->json($p);
   }
