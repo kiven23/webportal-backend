@@ -437,3 +437,6 @@ Route::get('/sync/jdt1', 'SapApiController@jdt1extract');
 Route::get('/sync/oinv/execute', 'SapApiController@executionpromax');
 
 //END EXPRESSWAY TOLLWAY TOLLWAY
+
+ 
+Route::get('/gen/grporeceiving', 'InventoryGrpoController@printreceiving');

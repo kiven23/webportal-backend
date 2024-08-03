@@ -82,6 +82,18 @@ $connections = [
         'prefix' => '',
         'prefix_indexes' => true,
     ],
+    'mysql-qportal' => [
+        'driver' => env('DB_CONNECTION_SERVER2'),
+        'url' => env('DATABASE_URL'),
+        'host' => env('DB_HOST_SERVER2', 'localhost'),
+        'port' => env('DB_PORT_SERVER2', '1433'),
+        'database' => env('DB_DATABASE_SERVER2', 'forge'),
+        'username' => env('DB_USERNAME_SERVER2', 'forge'),
+        'password' => env('DB_PASSWORD_SERVER2', ''),
+        'charset' => 'utf8',
+        'prefix' => '',
+        'prefix_indexes' => true,
+    ],
 ];
 
 foreach ($database_list as  $dbs) {

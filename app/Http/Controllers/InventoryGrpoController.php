@@ -12,13 +12,13 @@ use PDF;
 class InventoryGrpoController extends Controller
 {
   public function ip(){
-    return "http://192.168.1.26:8082";
+    return "http://192.168.1.3:8082";
   }
   public function mssqlcon(){
     return \Auth::user()->dbselection->connection;
   }
   public function createGrpo(request $req){
-    
+    if (\Auth::user()->hasRole(['Master GRPO'])) {
     $database = explode(' - ', \Auth::user()->dbselection->dbname);
     $req['ip'] = $database[1];
     $req['db'] = $database[0];
@@ -35,6 +35,8 @@ class InventoryGrpoController extends Controller
     $body = ($response->getBody());
     return $body;
   }
+    return "No Permission";
+  }
   public function getLines(request $req){
     $client = new Client();
     $data = $client->request('GET', ($this->ip()).'/api/document/getlines?data='.$req->data)->getBody()->getContents();
@@ -42,7 +44,7 @@ class InventoryGrpoController extends Controller
     return response()->json(json_decode($data));
   }
   public function createGrpo1(request $req){
-  
+    if (\Auth::user()->hasRole(['Master GRPO'])) {
     $database = explode(' - ', \Auth::user()->dbselection->dbname);
     $req['ip'] = $database[1];
     $req['db'] = $database[0];
@@ -58,6 +60,8 @@ class InventoryGrpoController extends Controller
     
     $body = ($response->getBody());
     return $body;
+    }
+    return "No Permission";
   }
   public function search(request $req){
     
@@ -228,6 +232,61 @@ class InventoryGrpoController extends Controller
       $new[$br] =  ['br'=>barcoders($br, $barcodeGenerator), 'code'=> $br];
     }
     $pdf = PDF::loadView("grpobarcode.generator", ["data"=> $new]);
+    return $pdf->download('sample.pdf')->header('Access-Control-Expose-Headers', 'Content-Disposition'); 
+  }
+  public function grporeports($data){
+    
+    try {
+      $database = $this->mssqlcon();
+      $expo = explode('-',$data);
+      $po = $expo[0];
+      $qty = (int)$expo[1];
+      $line = (int)$expo[2];
+      
+      function getDocentry($po,$line,$qty){
+        return DB::connection('mysql-qportal')->table('serial')->where('po', $po)->where('frontendline', $line)->where('qty', $qty)->pluck('docentry')->first();
+      }
+      function getSn($map){
+        return DB::connection('mysql-qportal')->table('mapline')->where('mapline', $map)->get();
+      }
+      function getItems($docentry, $database){
+        return DB::connection($database)->table('pdn1')->where('docentry', $docentry)->get();
+      }
+      function getProdCat($itemcode, $database){
+        return DB::connection($database)->table('oitm')->where('ItemCode', $itemcode)->select('FrgnName', 'FirmCode')->get();
+      }
+      function getBrand($firmcode, $database){
+        return DB::connection($database)->table('omrc')->where('FirmCode', $firmcode)->pluck('FirmName')->first();
+      }
+      function getHeading($docentry, $database){
+        return DB::connection($database)->table('opdn')->where('DocEntry', $docentry)->select('DocNum','DocDate','CardName','Comments','NumAtCard');
+
+      }
+
+      $form = getItems(getDocentry($po,$line,$qty), $database);
+      $heading = getHeading(getDocentry($po,$line,$qty), $database)->get();
+      $data = [];
+      $sumqty = [];
+      foreach($form as $x){
+        $data[] = ["prodcat"=> getProdCat($x->ItemCode, $database)[0]->FrgnName,
+        "brand"=> getBrand(getProdCat($x->ItemCode, $database)[0]->FirmCode, $database),
+        "model"=> $x->Dscription, "po"=> $x->BaseEntry, "qty"=> $x->Quantity, "serial"=> $x->Text];
+        $sumqty[] = $x->Quantity;
+      }
+      return ["head"=> $heading, "item"=> $data, "total"=> $sumqty];
+    } catch (\Exception $e) {
+      return $e;
+    }
+ 
+  }
+  public function printreceiving(request $req){
+    
+    $reports = $this->grporeports($req->data );
+    $head = $reports['head'];
+    $rep = $reports['item'];
+    //return view('grpobarcode.receivingreports',compact('head','rep'));
+    //return view('grpobarcode.receivingreports',["head"=> $head, "rep"=> $rep]);
+    $pdf = PDF::loadView("grpobarcode.receivingreports", ["head"=> $head, "rep"=> $rep, "total"=> array_sum($reports['total'])])->setPaper('a3', 'landscape');;
     return $pdf->download('sample.pdf')->header('Access-Control-Expose-Headers', 'Content-Disposition'); 
   }
 }

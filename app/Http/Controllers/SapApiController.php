@@ -25,7 +25,9 @@ use Illuminate\Support\Facades\Crypt;
 use Auth;
 class SapApiController extends Controller
 {
-
+    public function ip(){
+        return "http://192.168.1.3:8000";
+      }
     public function mssqlcon(){
         return \Auth::user()->dbselection->connection;
     }
@@ -118,7 +120,7 @@ class SapApiController extends Controller
         $arr2 = json_encode($req->all['database']);
         // $arr3 = $sapuser;
         // $arr4 = $sappassword;
-        $response = $client->post('http://192.168.1.26:8000/api/add', [
+        $response = $client->post($this->ip().'/api/add', [
             'form_params' => [
                 $arr,$arr1,$arr2,$sapuser
             ]
@@ -134,7 +136,7 @@ class SapApiController extends Controller
         $arr = json_encode($req->all['data']);
         $arr1 = json_encode($req->all['prop']);
         //$arr1 = json_encode($req->all['prop']);
-        $response = $client->post('http://192.168.1.26:8000/api/update', [
+        $response = $client->post($this->ip().'/api/update', [
             'Connection' => 'keep-alive',
             'form_params' => [
                 $arr ,$arr1,$sapuser
@@ -151,9 +153,9 @@ class SapApiController extends Controller
         $client = new Client();
         $firmcode = $this->fimcode();
         //$firmcode = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=firmcode')->getBody()->getContents();
-        $warranty1 = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=warranty1')->getBody()->getContents();
+        $warranty1 = $client->request('GET', $this->ip().'/api/fields?data=warranty1')->getBody()->getContents();
         //$pvendor = $client->request('GET', 'http://192.168.1.19:7771/api/fields?data=pvendor')->getBody()->getContents();
-        $oitb = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=oitb')->getBody()->getContents();
+        $oitb = $client->request('GET', $this->ip().'/api/fields?data=oitb')->getBody()->getContents();
         //$oitg = $client->request('GET', 'http://192.168.1.26:8000/api/fields?data=oitg')->getBody()->getContents();
         $arr['preferredv'] = json_decode($vendor);
         $arr['warrantyt'] = json_decode($warranty1);
@@ -164,7 +166,7 @@ class SapApiController extends Controller
     }
     public function progress(Request $req){
         $client = new Client();
-        $data = $client->request('GET', 'http://192.168.1.26:8000/api/progress?data='.$req->uniqueid)->getBody()->getContents();
+        $data = $client->request('GET', $this->ip().'/api/progress?data='.$req->uniqueid)->getBody()->getContents();
         $p['status'] = json_decode($data);
         return response()->json($p);
     }
