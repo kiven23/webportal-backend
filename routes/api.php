@@ -410,7 +410,7 @@ Route::group(['prefix' => 'expressway'], function () {
 	Route::get('/monitoring/fetch', 'ExpressWayTollController@queries');
 	Route::get('/monitoring/generates/reports', 'ExpressWayTollController@reports');
 });
- 
+ //END EXPRESSWAY TOLLWAY MOTORPOOL
 //FOR GRPO INVENTORY
 Route::group(['prefix' => 'inventory' ,'middleware' => ['jwt.auth', 'grpomiddleware']], function () {
 	#SERIAL CREATION
@@ -426,7 +426,9 @@ Route::group(['prefix' => 'inventory' ,'middleware' => ['jwt.auth', 'grpomiddlew
 	Route::post('/grpo/download', 'InventoryGrpoController@download'); 
 	 
 });
-
+//PRINT GRPO RECEIVING FORM
+Route::get('/gen/grporeceiving', 'InventoryGrpoController@printreceiving');
+//END GRPO INVENTORY
 //INVENTORY TRANSFER
 Route::get('/inventory/transfer/printing', 'InventoryTransferController@owtr');
 Route::get('/inventory/transfer/printing/getitem', 'InventoryTransferController@wtr1');
@@ -436,7 +438,9 @@ Route::get('/grpo/print', 'InventoryGrpoController@print');
 Route::get('/sync/jdt1', 'SapApiController@jdt1extract');
 Route::get('/sync/oinv/execute', 'SapApiController@executionpromax');
 
-//END EXPRESSWAY TOLLWAY TOLLWAY
+//END 
+//SAP GOODSISSUE START
+Route::get('/inventory/goodsissue/getters', 'InventorySapBackendController@GettersItems');
 
+//END SAP GOODSISSUE
  
-Route::get('/gen/grporeceiving', 'InventoryGrpoController@printreceiving');

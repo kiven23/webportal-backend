@@ -64,7 +64,7 @@ class InventoryGrpoController extends Controller
     return "No Permission";
   }
   public function search(request $req){
-    
+      
       $user = \Auth::user()->barcoder;
       $database = explode(' -', \Auth::user()->dbselection->dbname);
       $req['db'] = $database[0];
@@ -165,11 +165,12 @@ class InventoryGrpoController extends Controller
             
   
       }
-     $data = \DB::connection($this->mssqlcon())->select("SELECT  CardCode,CardName,DocEntry
+     $data = \DB::connection($this->mssqlcon())->select("SELECT TOP 40  CardCode,CardName,DocEntry
                 FROM OPOR
+
                 WHERE DocStatus = 'O'
                 ORDER BY DocDate DESC
-               
+                
                 ");
 //      $data = \DB::connection($this->mssqlcon())->select("SELECT  CardCode,CardName,DocEntry
 //                 FROM OPOR

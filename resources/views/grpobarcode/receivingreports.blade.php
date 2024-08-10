@@ -129,7 +129,7 @@
                     <td class="s6 softmerge">
                     <div class="softmerge-inner" style="width:460px;left:-1px">  <?php
                     $text = $value['serial'];
-                    $maxWidth = 330;
+                    $maxWidth = 430;
                     $lines = [];
                     $line = '';
                     $words = explode(' ', $text);
