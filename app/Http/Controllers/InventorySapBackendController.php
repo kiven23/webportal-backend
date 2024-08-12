@@ -32,21 +32,39 @@ class InventorySapBackendController extends Controller
     //LIST OF SAP GETTERS
     public function GettersItems(Request $req){
        try {
-            if($req->get == 'items' || $req->page){
-                if($req->search){
-                    return $this->SapTables('items')
-                    ->where('ItemName', 'LIKE', '%'.$req->search.'%')
-                    ->paginate(10);
-                }else{
-                    return $this->SapTables('items') 
-                    ->orderby('CreateDate', 'DESC')
-                    ->paginate(10);
+            if($req->get == 'items'  ){
+                if($req->page || $req){
+                    if($req->search){
+                        return $this->SapTables('items')
+                        ->where('ItemName', 'LIKE', '%'.$req->search.'%')
+                        ->where('OnHand', '>', 0)
+                        ->paginate(10);
+                    }else{
+                        return $this->SapTables('items') 
+                        ->orderby('CreateDate', 'DESC')
+                        ->where('OnHand', '>', 0)
+                        ->paginate(10);
+                    }
                 }
+                
             }elseif($req->get == 'itembywarehouse'){
-                return $this->SapTables('itembywarehouse')
-                ->select('ItemCode','WhsCode','OnHand','IsCommited','OnOrder')
-                ->where('ItemCode', $req->itemcode)
-                ->get();
+                
+                // if($req->search !== 'undefined'){
+                //     return $this->SapTables('itembywarehouse')
+                //     ->select('ItemCode','WhsCode','OnHand','IsCommited','OnOrder')
+                //     ->where('WhsCode', 'LIKE', '%'.$req->search.'%')
+                //     ->where('OnHand', '>', 0)
+                //     ->paginate(10);
+    
+                // }else{
+            
+                    return $this->SapTables('itembywarehouse')
+                    ->select('ItemCode','WhsCode','OnHand','IsCommited','OnOrder')
+                    ->where('ItemCode', $req->itemcode)
+                    ->where('OnHand', '>', 0)
+                    ->paginate(10);
+    
+              
             }elseif($req->get == 'availablesn'){
                 return $this->SapTables('availablesn')
                 ->select('IntrSerial','ItemCode','WhsCode')
