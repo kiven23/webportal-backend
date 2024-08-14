@@ -441,6 +441,7 @@ Route::get('/sync/oinv/execute', 'SapApiController@executionpromax');
 //END 
 //SAP GOODSISSUE START
 Route::get('/inventory/goodsissue/getters', 'InventorySapBackendController@GettersItems');
+Route::post('/inventory/goodsissue/submit', 'InventorySapBackendController@send');
 
 //END SAP GOODSISSUE
  

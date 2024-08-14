@@ -25,6 +25,8 @@ class InventorySapBackendController extends Controller
             return DB::connection($this->mssqlcon())->table('OITW');
         }elseif($t == 'availablesn'){
             return DB::connection($this->mssqlcon())->table('OSRI');
+        }elseif($t == 'gl'){
+            return DB::connection($this->mssqlcon())->table('OACT');
         }else{
             return "ERROR WEW!!";
         }
@@ -72,12 +74,31 @@ class InventorySapBackendController extends Controller
                 ->where('WhsCode', $req->warehouse)
                 ->where('Status', 0)
                 ->get();
+            }elseif($req->get == 'gl'){
+                return $this->SapTables('gl')
+                ->select('AcctCode','AcctName','CurrTotal')
+                ->get();
             }else{
                 return "ERROR";
             }
        }catch(\Exception $e){
          return $e;
        }
+     }
+     public function send(request $req){
+            
+            $client = new Client(['timeout' => 300000]);
+            
+         
+          
+            $response = $client->post(($this->ip()).'/api/inventory/goodsissue', [
+                'headers' => ['Content-Type' => 'application/json'],
+                'body' => json_encode($req->all()),
+                 
+            ]);
+            $body = ($response->getBody());
+            return $body;
+            
      }
   
 }
