@@ -38,7 +38,7 @@ class InventorySapBackendController extends Controller
        //ARRAY DATA MANIPULATION
        function Recustomize($DocEntry, $db){
             return DB::connection($db)->table('IGE1')
-            ->select('DocEntry','ItemCode','Dscription','Quantity','WhsCode')
+            ->select('DocEntry','ItemCode','Dscription as ItemName','Quantity','WhsCode','AcctCode')
             ->where('DocEntry', $DocEntry)->get();
        }
        //END
@@ -79,7 +79,7 @@ class InventorySapBackendController extends Controller
                     ->select('IntrSerial','ItemCode','WhsCode')
                     ->where('ItemCode', $req->itemcode)
                     ->where('WhsCode', $req->warehouse)
-                    ->where('Status', 0)
+                    ->where('Status', $req->status)
                     ->get();
             }elseif($req->get == 'gl'){
                 return $this->SapTables('gl')
