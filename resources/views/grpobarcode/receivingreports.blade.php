@@ -259,7 +259,7 @@
             <td class="s0"></td>
             <td class="s0"></td>
             <td class="s0"></td>
-            <td class="s0"></td>
+            <td class="s0">RECEIVED BY: _______________</td>
             <td class="s0"></td>
             <td class="s0"></td>
          </tr>
@@ -302,3 +302,48 @@
       </tbody>
    </table>
 </div>
+<style type="text/css">
+        /* Existing styles */
+        .ritz .waffle a { color: inherit; }
+        .ritz .waffle .s10 { /* existing styles */ }
+        .ritz .waffle .s0 { /* existing styles */ }
+        /* ... other existing styles ... */
+        .ritz {
+        transform: scale(0.5); /* Adjust scaling factor as needed */
+        transform-origin: top left;
+        width: 50%;
+    }
+        /* Print styles */
+        @media print {
+            @page {
+                size: portrait; /* Set to portrait orientation */
+                margin: 1in; /* Adjust margins as needed */
+            }
+
+            /* Adjust specific styles for printing */
+            body {
+                font-size: 12pt; /* Increase font size if necessary for better readability */
+            }
+
+            .ritz .waffle {
+                width: 50%; /* Ensure the table uses full width */
+                border-collapse: collapse; /* Ensure borders are collapsed */
+            }
+
+            /* Adjust cell padding and other table styles for better print layout */
+            .ritz .waffle td, .ritz .waffle th {
+                padding: 5px; /* Increase padding if needed for better readability */
+                border: 1px solid #000; /* Ensure borders are visible */
+            }
+
+            .ritz .waffle .s5 {
+                font-size: 16pt; /* Adjust font size if necessary for better visibility */
+            }
+
+            /* Hide elements that are not needed in print */
+            .no-print {
+                display: none; /* Add this class to any elements you want to hide in print */
+            }
+          
+        }
+    </style>

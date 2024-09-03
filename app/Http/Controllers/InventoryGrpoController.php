@@ -287,7 +287,7 @@ class InventoryGrpoController extends Controller
     $rep = $reports['item'];
     //return view('grpobarcode.receivingreports',compact('head','rep'));
     //return view('grpobarcode.receivingreports',["head"=> $head, "rep"=> $rep]);
-    $pdf = PDF::loadView("grpobarcode.receivingreports", ["head"=> $head, "rep"=> $rep, "total"=> array_sum($reports['total'])])->setPaper('a3', 'landscape');;
+    $pdf = PDF::loadView("grpobarcode.receivingreports", ["head"=> $head, "rep"=> $rep, "total"=> array_sum($reports['total'])])->setPaper('letter', 'portrait');
     return $pdf->download('sample.pdf')->header('Access-Control-Expose-Headers', 'Content-Disposition'); 
   }
 }

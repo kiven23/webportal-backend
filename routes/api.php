@@ -447,4 +447,11 @@ Route::post('/inventory/goodsissue/submit', 'InventorySapBackendController@sendG
 Route::get('/inventory/goodsreceipt/getters', 'InventorySapBackendController@GettersItemsGoodsReceipt');
 Route::post('/inventory/goodsreceipt/submit', 'InventorySapBackendController@sendGoodsReceipt');
 //END SAP GOODSRECEIPT
- 
+//SAP BUSINESS PARTNER START
+Route::get('/inventory/businesspartner/getters', 'InventorySapBackendController@GettersBusinessPartner');
+Route::post('/inventory/businesspartner/submit', 'InventorySapBackendController@sendNewBusinessPartner');
+//END SAP BUSINESS PARTNER
+
+//GET BRANCHES
+Route::get('/getbranches/code', 'SapApiController@getBranches');
+//END BRANCHES
