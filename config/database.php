@@ -22,6 +22,21 @@ $connections = [
         'strict' => true,
         'engine' => null,
     ],
+    'diapidata' => [
+        'driver' => 'mysql',
+        'host' => '192.168.1.3',
+        'port' => '3306',
+        'database' => 'progress',
+        'username' => 'stevefox',
+        'password' => 'M15@2dwin0n7y',
+       
+        'unix_socket' => env('DB_SOCKET', ''),
+        'charset' => 'utf8mb4',
+        'collation' => 'utf8mb4_unicode_ci',
+        'prefix' => '',
+        'strict' => true,
+        'engine' => null,
+    ],
     'pgsql' => [
         'driver' => 'pgsql',
         'host' => env('DB_HOST', '127.0.0.1'),

@@ -419,6 +419,7 @@ Route::group(['prefix' => 'inventory' ,'middleware' => ['jwt.auth', 'grpomiddlew
 	Route::post('/grpo/createpo', 'InventoryGrpoController@createGrpo1');
 	#SEARCH PO
 	Route::post('/grpo/search', 'InventoryGrpoController@search');
+	Route::post('/grpo/createdgrpos', 'InventoryGrpoController@createdFunction');
 	#PROGRESS BAR
 	Route::get('/grpo/progress', 'InventoryGrpoController@progress');
 	Route::get('/grpo/viewpos', 'InventoryGrpoController@viewpos');
@@ -426,6 +427,7 @@ Route::group(['prefix' => 'inventory' ,'middleware' => ['jwt.auth', 'grpomiddlew
 	Route::post('/grpo/download', 'InventoryGrpoController@download'); 
 	 
 });
+Route::get('/grpo/checkserial/getlines', 'InventoryGrpoController@checksn');
 //PRINT GRPO RECEIVING FORM
 Route::get('/gen/grporeceiving', 'InventoryGrpoController@printreceiving');
 //END GRPO INVENTORY

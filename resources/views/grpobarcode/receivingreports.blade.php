@@ -76,7 +76,9 @@
             <td class="s3 s11"><h2>  RECEIVING REPORTS <h2></td>
             <td class="s3"></td>
             <td class="s4"></td>
-            <td class="s4"></td>
+            <td class="s1"> <span style="font-weight:bold; ">NO.
+                    
+                    {{$head[0]->DocNum}}</span></td>
          </tr>
          <tr style="height: 20px">
             <th id="0R5" style="height: 20px;" class="row-headers-background">
@@ -84,17 +86,25 @@
             </th>
             <td class="s0"></td>
             <td class="s6 softmerge">
-               <div class="softmerge-inner" style="width:560px;left:-1px">RECEIVING FROM: <span style="font-weight:bold;">{{$head[0]->CardName}}</span>    NO. <span style="font-weight:bold;">{{$head[0]->DocNum}}</span><br>VENDOR REF#        <span style="font-weight:bold;"> {{$head[0]->NumAtCard}}                    </span>                DATE<span style="font-weight:bold;"> 
-               @php
-               $date = new DateTime($head[0]->DocDate);
-               $formattedDate = $date->format('m.d.y');
-               echo $formattedDate;  
-                @endphp<br></span></div>
+               <div class="softmerge-inner" style="width:560px;left:-1px">
+                  RECEIVING FROM:
+                   <span style="font-weight:bold; ">{{$head[0]->CardName}}</span>
+                     <br>
+                       VENDOR REF#       
+                        <span style="font-weight:bold;">
+                       {{$head[0]->NumAtCard}} 
+                      </span>              
+                        </div>
             </td>
             <td class="s7"></td>
             <td class="s7"></td>
             <td class="s7"></td>
-            <td class="s8"></td>
+            <td class="s8"><span style="font-weight:bold; " >  DATE
+               @php
+               $date = new DateTime($head[0]->DocDate);
+               $formattedDate = $date->format('m.d.y');
+               echo $formattedDate;  
+                @endphp<br></span></td>
          </tr>
          <tr style="height: 20px">
             <th id="0R6" style="height: 20px;" class="row-headers-background">
@@ -118,7 +128,7 @@
                     <td class="s11">{{$value['prodcat']}}</td>
                     <td class="s11">{{$value['model']}}</td>
                     <td class="s11">{{$value['po']}}</td>
-                    <td class="s12">{{$value['qty']}}</td>
+                    <td class="s12">{{number_format($value['qty'], 0) }}</td>
                 </tr>
                 <tr style="height: 20px">
                     <th id="0R8" style="height: 20px;" class="row-headers-background">
@@ -256,8 +266,8 @@
             <th id="0R17" style="height: 20px;" class="row-headers-background">
                <div class="row-header-wrapper" style="line-height: 20px"></div>
             </th>
-            <td class="s0"></td>
-            <td class="s0"></td>
+            <td class="s0"></td> 
+            <td class="s0">DELIVERED BY: _______________</td>
             <td class="s0"></td>
             <td class="s0">RECEIVED BY: _______________</td>
             <td class="s0"></td>

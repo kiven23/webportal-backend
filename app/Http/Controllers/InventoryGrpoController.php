@@ -91,7 +91,9 @@ class InventoryGrpoController extends Controller
             'A.GrossBuyPr', 'A.PriceBefDi', 'A.DocDate', 'A.Flags', 'A.OpenCreQty',
             'A.UseBaseUn', 'A.SubCatNum', 'A.BaseCard', 'A.TotalSumSy', 'A.OpenSumSys',
             'A.InvntSttus', 'A.OcrCode', 'A.Project', 'A.CodeBars', 'A.VatPrcnt',
-            'A.VatGroup', 'A.PriceAfVAT', 'A.Height1', 'C.FirmName'
+            'A.VatGroup', 'A.PriceAfVAT', 'A.Height1', 'C.FirmName',
+            \DB::raw('CASE WHEN A.Quantity = A.OpenQty THEN 1 ELSE 0 END AS Remaining'),
+            \DB::raw('(A.Quantity - A.OpenQty) AS createdFor')
         )
           ->join('OITM as B', 'A.ItemCode', '=', 'B.ItemCode')
           ->join('OMRC as C', 'C.FirmCode', '=', 'B.FirmCode')
@@ -102,14 +104,14 @@ class InventoryGrpoController extends Controller
 
           if(( is_array($whs))){
             //MAIN WAREHOUSE
-            $data = $data->whereIn(\DB::raw('LEFT(A.WhsCode, 4)'), $whs);
+            $data = $data->whereIn(\DB::raw('LEFT(A.WhsCode, 4)'), $whs)->where('A.InvntSttus', $req->status);
           }else{
             //BRANCH
-            $data = $data->whereRaw('LEFT(A.WhsCode, 4) = ?', [$whs]);
+            $data = $data->whereRaw('LEFT(A.WhsCode, 4) = ?', [$whs])->where('A.InvntSttus', $req->status);
           }
             $data2 = $data->get();
 
-      
+     
       $client = new Client(['timeout' => 300000]);
  
     $response = $client->post(($this->ip()).'/api/document/getkey', [
@@ -121,8 +123,30 @@ class InventoryGrpoController extends Controller
    
     return $all;
   }
-  public function viewpos(){
+  public function createdFunction(request $req){
+      
+    $user = \Auth::user()->barcoder;
+    $database = explode(' -', \Auth::user()->dbselection->dbname);
+    $req['db'] = $database[0];
  
+    $data = DB::connection('mysql-qportal')->table('po')->where('DocEntry', $req->data)->get();
+         
+
+   
+    $client = new Client(['timeout' => 300000]);
+
+  $response = $client->post(($this->ip()).'/api/document/getkey', [
+      'headers' => ['Content-Type' => 'application/json'],
+      'body' => json_encode($req->all()),
+       
+  ]);
+  $all = ['key'=> json_decode($response->getBody()), 'data'=> $data, 'barcoder'=> $user];
+ 
+  return $all;
+
+  }
+  public function viewpos(request $req){
+     
       function recheckdata($re,$auth){
         
         $user = \Auth::user()->barcoder;
@@ -137,7 +161,7 @@ class InventoryGrpoController extends Controller
         }else{
           $whs = $dd[0];
         }
-      
+         
          $data = \DB::connection($auth)
             ->table('POR1 as A')
             // ->select('A.*', 'C.FirmName')  
@@ -151,7 +175,8 @@ class InventoryGrpoController extends Controller
               'A.GrossBuyPr', 'A.PriceBefDi', 'A.DocDate', 'A.Flags', 'A.OpenCreQty',
               'A.UseBaseUn', 'A.SubCatNum', 'A.BaseCard', 'A.TotalSumSy', 'A.OpenSumSys',
               'A.InvntSttus', 'A.OcrCode', 'A.Project', 'A.CodeBars', 'A.VatPrcnt',
-              'A.VatGroup', 'A.PriceAfVAT', 'A.Height1', 'C.FirmName'
+              'A.VatGroup', 'A.PriceAfVAT', 'A.Height1', 'C.FirmName',
+               
           )
             ->join('OITM as B', 'A.ItemCode', '=', 'B.ItemCode')
             ->join('OMRC as C', 'C.FirmCode', '=', 'B.FirmCode')
@@ -168,7 +193,7 @@ class InventoryGrpoController extends Controller
      $data = \DB::connection($this->mssqlcon())->select("SELECT TOP 40  CardCode,CardName,DocEntry
                 FROM OPOR
 
-                WHERE DocStatus = 'O'
+                WHERE DocStatus = '$req->status'
                 ORDER BY DocDate DESC
                 
                 ");
@@ -286,8 +311,11 @@ class InventoryGrpoController extends Controller
     $head = $reports['head'];
     $rep = $reports['item'];
     //return view('grpobarcode.receivingreports',compact('head','rep'));
-    //return view('grpobarcode.receivingreports',["head"=> $head, "rep"=> $rep]);
+    //return view('grpobarcode.receivingreports',  ["head"=> $head, "rep"=> $rep, "total"=> array_sum($reports['total'])]);
     $pdf = PDF::loadView("grpobarcode.receivingreports", ["head"=> $head, "rep"=> $rep, "total"=> array_sum($reports['total'])])->setPaper('letter', 'portrait');
     return $pdf->download('sample.pdf')->header('Access-Control-Expose-Headers', 'Content-Disposition'); 
+  }
+  public function checksn(request $req){
+    return DB::connection('diapidata')->table('mapline')->where('brand', $req->brand)->where('sn', $req->sn)->get();
   }
 }
