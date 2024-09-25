@@ -264,17 +264,18 @@ class InventoryGrpoController extends Controller
     
     try {
       $database = $this->mssqlcon();
-      $expo = explode('-',$data);
-      $po = $expo[0];
-      $qty = (int)$expo[1];
-      $line = (int)$expo[2];
+      // $expo = explode('-',$data);
+      // $po = $expo[0];
+      // $qty = (int)$expo[1];
+      // $line = (int)$expo[2];
       
-      function getDocentry($po,$line,$qty){
-        return DB::connection('mysql-qportal')->table('serial')->where('po', $po)->where('frontendline', $line)->where('qty', $qty)->pluck('docentry')->first();
+      function getDocentry($mapid){
+        
+        return DB::connection('mysql-qportal')->table('serial')->where('mapid', $mapid)->pluck('docentry')->first();
       }
-      function getSn($map){
-        return DB::connection('mysql-qportal')->table('mapline')->where('mapline', $map)->get();
-      }
+      // function getSn($map){
+      //   return DB::connection('mysql-qportal')->table('mapline')->where('mapline', $map)->get();
+      // }
       function getItems($docentry, $database){
         return DB::connection($database)->table('pdn1')->where('docentry', $docentry)->get();
       }
@@ -289,8 +290,8 @@ class InventoryGrpoController extends Controller
 
       }
 
-      $form = getItems(getDocentry($po,$line,$qty), $database);
-      $heading = getHeading(getDocentry($po,$line,$qty), $database)->get();
+      $form = getItems(getDocentry($data), $database);
+      $heading = getHeading(getDocentry($data), $database)->get();
       $data = [];
       $sumqty = [];
       foreach($form as $x){
@@ -306,8 +307,9 @@ class InventoryGrpoController extends Controller
  
   }
   public function printreceiving(request $req){
-    
+     
     $reports = $this->grporeports($req->data );
+ 
     $head = $reports['head'];
     $rep = $reports['item'];
     //return view('grpobarcode.receivingreports',compact('head','rep'));
