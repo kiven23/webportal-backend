@@ -320,4 +320,8 @@ class InventoryGrpoController extends Controller
   public function checksn(request $req){
     return DB::connection('diapidata')->table('mapline')->where('brand', $req->brand)->where('sn', $req->sn)->get();
   }
+  public function getlogs(request $req){
+    return DB::connection('diapidata')->table('grpologs')->where('mapid', $req->data)->pluck('logs')->first();
+
+  }
 }
