@@ -10,7 +10,7 @@ use Auth;
 class InventorySapBackendController extends Controller
 {
     public function ip(){
-        return "http://192.168.1.26:8001";
+        return "http://192.168.1.26:8082";
     }
     public function mssqlcon(){
         return \Auth::user()->dbselection->connection;
@@ -233,12 +233,18 @@ class InventorySapBackendController extends Controller
 
 ## -------------------------------------------  BUSINESS PARTNER CONTROLLER -----------------------------------------------#
 
-public function SapTablesBusinessPartner($t){
+public function SapTablesBusinessPartner($t,$search){
     if($t == 'bp'){
         //OCRD
-        return DB::connection($this->mssqlcon())->table('OCRD');
+        if($search){
+            return DB::connection($this->mssqlcon())->table('OCRD')->where('CardName', 'LIKE', '%'.$search.'%');
+        }else{
+            return DB::connection($this->mssqlcon())->table('OCRD');
+        }
+         
     }elseif($t == 'series'){
         //NNM1
+   
         return DB::connection($this->mssqlcon())->table('NNM1');
     }elseif($t == 'groupcode'){
         //OCRG
@@ -261,17 +267,22 @@ public function GettersBusinessPartner(Request $req){
 
     try {
         if($req->item == 'series'){
-           return $this->SapTablesBusinessPartner('series')->where('objectcode', 2)->select('Series','SeriesName')->get();
+           return $this->SapTablesBusinessPartner('series','')->where('objectcode', 2)->select('Series','SeriesName')->get();
         }elseif($req->item == 'groupcode'){
-            return $this->SapTablesBusinessPartner('groupcode')->select('GroupCode','GroupName','GroupType')->get();
+            return $this->SapTablesBusinessPartner('groupcode','')->select('GroupCode','GroupName','GroupType')->get();
         }elseif($req->item == 'bank'){
-            return $this->SapTablesBusinessPartner('bank')->select('BankCode','BankName','DfltAcct','DfltBranch')->get();
+            return $this->SapTablesBusinessPartner('bank','')->select('BankCode','BankName','DfltAcct','DfltBranch')->get();
         }elseif($req->item == 'salesemployee'){
-            return $this->SapTablesBusinessPartner('salesemployee')->select('SlpCode','SlpName','Memo')->get();
+            return $this->SapTablesBusinessPartner('salesemployee','')->select('SlpCode','SlpName','Memo')->get();
         }elseif($req->item == 'bp'){
-            return $this->SapTablesBusinessPartner('bp')->paginate(1);
+            if($req->search){
+                return $this->SapTablesBusinessPartner('bp', $req->search)->paginate(1);
+            }else{
+                return $this->SapTablesBusinessPartner('bp','')->paginate(1);
+            }
+            
         }elseif($req->item == 'paymentterm'){
-            return $this->SapTablesBusinessPartner('paymentterm')->select('GroupNum','PymntGroup')->get();
+            return $this->SapTablesBusinessPartner('paymentterm','')->select('GroupNum','PymntGroup')->get();
         }else{
             return "ERROR";
         }

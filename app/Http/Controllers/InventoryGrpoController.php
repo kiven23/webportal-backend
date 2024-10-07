@@ -12,7 +12,7 @@ use PDF;
 class InventoryGrpoController extends Controller
 {
   public function ip(){
-    return "http://192.168.1.3:8082";
+    return "http://192.168.1.26:8082";
   }
   public function mssqlcon(){
     return \Auth::user()->dbselection->connection;
@@ -318,7 +318,7 @@ class InventoryGrpoController extends Controller
     return $pdf->download('sample.pdf')->header('Access-Control-Expose-Headers', 'Content-Disposition'); 
   }
   public function checksn(request $req){
-    return DB::connection('diapidata')->table('mapline')->where('brand', $req->brand)->where('sn', $req->sn)->get();
+    return DB::connection($this->mssqlcon())->table('OSRI')->select("IntrSerial as sn")->where('ItemName', $req->model)->where('IntrSerial',  $req->sn)->get();
   }
   public function getlogs(request $req){
     return DB::connection('diapidata')->table('grpologs')->where('mapid', $req->data)->pluck('logs')->first();
