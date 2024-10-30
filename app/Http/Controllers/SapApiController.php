@@ -26,10 +26,13 @@ use Auth;
 class SapApiController extends Controller
 {
     public function ip(){
-        return "http://192.168.1.3:8000";
+        return "http://192.168.1.38:8000";
       }
     public function mssqlcon(){
         return \Auth::user()->dbselection->connection;
+    }
+    public function ItemMasterDB(){
+        return DB::table('custom_db')->whereIn('server',['192.168.1.15','192.168.1.8'])->select('dbname')->orderByRaw("FIELD(server, '192.168.1.15', '192.168.1.8')")->get();
     }
     public function getBrandId($firmcode){
         return DB::connection($this->mssqlcon())->table('OMRC')->where('FirmCode', $firmcode)->pluck('FirmName')->first();

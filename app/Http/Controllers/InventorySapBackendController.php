@@ -22,6 +22,7 @@ class InventorySapBackendController extends Controller
 ## -------------------------------------------GOODSISSUE AND GOODSRECEIPT -----------------------------------------------#
     //SAP TABLES BACK-END GOODSISSUE
     public function SapTablesGoodsIssue($t){
+        if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
         if($t == 'items'){
             return DB::connection($this->mssqlcon())->table('OITM') 
             ->select('ItemCode','ItemName','FrgnName','OnHand',
@@ -37,9 +38,11 @@ class InventorySapBackendController extends Controller
         }else{
             return "ERROR WEW!!";
         }
+       }
     }
      //SAP TABLES BACK-END GOODSRECEIPT
      public function SapTablesGoodsReceipt($t){
+        if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
         if($t == 'items'){
             return DB::connection($this->mssqlcon())->table('OITM') 
             ->select('ItemCode','ItemName','FrgnName','OnHand',
@@ -55,10 +58,102 @@ class InventorySapBackendController extends Controller
         }else{
             return "ERROR WEW!!";
         }
+       }
     }
+    //SAP TABLES BACK-END INVENTORY TRANSFER
+    public function SapTablesInventoryTransfer($t){
+        if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
+            if($t == 'items'){
+                return DB::connection($this->mssqlcon())->table('OITM') 
+                ->select('ItemCode','ItemName','FrgnName','OnHand',
+                'U_srp','U_RegNC','U_PresentNC','U_Freebies','U_cSizes');
+                }elseif($t == 'itembywarehouse'){
+                    return DB::connection($this->mssqlcon())->table('OITW');
+                }elseif($t == 'availablesn'){
+                    return DB::connection($this->mssqlcon())->table('OSRI');
+                }elseif($t == 'gl'){
+                    return DB::connection($this->mssqlcon())->table('OACT');
+                }elseif($t == 'inventorytransferlist'){
+                    return DB::connection($this->mssqlcon())->table('OWTR');
+                }elseif($t == 'whslist'){
+                    return DB::connection($this->mssqlcon())->table('OWHS');
+                }else{
+                return "ERROR WEW!!";
+            }
+        }
+    }
+    //LIST OF SAP GETTERS INVENTORYTRANSFER
+    public function GettersItemsInventoryTransfer(Request $req){
+        if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
+       //ARRAY DATA MANIPULATION
+       function Recustomize($DocEntry, $db){
+            return DB::connection($db)->table('WTR1')
+            ->select('DocEntry','ItemCode','Dscription as ItemName','Quantity','WhsCode','AcctCode', 'Text')
+            ->where('DocEntry', $DocEntry)->get();
+       }
+       //END
+       try {
+            if($req->get == 'items'){
+                if($req->page || $req){
+                    if($req->search){
+                        return $this->SapTablesInventoryTransfer('items')
+                        ->where('ItemName', 'LIKE', '%'.$req->search.'%')
+                        ->where('OnHand', '>', 0)
+                        ->paginate(10);
+                    }else{
+                        return $this->SapTablesInventoryTransfer('items') 
+                        ->orderby('CreateDate', 'DESC')
+                        ->where('OnHand', '>', 0)
+                        ->paginate(10);
+                    }
+                }
+            }elseif($req->get == 'itembywarehouse'){
+          
+                    return $this->SapTablesInventoryTransfer('itembywarehouse')
+                    ->select('ItemCode','WhsCode','OnHand','IsCommited','OnOrder')
+                     ->where('ItemCode', $req->itemcode)
+                    ->where('OnHand', '>', 0)
+                    ->paginate(10);
+    
+              
+            }elseif($req->get == 'availablesn'){
+                return $this->SapTablesInventoryTransfer('availablesn')
+                    ->select('IntrSerial','ItemCode','WhsCode')
+                    ->where('ItemCode', $req->itemcode)
+                    ->where('WhsCode', $req->warehouse)
+                   // ->where('Status', $req->status)
+                    ->get();
+            }elseif($req->get == 'gl'){
+                return $this->SapTablesInventoryTransfer('gl')
+                ->select('AcctCode','AcctName','CurrTotal')
+                ->where('FrozenFor', 'N')
+                ->get();
+            }elseif($req->get == 'inventorytransferlist'){
+                return $this->SapTablesInventoryTransfer('inventorytransferlist')
+                ->select('DocEntry','DocNum','DocStatus','DocDate','Comments','JrnlMemo','Filler')
+                ->orderby('DocDate', 'DESC')
+                ->paginate(1);
+            }elseif($req->get == 'whslist'){
+                return $this->SapTablesInventoryTransfer('whslist')
+                ->select('WhsCode')
+                ->get();
+            }elseif($req->get == 'index'){
+                //plucking
+                //?get=index&docentry={}
+                return Recustomize($req->docentry, $this->mssqlcon());
+            }else{
+                return "ERROR";
+            }
+       }catch(\Exception $e){
+         return $e;
+       }
+    }else{
+        return Response()->json(['error'=>'No Access']);
+    }
+     }
     //LIST OF SAP GETTERS GOODSISSUE
     public function GettersItemsGoodsIssue(Request $req){
-      
+        if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
        //ARRAY DATA MANIPULATION
        function Recustomize($DocEntry, $db){
             return DB::connection($db)->table('IGE1')
@@ -82,15 +177,7 @@ class InventorySapBackendController extends Controller
                     }
                 }
             }elseif($req->get == 'itembywarehouse'){
-                // if($req->search !== 'undefined'){
-                //     return $this->SapTablesGoodsIssue('itembywarehouse')
-                //     ->select('ItemCode','WhsCode','OnHand','IsCommited','OnOrder')
-                //     ->where('WhsCode', 'LIKE', '%'.$req->search.'%')
-                //     ->where('OnHand', '>', 0)
-                //     ->paginate(10);
-    
-                // }else{
-            
+          
                     return $this->SapTablesGoodsIssue('itembywarehouse')
                     ->select('ItemCode','WhsCode','OnHand','IsCommited','OnOrder')
                     ->where('ItemCode', $req->itemcode)
@@ -125,10 +212,14 @@ class InventorySapBackendController extends Controller
        }catch(\Exception $e){
          return $e;
        }
+    }else{
+        return Response()->json(['error'=>'No Access']);
+    }
      }
 
       //LIST OF SAP GETTERS GOODSISSUE
     public function GettersItemsGoodsReceipt(Request $req){
+        if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
         //ARRAY DATA MANIPULATION
         function Recustomize($DocEntry, $db){
              return DB::connection($db)->table('IGN1')
@@ -152,19 +243,10 @@ class InventorySapBackendController extends Controller
                      }
                  }
              }elseif($req->get == 'itembywarehouse'){
-                 // if($req->search !== 'undefined'){
-                 //     return $this->SapTablesGoodsReceipt('itembywarehouse')
-                 //     ->select('ItemCode','WhsCode','OnHand','IsCommited','OnOrder')
-                 //     ->where('WhsCode', 'LIKE', '%'.$req->search.'%')
-                 //     ->where('OnHand', '>', 0)
-                 //     ->paginate(10);
-     
-                 // }else{
-             
                      return $this->SapTablesGoodsReceipt('itembywarehouse')
                      ->select('ItemCode','WhsCode','OnHand','IsCommited','OnOrder')
                      ->where('ItemCode', $req->itemcode)
-                     //->where('OnHand', '>', 0)
+                     ->where('OnHand', '>', 0)
                      ->paginate(10);
      
                
@@ -195,8 +277,12 @@ class InventorySapBackendController extends Controller
         }catch(\Exception $e){
           return $e;
         }
+    }else{
+        return Response()->json(['error'=>'No Access']);
+    }
       }
      public function sendGoodsIssue(request $req){
+      if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
         try{
             if($req->all()){
             $data = ["db"=> ['dbname' => $this->getdatabase()->dbname,  'dbserver' => $this->getdatabase()->server], "data"=> $req->all()]; 
@@ -208,10 +294,33 @@ class InventorySapBackendController extends Controller
             $body = ($response->getBody());
             return $body;
         } 
-    }catch(\Exception $e){
-        return $e;
-    } 
+        }catch(\Exception $e){
+            return $e;
+        } 
+      }else{
+        return Response()->json(['error'=>'No Access']);
+      }
      }
+     public function sendInventoryTransfer(request $req){
+        if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
+          try{
+              if($req->all()){
+              $data = ["db"=> ['dbname' => $this->getdatabase()->dbname,  'dbserver' => $this->getdatabase()->server], "data"=> $req->all()]; 
+              $client = new Client(['timeout' => 300000]);
+              $response = $client->post(($this->ip()).'/api/inventory/stocktransfer', [
+                  'headers' => ['Content-Type' => 'application/json'],
+                  'body' => json_encode($data),  
+              ]);
+              $body = ($response->getBody());
+              return $body;
+          } 
+          }catch(\Exception $e){
+              return $e;
+          } 
+        }else{
+          return Response()->json(['error'=>'No Access']);
+        }
+       }
      public function sendGoodsReceipt(request $req){
         try{
             if($req->all()){
@@ -264,51 +373,54 @@ public function SapTablesBusinessPartner($t,$search){
 }
  
 public function GettersBusinessPartner(Request $req){
-
-    try {
-        if($req->item == 'series'){
-           return $this->SapTablesBusinessPartner('series','')->where('objectcode', 2)->select('Series','SeriesName')->get();
-        }elseif($req->item == 'groupcode'){
-            return $this->SapTablesBusinessPartner('groupcode','')->select('GroupCode','GroupName','GroupType')->get();
-        }elseif($req->item == 'bank'){
-            return $this->SapTablesBusinessPartner('bank','')->select('BankCode','BankName','DfltAcct','DfltBranch')->get();
-        }elseif($req->item == 'salesemployee'){
-            return $this->SapTablesBusinessPartner('salesemployee','')->select('SlpCode','SlpName','Memo')->get();
-        }elseif($req->item == 'bp'){
-            if($req->search){
-                return $this->SapTablesBusinessPartner('bp', $req->search)->paginate(1);
-            }else{
-                return $this->SapTablesBusinessPartner('bp','')->paginate(1);
-            }
-            
-        }elseif($req->item == 'paymentterm'){
-            return $this->SapTablesBusinessPartner('paymentterm','')->select('GroupNum','PymntGroup')->get();
-        }else{
-            return "ERROR";
+    if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
+            try {
+                if($req->item == 'series'){
+                return $this->SapTablesBusinessPartner('series','')->where('objectcode', 2)->select('Series','SeriesName')->get();
+                }elseif($req->item == 'groupcode'){
+                    return $this->SapTablesBusinessPartner('groupcode','')->select('GroupCode','GroupName','GroupType')->get();
+                }elseif($req->item == 'bank'){
+                    return $this->SapTablesBusinessPartner('bank','')->select('BankCode','BankName','DfltAcct','DfltBranch')->get();
+                }elseif($req->item == 'salesemployee'){
+                    return $this->SapTablesBusinessPartner('salesemployee','')->select('SlpCode','SlpName','Memo')->get();
+                }elseif($req->item == 'bp'){
+                    if($req->search){
+                        return $this->SapTablesBusinessPartner('bp', $req->search)->paginate(1);
+                    }else{
+                        return $this->SapTablesBusinessPartner('bp','')->paginate(1);
+                    }
+                    
+                }elseif($req->item == 'paymentterm'){
+                    return $this->SapTablesBusinessPartner('paymentterm','')->select('GroupNum','PymntGroup')->get();
+                }else{
+                    return "ERROR";
+                }
+        }catch(\Exception $e){
+            return $e;
         }
-   }catch(\Exception $e){
-     return $e;
-   }
+    }
 
 
 }
 
 public function sendNewBusinessPartner(request $req){
-    try{
-         
-        if($req->all()){
-            $data = ["db"=> ['dbname' => $this->getdatabase()->dbname,  'dbserver' => $this->getdatabase()->server], "data"=> $req->all()];
-            $client = new Client(['timeout' => 300000]);
-            $response = $client->post(($this->ip()).'/api/businesspartner', [
-                'headers' => ['Content-Type' => 'application/json'],
-                'body' => json_encode($data),
-            ]);
-            $body = ($response->getBody());
-            return $body;
-        } 
-    }catch(\Exception $e){
-        return $e;
-    }
+    if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
+        try{
+            
+            if($req->all()){
+                $data = ["db"=> ['dbname' => $this->getdatabase()->dbname,  'dbserver' => $this->getdatabase()->server], "data"=> $req->all()];
+                $client = new Client(['timeout' => 300000]);
+                $response = $client->post(($this->ip()).'/api/businesspartner', [
+                    'headers' => ['Content-Type' => 'application/json'],
+                    'body' => json_encode($data),
+                ]);
+                $body = ($response->getBody());
+                return $body;
+            } 
+        }catch(\Exception $e){
+            return $e;
+        }
+  }
 }
 
 ## ------------------------------------------- END BUSINESS PARTNER CONTROLLER-----------------------------------------------#

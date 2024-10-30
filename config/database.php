@@ -26,7 +26,7 @@ $connections = [
         'driver' => 'mysql',
         'host' => '192.168.1.3',
         'port' => '3306',
-        'database' => 'progress',
+        'database' => 'live',
         'username' => 'stevefox',
         'password' => 'M15@2dwin0n7y',
        

@@ -392,6 +392,7 @@ Route::get('/test/history', 'RevolvingFundController@CKhistory')->name('sap.test
 Route::group(['prefix' => 'itemmasterdata', 'middleware' => ['jwt.auth', 'item_master_data']], function () {
 	Route::get('/oitm/index', 'SapApiController@render');
 	Route::get('/oitm/fields', 'SapApiController@fields');
+	Route::get('/oitm/db', 'SapApiController@ItemMasterDB');
 	Route::get('/oitm/progress', 'SapApiController@progress');
 	Route::post('/oitm/create', 'SapApiController@create');
 	Route::post('/oitm/update', 'SapApiController@update');
@@ -441,11 +442,15 @@ Route::get('/inventory/transfer/printing/activate', 'InventoryTransferController
 Route::get('/grpo/print', 'InventoryGrpoController@print'); 
 Route::get('/sync/jdt1', 'SapApiController@jdt1extract');
 Route::get('/sync/oinv/execute', 'SapApiController@executionpromax');
-
 //END 
+
 //SAP GOODSISSUE START
 Route::get('/inventory/goodsissue/getters', 'InventorySapBackendController@GettersItemsGoodsIssue');
 Route::post('/inventory/goodsissue/submit', 'InventorySapBackendController@sendGoodsIssue');
+//END SAP GOODSISSUE
+//SAP INVENTORYTRANSFER START
+Route::get('/inventory/transfer/getters', 'InventorySapBackendController@GettersItemsInventoryTransfer');
+Route::post('/inventory/transfer/submit', 'InventorySapBackendController@sendInventoryTransfer');
 //END SAP GOODSISSUE
 //SAP GOODSRECEIPT START
 Route::get('/inventory/goodsreceipt/getters', 'InventorySapBackendController@GettersItemsGoodsReceipt');

@@ -16,7 +16,7 @@ class ItemMasterData
     public function handle($request, Closure $next)
     {
          //ITEM MASTER DATA
-         if ($request->is('api/itemmasterdata/oitm/index') || $request->is('api/itemmasterdata/oitm/fields')
+         if ($request->is('api/itemmasterdata/oitm/db') ||$request->is('api/itemmasterdata/oitm/index') || $request->is('api/itemmasterdata/oitm/fields')
        || $request->is('api/itemmasterdata/oitm/progress') || $request->is('api/itemmasterdata/oitm/create') || $request->is('api/itemmasterdata/oitm/update' )
             ) {
             if (\Auth::user()->hasRole(['Item Master Data Admin'])) {
