@@ -12,7 +12,10 @@ use PDF;
 class InventoryGrpoController extends Controller
 {
   public function ip(){
-    return "http://192.168.1.26:8082";
+    #SERVER3 http://192.168.1.3:8082
+    #SERVER2 http://192.168.1.26:8082
+    #SERVER1
+    return "http://192.168.1.240:8082";
   }
   public function mssqlcon(){
     return \Auth::user()->dbselection->connection;
@@ -82,7 +85,7 @@ class InventoryGrpoController extends Controller
           ->table('POR1 as A')
           // ->select('A.DocEntry as DocEntry, A.VisOrder as VisOrder', 'C.FirmName')  
           ->select(
-            'A.DocEntry', 'A.VisOrder as LineNum', 'A.TargetType', 'A.TrgetEntry', 'A.BaseRef',
+            'A.DocEntry', 'A.LineNum', 'A.TargetType', 'A.TrgetEntry', 'A.BaseRef',
             'A.BaseType', 'A.BaseEntry', 'A.BaseLine', 'A.LineStatus', 'A.ItemCode',
             'A.Dscription', 'A.Quantity', 'A.ShipDate', 'A.OpenQty', 'A.Price',
             'A.Currency', 'A.Rate', 'A.DiscPrcnt', 'A.LineTotal', 'A.TotalFrgn',
@@ -219,10 +222,12 @@ class InventoryGrpoController extends Controller
       return Response()->json($filtered);
   }
   public function progress(Request $req){
-    $client = new Client();
-    $data = $client->request('GET', ($this->ip()).'/api/progress?data='.$req->data)->getBody()->getContents();
-    $p['status'] = json_decode($data);
-    return response()->json($p);
+    return "";
+    return DB::connection('mysql-qportal')->table('serial')->where('mapid', $req->data)->first();
+    // $client = new Client();
+    // $data = $client->request('GET', ($this->ip()).'/api/progress?data='.$req->data)->getBody()->getContents();
+    // $p['status'] = json_decode($data);
+    // return response()->json($p);
   }
   public function print(request $req){
     $value = json_decode(base64_decode($req->id));

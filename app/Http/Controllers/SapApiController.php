@@ -26,7 +26,7 @@ use Auth;
 class SapApiController extends Controller
 {
     public function ip(){
-        return "http://192.168.1.38:8000";
+        return "http://192.168.1.26:8000";
       }
     public function mssqlcon(){
         return \Auth::user()->dbselection->connection;
@@ -99,6 +99,12 @@ class SapApiController extends Controller
         $ar =  ["data"=> $data, "brand"=> $req->brand];
         return $ar;
     }
+    public function subcatgroup(){
+        $data = \DB::connection($this->mssqlcon())->table('@subcatgroup')
+                ->select(\DB::raw("Code + ' - ' + Name AS CodeName"), 'Code', 'Name')->get() ;
+        $data->prepend((object) ['CodeName' => '', 'Code' => '', 'Name' => '']);
+        return $data;
+    }
     public function vendor(){
         $data = \DB::connection($this->mssqlcon())->table('ocrd')
                 ->select("CardCode","CardName")->where("CardType", 'S')->where('Password', 'S')->get() ;
@@ -151,6 +157,7 @@ class SapApiController extends Controller
         return $body;
     }
     public function fields(){
+        $subcatgroup = $this->subcatgroup();
         $oitg = $this->oitg();
         $vendor =  $this->vendor();
         $client = new Client();
@@ -165,6 +172,7 @@ class SapApiController extends Controller
         $arr['firmcode'] = json_decode($firmcode);
         $arr['oitb'] = json_decode($oitb);
         $arr['oitg'] = json_decode($oitg);
+        $arr['subcatgroup'] = json_decode($subcatgroup);
         return response()->json($arr);
     }
     public function progress(Request $req){
