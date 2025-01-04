@@ -76,7 +76,7 @@ class InventoryGrpoController extends Controller
       
       $dd = explode(",", $code);
       if( $dd[0] == 'ADMN'){
-        $whs = ["ADMN","ADM2","ANON","EASY","THRE","STEA","ELEC","OUTX","ISAB","APPT","CAMA", "MIAW"];
+        $whs = ["ADMN","ADM2","ANON","EASY","THRE","STEA","ELEC","OUTX","ISAB","APPT","CAMA", "MIAW","URDA"];
       }else{
         $whs = $dd[0];
       }
@@ -323,6 +323,7 @@ class InventoryGrpoController extends Controller
     return $pdf->download('sample.pdf')->header('Access-Control-Expose-Headers', 'Content-Disposition'); 
   }
   public function checksn(request $req){
+    return 0;
     return DB::connection($this->mssqlcon())->table('OSRI')->select("IntrSerial as sn")->where('ItemName', $req->model)->where('IntrSerial',  $req->sn)->get();
   }
   public function getlogs(request $req){

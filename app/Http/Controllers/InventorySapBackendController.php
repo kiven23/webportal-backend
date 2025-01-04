@@ -77,6 +77,8 @@ class InventorySapBackendController extends Controller
                     return DB::connection($this->mssqlcon())->table('OWTR');
                 }elseif($t == 'whslist'){
                     return DB::connection($this->mssqlcon())->table('OWHS');
+                }elseif($t == 'udf'){
+                    return DB::connection($this->mssqlcon())->table('UFD1')->where('TableID', 'OWTR');
                 }else{
                 return "ERROR WEW!!";
             }
@@ -141,6 +143,11 @@ class InventorySapBackendController extends Controller
                 //plucking
                 //?get=index&docentry={}
                 return Recustomize($req->docentry, $this->mssqlcon());
+            }elseif($req->get == 'udf'){
+                return $this->SapTablesInventoryTransfer('udf')
+                ->where('FieldID', $req->id)
+                ->select('FldValue','Descr')
+                ->get();
             }else{
                 return "ERROR";
             }
