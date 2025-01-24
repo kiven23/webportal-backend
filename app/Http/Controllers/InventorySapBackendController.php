@@ -78,7 +78,7 @@ class InventorySapBackendController extends Controller
                 }elseif($t == 'whslist'){
                     return DB::connection($this->mssqlcon())->table('OWHS');
                 }elseif($t == 'udf'){
-                    return DB::connection($this->mssqlcon())->table('UFD1')->where('TableID', 'OWTR');
+                    return DB::connection($this->mssqlcon())->table('UFD1');
                 }else{
                 return "ERROR WEW!!";
             }

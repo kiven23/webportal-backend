@@ -26,7 +26,7 @@ use Auth;
 class SapApiController extends Controller
 {
     public function ip(){
-        return "http://192.168.1.26:8000";
+        return "http://192.168.1.240:8000";
       }
     public function mssqlcon(){
         return \Auth::user()->dbselection->connection;
