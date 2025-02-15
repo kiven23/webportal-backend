@@ -64,6 +64,7 @@ class InventorySapBackendController extends Controller
     public function SapTablesInventoryTransfer($t){
         if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
             if($t == 'items'){
+           
                 return DB::connection($this->mssqlcon())->table('OITM') 
                 ->select('ItemCode','ItemName','FrgnName','OnHand',
                 'U_srp','U_RegNC','U_PresentNC','U_Freebies','U_cSizes');
@@ -93,16 +94,43 @@ class InventorySapBackendController extends Controller
             ->select('DocEntry','ItemCode','Dscription as ItemName','Quantity','WhsCode','AcctCode', 'Text')
             ->where('DocEntry', $DocEntry)->get();
        }
+       //FUNCTION GET WAREHOUSE
+       function Warehouse($functions,$itemCode){
+          return  $warehouse = $functions->SapTablesInventoryTransfer('itembywarehouse')
+            ->select('ItemCode','WhsCode')                
+            ->where('ItemCode',  $itemCode)
+            ->where('OnHand', '>', 0)
+            ->get();
+       }
        //END
        try {
             if($req->get == 'items'){
                 if($req->page || $req){
                     if($req->search){
-                        return $this->SapTablesInventoryTransfer('items')
-                        ->where('ItemName', 'LIKE', '%'.$req->search.'%')
+                        $req->search = DB::connection($this->mssqlcon())->table('OSRN')->where('DistNumber', $req->search)->pluck('ItemCode')->first();
+                         
+                        $get = $this->SapTablesInventoryTransfer('items')
+                        ->where('ItemCode', 'LIKE', '%'.$req->search.'%')
                         ->where('OnHand', '>', 0)
-                        ->paginate(10);
+                        ->paginate(1)
+                         ;
+                        foreach(Warehouse($this,$req->search) as $i){
+                            $out[] =  ['ItemCode' => @$get[0]->ItemCode,
+                                       'id'=> @$get[0]->ItemCode.'-'.@$i->WhsCode,
+                                       'WhsCode'=> @$i->WhsCode,
+                                       'ItemName' => @$get[0]->ItemName ,
+                                       'FrgnName' => @$get[0]->FrgnName,
+                                       'OnHand'	=>   @$get[0]->OnHand,
+                                       'U_srp'  =>	@$get[0]->U_srp,
+                                       'U_RegNC' =>	@$get[0]->U_RegNC,
+                                       'U_PresentNC' =>	@$get[0]->U_PresentNC,
+                                       'U_Freebies' =>	@$get[0]->U_Freebies,
+                                       'U_cSizes'	=> @$get[0]->U_cSizes
+                            ];
+                        }
+                        return $out;
                     }else{
+                        return "";
                         return $this->SapTablesInventoryTransfer('items') 
                         ->orderby('CreateDate', 'DESC')
                         ->where('OnHand', '>', 0)

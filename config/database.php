@@ -60,6 +60,7 @@ $connections = [
         'charset' => 'utf8',
         'prefix' => '',
         'prefix_indexes' => true,
+        
     ],
     'sqlsrv2' => [
         'driver' => env('DB_CONNECTION_THIRD'),
@@ -109,6 +110,18 @@ $connections = [
         'prefix' => '',
         'prefix_indexes' => true,
     ],
+    'mysql-qportal-test' => [
+        'driver' => env('DB_CONNECTION_SERVER2_TEST'),
+        'url' => env('DATABASE_URL_TEST'),
+        'host' => env('DB_HOST_SERVER2_TEST', 'localhost'),
+        'port' => env('DB_PORT_SERVER2_TEST', '1433'),
+        'database' => env('DB_DATABASE_SERVER2_TEST', 'forge'),
+        'username' => env('DB_USERNAME_SERVER2_TEST', 'forge'),
+        'password' => env('DB_PASSWORD_SERVER2_TEST', ''),
+        'charset' => 'utf8',
+        'prefix' => '',
+        'prefix_indexes' => true,
+    ],
 ];
 
 foreach ($database_list as  $dbs) {
@@ -124,6 +137,7 @@ foreach ($database_list as  $dbs) {
         'charset' => 'utf8',
         'prefix' => '',
         'prefix_indexes' => true,
+        
     ];
 }
 

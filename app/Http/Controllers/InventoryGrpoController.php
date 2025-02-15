@@ -15,7 +15,7 @@ class InventoryGrpoController extends Controller
     #SERVER3 http://192.168.1.3:8082
     #SERVER2 http://192.168.1.26:8082
     #SERVER1
-    return "http://192.168.1.240:8082";
+    return \Auth::user()->backend;
   }
   public function mssqlcon(){
     return \Auth::user()->dbselection->connection;
@@ -94,12 +94,13 @@ class InventoryGrpoController extends Controller
             'A.GrossBuyPr', 'A.PriceBefDi', 'A.DocDate', 'A.Flags', 'A.OpenCreQty',
             'A.UseBaseUn', 'A.SubCatNum', 'A.BaseCard', 'A.TotalSumSy', 'A.OpenSumSys',
             'A.InvntSttus', 'A.OcrCode', 'A.Project', 'A.CodeBars', 'A.VatPrcnt',
-            'A.VatGroup', 'A.PriceAfVAT', 'A.Height1', 'C.FirmName',
+            'A.VatGroup', 'A.PriceAfVAT', 'A.Height1', 'C.FirmName','F.Comments',
             \DB::raw('CASE WHEN A.Quantity = A.OpenQty THEN 1 ELSE 0 END AS Remaining'),
             \DB::raw('(A.Quantity - A.OpenQty) AS createdFor')
         )
           ->join('OITM as B', 'A.ItemCode', '=', 'B.ItemCode')
           ->join('OMRC as C', 'C.FirmCode', '=', 'B.FirmCode')
+          ->join('OPOR as F', 'A.DocEntry', '=', 'F.DocEntry')
           ->where('A.DocEntry', $req->data);
           // ->whereIn(\DB::raw('LEFT(A.WhsCode, 4)'), $whs)
           // ->whereRaw('LEFT(A.WhsCode, 4) = ?', [$whs])  
@@ -122,7 +123,7 @@ class InventoryGrpoController extends Controller
         'body' => json_encode($req->all()),
          
     ]);
-    $all = ['key'=> json_decode($response->getBody()), 'data'=> $data2, 'barcoder'=> $user];
+    $all = ['key'=> json_decode($response->getBody()), 'data'=> $data2, 'barcoder'=> $user, 'comment'=> ''];
    
     return $all;
   }
@@ -131,8 +132,12 @@ class InventoryGrpoController extends Controller
     $user = \Auth::user()->barcoder;
     $database = explode(' -', \Auth::user()->dbselection->dbname);
     $req['db'] = $database[0];
- 
-    $data = DB::connection('mysql-qportal')->table('po')->where('DocEntry', $req->data)->get();
+    if(\Auth::user()->id == 2608){
+      $data = DB::connection('mysql-qportal-test')->table('po')->where('DocEntry', $req->data)->get();
+    }else{
+      $data = DB::connection('mysql-qportal')->table('po')->where('DocEntry', $req->data)->get();
+    }
+    
          
 
    
@@ -275,8 +280,12 @@ class InventoryGrpoController extends Controller
       // $line = (int)$expo[2];
       
       function getDocentry($mapid){
+        if(\Auth::user()->id == 2608){
+          return DB::connection('mysql-qportal-test')->table('serial')->where('mapid', $mapid)->pluck('docentry')->first();
+        }else{
+          return DB::connection('mysql-qportal')->table('serial')->where('mapid', $mapid)->pluck('docentry')->first();
+        }
         
-        return DB::connection('mysql-qportal')->table('serial')->where('mapid', $mapid)->pluck('docentry')->first();
       }
       // function getSn($map){
       //   return DB::connection('mysql-qportal')->table('mapline')->where('mapline', $map)->get();
@@ -327,7 +336,8 @@ class InventoryGrpoController extends Controller
     return DB::connection($this->mssqlcon())->table('OSRI')->select("IntrSerial as sn")->where('ItemName', $req->model)->where('IntrSerial',  $req->sn)->get();
   }
   public function getlogs(request $req){
-    return DB::connection('diapidata')->table('grpologs')->where('mapid', $req->data)->pluck('logs')->first();
-
+    
+      return DB::connection('diapidata')->table('grpologs')->where('mapid', $req->data)->pluck('logs')->first();
+     
   }
 }
