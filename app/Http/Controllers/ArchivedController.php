@@ -8,6 +8,7 @@ use App\Archived;
 use App\GovDataReport;
 use App\Archived_Add;
 use DB;
+
 class ArchivedController extends Controller
 {
     public function all(){
@@ -432,5 +433,6 @@ class ArchivedController extends Controller
          $file = '../storage/app/'. $location;
         return response()->download($file);
     }
+     
     
 }

@@ -193,7 +193,7 @@ Route::group(['prefix' => 'archived', 'middleware' => ['jwt.auth', 'government_c
 	Route::post('/download', 'ArchivedController@download')->name('archived.land.download');
 	Route::post('/delete', 'ArchivedController@delete')->name('archived.land.delete');
 });
-
+ 
 //AGENCIES
 Route::group(['prefix' => 'agencies', 'middleware' => ['jwt.auth', 'government_clearance']], function () {
 	Route::get('/index', 'AgenciesController@all')->name('agencies.all');
@@ -435,6 +435,7 @@ Route::get('/getlogs/grpo', 'InventoryGrpoController@getlogs');
  
 //END GRPO INVENTORY
 //INVENTORY TRANSFER
+ 
 Route::get('/inventory/transfer/printing', 'InventoryTransferController@owtr');
 Route::get('/inventory/transfer/printing/getitem', 'InventoryTransferController@wtr1');
 Route::get('/inventory/transfer/printing/getserial', 'InventoryTransferController@osri');
@@ -450,6 +451,8 @@ Route::post('/inventory/goodsissue/submit', 'InventorySapBackendController@sendG
 //END SAP GOODSISSUE
 //SAP INVENTORYTRANSFER START
 Route::get('/inventory/transfer/getters', 'InventorySapBackendController@GettersItemsInventoryTransfer');
+Route::get('/inventory/transfer/reports/print', 'InventorySapBackendController@printInventorytransfer');
+
 Route::post('/inventory/transfer/submit', 'InventorySapBackendController@sendInventoryTransfer');
 //END SAP GOODSISSUE
 //SAP GOODSRECEIPT START

@@ -76,7 +76,7 @@ class InventoryGrpoController extends Controller
       
       $dd = explode(",", $code);
       if( $dd[0] == 'ADMN'){
-        $whs = ["ADMN","ADM2","ANON","EASY","THRE","STEA","ELEC","OUTX","ISAB","APPT","CAMA", "MIAW","URDA"];
+        $whs = ["ADMN","ADM2","ANON","EASY","THRE","STEA","ELEC","OUTX","ISAB","APPT","CAMA", "MIAW"];
       }else{
         $whs = $dd[0];
       }

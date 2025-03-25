@@ -7,10 +7,11 @@ use App\Http\Controllers\Controller;
 use GuzzleHttp\Client;
 use DB;
 use Auth;
+use PDF;
 class InventorySapBackendController extends Controller
 {
     public function ip(){
-        return "http://192.168.1.26:8082";
+        return \Auth::user()->backend;
     }
     public function mssqlcon(){
         return \Auth::user()->dbselection->connection;
@@ -102,33 +103,52 @@ class InventorySapBackendController extends Controller
             ->where('OnHand', '>', 0)
             ->get();
        }
+       function checkserial($itemCode,$whs,$serial, $t){
+            return  $t->SapTablesInventoryTransfer('availablesn')
+            ->select('IntrSerial')
+            ->where('ItemCode', $itemCode)
+            ->where('WhsCode', $whs)
+            ->where('IntrSerial', $serial)
+            ->pluck('IntrSerial')
+            ->first();
+       }
        //END
        try {
             if($req->get == 'items'){
                 if($req->page || $req){
                     if($req->search){
+                        $v= $req->search;
                         $req->search = DB::connection($this->mssqlcon())->table('OSRN')->where('DistNumber', $req->search)->pluck('ItemCode')->first();
                          
-                        $get = $this->SapTablesInventoryTransfer('items')
+                       $get = $this->SapTablesInventoryTransfer('items')
                         ->where('ItemCode', 'LIKE', '%'.$req->search.'%')
                         ->where('OnHand', '>', 0)
                         ->paginate(1)
                          ;
+                         
                         foreach(Warehouse($this,$req->search) as $i){
-                            $out[] =  ['ItemCode' => @$get[0]->ItemCode,
-                                       'id'=> @$get[0]->ItemCode.'-'.@$i->WhsCode,
-                                       'WhsCode'=> @$i->WhsCode,
-                                       'ItemName' => @$get[0]->ItemName ,
-                                       'FrgnName' => @$get[0]->FrgnName,
-                                       'OnHand'	=>   @$get[0]->OnHand,
-                                       'U_srp'  =>	@$get[0]->U_srp,
-                                       'U_RegNC' =>	@$get[0]->U_RegNC,
-                                       'U_PresentNC' =>	@$get[0]->U_PresentNC,
-                                       'U_Freebies' =>	@$get[0]->U_Freebies,
-                                       'U_cSizes'	=> @$get[0]->U_cSizes
+                            
+                            if(checkserial(@$get[0]->ItemCode,@$i->WhsCode,$v,$this)){
+                                $out[] =  ['ItemCode' => @$get[0]->ItemCode,
+                                'id'=> @$get[0]->ItemCode.'-'.@$i->WhsCode,
+                                'WhsCode'=> @$i->WhsCode,
+                                'ItemName' => @$get[0]->ItemName ,
+                                'FrgnName' => @$get[0]->FrgnName,
+                                'OnHand'	=>   @$get[0]->OnHand,
+                                'U_srp'  =>	@$get[0]->U_srp,
+                                'U_RegNC' =>	@$get[0]->U_RegNC,
+                                'U_PresentNC' =>	@$get[0]->U_PresentNC,
+                                'U_Freebies' =>	@$get[0]->U_Freebies,
+                                'U_cSizes'	=> @$get[0]->U_cSizes
                             ];
+                            }
+                            
+                        }if($out){
+                            return $out;
+                        }else{
+                            return "";
                         }
-                        return $out;
+                         
                     }else{
                         return "";
                         return $this->SapTablesInventoryTransfer('items') 
@@ -459,4 +479,170 @@ public function sendNewBusinessPartner(request $req){
 }
 
 ## ------------------------------------------- END BUSINESS PARTNER CONTROLLER-----------------------------------------------#
+
+## ------------------------------------------- INVENTORY TRANSFER REPORTS GENERATION ----------------------------------------#
+
+public function inventorytransferreports($req){
+     
+     
+    try {
+      // $database = $this->mssqlcon();
+     $database = '7279f466b64f2099266553eba43fef48';
+      function getDocentry($DocEntry,$database){
+        return DB::connection($database)->table('wtr1')->where('DocEntry',  $DocEntry)->get();
+      }
+    
+      function getItems($docentry, $database){
+        return DB::connection($database)->table('pdn1')->where('docentry', $docentry)->get();
+      }
+      function getProdCat($itemcode, $database){
+        return DB::connection($database)->table('oitm')->where('ItemCode', $itemcode)->select('FrgnName', 'FirmCode')->get();
+      }
+      function getBrand($firmcode, $database){
+        return DB::connection($database)->table('omrc')->where('FirmCode', $firmcode)->pluck('FirmName')->first();
+      }
+      function getHeading($docentry, $database){
+        return DB::connection($database)->table('owtr')->where('DocEntry', $docentry)->select('DocNum','DocDate','CardName','Comments','NumAtCard');
+
+      }
+      function getSerial($docnum,$docenty,$itemcode,$database){
+         return DB::connection($database)->table('OSRN as T0')
+         ->select(
+             DB::raw('MIN(T0.DistNumber) as DistNumber'),
+           
+     
+         )
+         ->join('OITM as T1', 'T1.ItemCode', '=', 'T0.ItemCode')
+         ->leftJoin('OSRQ as T2', function($join) {
+             $join->on('T2.ItemCode', '=', 'T0.ItemCode')
+                  ->on('T2.SysNumber', '=', 'T0.SysNumber')
+                  ->where('T2.Quantity', '>', 0);
+         })
+         ->join('ITL1 as T3', function($join) {
+             $join->on('T3.ItemCode', '=', 'T0.ItemCode')
+                  ->on('T3.SysNumber', '=', 'T0.SysNumber');
+         })
+         ->join('OITL as T4', 'T4.LogEntry', '=', 'T3.LogEntry')
+         ->leftJoin('OCRD as T5', 'T5.CardCode', '=', 'T4.CardCode')
+         ->where('T1.InvntItem', 'Y')
+         ->where('T4.ApplyType', 67)
+         ->whereBetween('T4.AppDocNum', [$docnum, $docnum])
+         ->whereBetween('T4.ApplyEntry', [$docenty, $docenty])
+         ->where('T4.ItemCode',  $itemcode)
+         ->groupBy('T0.AbsEntry')
+         ->get();   
+      }
+
+      $form = getDocentry($req->DocEntry,$database);
+      $whs = explode('-', $form[0]->WhsCode);
+      $getbranch = DB::table('branches')->where('whscode', 'LIKE', '%'.$whs[0].'%')->get() ;
+      $heading = getHeading($req->DocEntry, $database)->get();
+      $data = [];
+      $sumqty = [];
+      foreach($form as $x){
+        $data[] = ["prodcat"=> getProdCat($x->ItemCode, $database)[0]->FrgnName,
+            "brand"=> getBrand(getProdCat($x->ItemCode, $database)[0]->FirmCode, $database),
+            "model"=> $x->Dscription,
+            "whs"=> $x->WhsCode,
+            "qty"=> (float)$x->Quantity, 
+            "serial"=> getSerial($req->DocNum,$req->DocEntry,$x->ItemCode,$database)];
+        $sumqty[] = $x->Quantity;
+      }
+      return ["head"=> $heading, "item"=> $data, "total"=> $sumqty, "additional"=> $getbranch];
+    } catch (\Exception $e) {
+      return $e;
+    }
+ 
+  }
+## ------------------------------------------- END INVENTORY TRANSFER REPORTS CREATION --------------------------------------#
+public function printInventorytransfer(request $req){
+   $client = new Client(['timeout' => 300000]);
+   function format_json($serials){
+            $serial = [];
+            foreach($serials as $sn){
+               $serial [] = $sn->DistNumber;
+            }
+            return $serial;
+   }
+   function format_reports($index, $data,$comment,$branch,$docnum,$date){
+        return  ["brand" => $data['brand'],
+                "prodcat" => $data['prodcat'],
+                "Description" => $data['model'],
+                "Warehouse" => $data['whs'],
+                "qty" => $data['qty'],
+                "serial" => format_json($data['serial']),
+                "name" => $branch,
+                "no" => $docnum,
+                "date" => date('Y/m/d', strtotime($date)) ,
+                "comment" => $comment];
+   }
+   $reports = $this->inventorytransferreports($req);
+   $comment = $reports['head'][0]->Comments;
+   $date = $reports['head'][0]->DocDate;
+   $branch = $reports['additional'][0]->name;
+   $docnum = $reports['head'][0]->DocNum;
+   $data = [];
+   foreach($reports['item'] as $index=> $rep){
+      $data[] = format_reports($index,$rep,$comment,$branch,$docnum,$date);
+   }
+    
+   $response = $client->post('http://192.168.200.11:8004/api/reports/crystal?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJleHAiOjIwNTc3MjQ3NDd9.0F5ZFHigMNt732EHIFd7azram_PWHIC5RGkkz8wqEz8', [
+    'headers' => ['Content-Type' => 'application/json'],
+    'body' => json_encode($data),
+    ]);
+
+    file_put_contents('InventoryTransfer-Report-'.$date.'.pdf', $response->getBody());
+    $response = response()->download('InventoryTransfer-Report-'.$date.'.pdf');
+    $response->headers->set('Access-Control-Expose-Headers', 'Content-Disposition');
+    return $response;
+ 
+   
+
+   
+    #====================OLD CODE========================
+   function checkqty($q){
+        if($q > 80){
+            return 2;
+        }
+        if($q < 80){
+            return 5;
+        }
+   }
+   $reports = $this->inventorytransferreports($req);
+   $head = $reports['head'];
+   $rep = $reports['item'] ;
+   $additional = $reports['additional'];
+   $items = [];
+   $temp = [];
+    foreach ($rep as $index => $display) {
+        $temp[] = $display;
+        
+        // Once $temp has 2 items, push it to $items and reset $temp
+        $t = [];
+        if (count($temp) == checkqty( array_sum($reports['total']))) {
+            foreach($temp as $c	){
+                $t[] = (int)($c['qty']);
+            }
+            $items[] = ["branch"=>  $additional[0]->name,"items"=> $temp, "head"=> $head, "total"=>   $t ];
+            $temp = [];
+        }
+    }
+    // If there are remaining items (odd count), push them as well
+    if (!empty($temp)) {
+        foreach($temp as $c	){
+            $t[] = (int)($c['qty']);
+        }
+        $items[] =["branch"=>  $additional[0]->name,"items"=> $temp, "head"=> $head, "total"=>   $t ];
+    }
+  //   return $items;
+  return ["data" => $items ];
+  return view('grpobarcode.inventory_reports',  ["data" => $items ]);
+   $pdf = PDF::loadView('grpobarcode.inventory_reports',  ["data" => $items ]) ->setPaper('letter', 'portrait');
+   return $pdf->download('inventory-transfer.pdf')->header('Access-Control-Expose-Headers', 'Content-Disposition'); 
+   return ["additional"=> $additional[0],"head"=> $head, "rep"=> $rep, "total"=> array_sum($reports['total'],)];
+    //return view('inventory_transfer.inventory_reports', compact(''));
+   return view('grpobarcode.inventory_reports',  ["additional"=> $additional[0],"head"=> $head, "rep"=> $rep, "total"=> array_sum($reports['total'],)]);
+//    $pdf = PDF::loadView("grpobarcode.inventory_reports", ["additional"=> $additional[0],"head"=> $head, "rep"=> $rep, "total"=> array_sum($reports['total'])]) ->setPaper('letter', 'portrait');
+//     return $pdf->download('inventory-transfer.pdf')->header('Access-Control-Expose-Headers', 'Content-Disposition'); 
+}
 }
