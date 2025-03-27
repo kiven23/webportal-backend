@@ -164,8 +164,7 @@ class InventorySapBackendController extends Controller
                      ->where('ItemCode', $req->itemcode)
                     ->where('OnHand', '>', 0)
                     ->paginate(10);
-    
-              
+  
             }elseif($req->get == 'availablesn'){
                 return $this->SapTablesInventoryTransfer('availablesn')
                     ->select('IntrSerial','ItemCode','WhsCode')
@@ -483,15 +482,12 @@ public function sendNewBusinessPartner(request $req){
 ## ------------------------------------------- INVENTORY TRANSFER REPORTS GENERATION ----------------------------------------#
 
 public function inventorytransferreports($req){
-     
-     
     try {
       // $database = $this->mssqlcon();
      $database = '7279f466b64f2099266553eba43fef48';
       function getDocentry($DocEntry,$database){
         return DB::connection($database)->table('wtr1')->where('DocEntry',  $DocEntry)->get();
       }
-    
       function getItems($docentry, $database){
         return DB::connection($database)->table('pdn1')->where('docentry', $docentry)->get();
       }
@@ -509,8 +505,6 @@ public function inventorytransferreports($req){
          return DB::connection($database)->table('OSRN as T0')
          ->select(
              DB::raw('MIN(T0.DistNumber) as DistNumber'),
-           
-     
          )
          ->join('OITM as T1', 'T1.ItemCode', '=', 'T0.ItemCode')
          ->leftJoin('OSRQ as T2', function($join) {
@@ -554,7 +548,7 @@ public function inventorytransferreports($req){
     }
  
   }
-## ------------------------------------------- END INVENTORY TRANSFER REPORTS CREATION --------------------------------------#
+ 
 public function printInventorytransfer(request $req){
    $client = new Client(['timeout' => 300000]);
    function format_json($serials){
@@ -595,10 +589,7 @@ public function printInventorytransfer(request $req){
     $response = response()->download('InventoryTransfer-Report-'.$date.'.pdf');
     $response->headers->set('Access-Control-Expose-Headers', 'Content-Disposition');
     return $response;
- 
-   
-
-   
+   ## ------------------------------------------- END INVENTORY TRANSFER REPORTS CREATION --------------------------------------#
     #====================OLD CODE========================
    function checkqty($q){
         if($q > 80){
@@ -645,4 +636,155 @@ public function printInventorytransfer(request $req){
 //    $pdf = PDF::loadView("grpobarcode.inventory_reports", ["additional"=> $additional[0],"head"=> $head, "rep"=> $rep, "total"=> array_sum($reports['total'])]) ->setPaper('letter', 'portrait');
 //     return $pdf->download('inventory-transfer.pdf')->header('Access-Control-Expose-Headers', 'Content-Disposition'); 
 }
+
+#####==========================PURCHASING AP CREDIT MEMO ==================================#####
+    //SAP TABLES BACK-END INVENTORY TRANSFER
+    public function SapTablesAPCM($t){
+        if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
+            if($t == 'items'){
+           
+                return DB::connection($this->mssqlcon())->table('OITM') 
+                ->select('ItemCode','ItemName','FrgnName','OnHand',
+                'U_srp','U_RegNC','U_PresentNC','U_Freebies','U_cSizes');
+                }elseif($t == 'itembywarehouse'){
+                    return DB::connection($this->mssqlcon())->table('OITW');
+                }elseif($t == 'availablesn'){
+                    return DB::connection($this->mssqlcon())->table('OSRI');
+                }elseif($t == 'gl'){
+                    return DB::connection($this->mssqlcon())->table('OACT');
+                }elseif($t == 'inventorytransferlist'){
+                    return DB::connection($this->mssqlcon())->table('ORPC');
+                }elseif($t == 'whslist'){
+                    return DB::connection($this->mssqlcon())->table('OWHS');
+                }elseif($t == 'udf'){
+                    return DB::connection($this->mssqlcon())->table('UFD1');
+                }elseif($t == 'ocrd'){
+                    return DB::connection($this->mssqlcon())->table('OCRD');
+                }else{
+                return "ERROR WEW!!";
+            }
+        }
+    }
+    public function GettersItemsAPCM(Request $req){
+        if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
+    //ARRAY DATA MANIPULATION
+    function Recustomize($DocEntry, $db){
+            return DB::connection($db)->table('RPC1')
+            ->select('DocEntry','ItemCode','Dscription as ItemName','Quantity','WhsCode','AcctCode', 'Text')
+            ->where('DocEntry', $DocEntry)->get();
+    }
+    //FUNCTION GET WAREHOUSE
+    function Warehouse($functions,$itemCode){
+        return  $warehouse = $functions->SapTablesAPCM('itembywarehouse')
+            ->select('ItemCode','WhsCode')                
+            ->where('ItemCode',  $itemCode)
+            ->where('OnHand', '>', 0)
+            ->get();
+    }
+    function checkserial($itemCode,$whs,$serial, $t){
+            return  $t->SapTablesAPCM('availablesn')
+            ->select('IntrSerial')
+            ->where('ItemCode', $itemCode)
+            ->where('WhsCode', $whs)
+            ->where('IntrSerial', $serial)
+            ->pluck('IntrSerial')
+            ->first();
+    }
+    //END
+    try {
+            if($req->get == 'items'){
+                if($req->page || $req){
+                    if($req->search){
+                        $v= $req->search;
+                        $req->search = DB::connection($this->mssqlcon())->table('OSRN')->where('DistNumber', $req->search)->pluck('ItemCode')->first();
+                        
+                    $get = $this->SapTablesAPCM('items')
+                        ->where('ItemCode', 'LIKE', '%'.$req->search.'%')
+                        ->where('OnHand', '>', 0)
+                        ->paginate(1)
+                        ;
+                        foreach(Warehouse($this,$req->search) as $i){
+                            
+                            if(checkserial(@$get[0]->ItemCode,@$i->WhsCode,$v,$this)){
+                                $out[] =  ['ItemCode' => @$get[0]->ItemCode,
+                                'id'=> @$get[0]->ItemCode.'-'.@$i->WhsCode,
+                                'WhsCode'=> @$i->WhsCode,
+                                'ItemName' => @$get[0]->ItemName ,
+                                'FrgnName' => @$get[0]->FrgnName,
+                                'OnHand'	=>   @$get[0]->OnHand,
+                                'U_srp'  =>	@$get[0]->U_srp,
+                                'U_RegNC' =>	@$get[0]->U_RegNC,
+                                'U_PresentNC' =>	@$get[0]->U_PresentNC,
+                                'U_Freebies' =>	@$get[0]->U_Freebies,
+                                'U_cSizes'	=> @$get[0]->U_cSizes
+                            ];
+                            }
+                            
+                        }if($out){
+                            return $out;
+                        }else{
+                            return "";
+                        }
+                        
+                    }else{
+                        return "";
+                        return $this->SapTablesAPCM('items') 
+                        ->orderby('CreateDate', 'DESC')
+                        ->where('OnHand', '>', 0)
+                        ->paginate(10);
+                    }
+                }
+            }elseif($req->get == 'itembywarehouse'){
+        
+                    return $this->SapTablesAPCM('itembywarehouse')
+                    ->select('ItemCode','WhsCode','OnHand','IsCommited','OnOrder')
+                    ->where('ItemCode', $req->itemcode)
+                    ->where('OnHand', '>', 0)
+                    ->paginate(10);
+
+            }elseif($req->get == 'availablesn'){
+                return $this->SapTablesAPCM('availablesn')
+                    ->select('IntrSerial','ItemCode','WhsCode')
+                    ->where('ItemCode', $req->itemcode)
+                    ->where('WhsCode', $req->warehouse)
+                // ->where('Status', $req->status)
+                    ->get();
+            }elseif($req->get == 'gl'){
+                return $this->SapTablesAPCM('gl')
+                ->select('AcctCode','AcctName','CurrTotal')
+                ->where('FrozenFor', 'N')
+                ->get();
+            }elseif($req->get == 'inventorytransferlist'){
+                return $this->SapTablesAPCM('inventorytransferlist')
+                ->select('DocEntry','DocNum','DocStatus','DocDate','Comments','JrnlMemo','Filler')
+                ->orderby('DocDate', 'DESC')
+                ->paginate(1);
+            }elseif($req->get == 'whslist'){
+                return $this->SapTablesAPCM('whslist')
+                ->select('WhsCode')
+                ->get();
+            }elseif($req->get == 'index'){
+                //plucking
+                //?get=index&docentry={}
+                return Recustomize($req->docentry, $this->mssqlcon());
+            }elseif($req->get == 'udf'){
+                return $this->SapTablesAPCM('udf')
+                ->where('FieldID', $req->id)
+                ->select('FldValue','Descr')
+                ->get();
+            }elseif($req->get == 'vendor'){
+                return $this->SapTablesAPCM('ocrd')
+                ->where('CardType', 'S')
+                ->get();
+            }else{
+                return "ERROR";
+            }
+    }catch(\Exception $e){
+        return $e;
+    }
+    }else{
+        return Response()->json(['error'=>'No Access']);
+    }
+  }
+#####==========================PURCHASING AP END ==============================#####
 }

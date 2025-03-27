@@ -434,7 +434,7 @@ Route::get('/gen/grporeceiving', 'InventoryGrpoController@printreceiving');
 Route::get('/getlogs/grpo', 'InventoryGrpoController@getlogs');
  
 //END GRPO INVENTORY
-//INVENTORY TRANSFER
+//INVENTORY TRANSFER PRINTING
  
 Route::get('/inventory/transfer/printing', 'InventoryTransferController@owtr');
 Route::get('/inventory/transfer/printing/getitem', 'InventoryTransferController@wtr1');
@@ -452,8 +452,12 @@ Route::post('/inventory/goodsissue/submit', 'InventorySapBackendController@sendG
 //SAP INVENTORYTRANSFER START
 Route::get('/inventory/transfer/getters', 'InventorySapBackendController@GettersItemsInventoryTransfer');
 Route::get('/inventory/transfer/reports/print', 'InventorySapBackendController@printInventorytransfer');
-
 Route::post('/inventory/transfer/submit', 'InventorySapBackendController@sendInventoryTransfer');
+//SAP PURCHASING AP - CREDIT MEMO START
+Route::get('/inventory/purchasing/apcreditmemo/getters', 'InventorySapBackendController@GettersItemsAPCM');
+//SAP PURCHASING AP - INVOICE
+#Route::get('/inventory/purchasing/apinvoice/getters', 'InventorySapBackendController@GettersItemsInventoryTransfer');
+
 //END SAP GOODSISSUE
 //SAP GOODSRECEIPT START
 Route::get('/inventory/goodsreceipt/getters', 'InventorySapBackendController@GettersItemsGoodsReceipt');
