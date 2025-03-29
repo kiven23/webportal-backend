@@ -639,6 +639,30 @@ public function printInventorytransfer(request $req){
 
 #####==========================PURCHASING AP CREDIT MEMO ==================================#####
     //SAP TABLES BACK-END INVENTORY TRANSFER
+    public function sendapcmTransfer(request $req){
+        
+        
+        if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
+            $seriesname = \Auth::user()->branch->seriesname;
+          try{
+              if($req->all()){
+              $data = ["db"=> ['dbname' => $this->getdatabase()->dbname,  'dbserver' => $this->getdatabase()->server], "data"=> $req->all(), "series"=>  \Auth::user()->branch->seriesname]; 
+              $client = new Client(['timeout' => 300000]);
+               
+              $response = $client->post(($this->ip()).'/api/inventory/apcredit/memo', [
+                  'headers' => ['Content-Type' => 'application/json'],
+                  'body' => json_encode($data),  
+              ]);
+              $body = ($response->getBody());
+              return $body;
+          } 
+          }catch(\Exception $e){
+              return $e;
+          } 
+        }else{
+          return Response()->json(['error'=>'No Access']);
+        }
+       }
     public function SapTablesAPCM($t){
         if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
             if($t == 'items'){
@@ -660,6 +684,10 @@ public function printInventorytransfer(request $req){
                     return DB::connection($this->mssqlcon())->table('UFD1');
                 }elseif($t == 'ocrd'){
                     return DB::connection($this->mssqlcon())->table('OCRD');
+                }elseif($t == 'companies'){
+                    $companyID = \Auth::user()->branch->companies;
+                    return DB::table('companies')->where('id', $companyID )->pluck('name')->first();
+       
                 }else{
                 return "ERROR WEW!!";
             }
@@ -773,9 +801,11 @@ public function printInventorytransfer(request $req){
                 ->select('FldValue','Descr')
                 ->get();
             }elseif($req->get == 'vendor'){
-                return $this->SapTablesAPCM('ocrd')
-                ->where('CardType', 'S')
+                return $this->SapTablesAPCM('ocrd')->select("CardName","CardCode")
+                ->where('CardType', 'S')->where('validFor', 'y')->where('frozenFor', 'n')
                 ->get();
+            }elseif($req->get == 'companies'){
+                return $this->SapTablesAPCM('companies');
             }else{
                 return "ERROR";
             }

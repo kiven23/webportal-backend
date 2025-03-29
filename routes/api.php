@@ -455,6 +455,7 @@ Route::get('/inventory/transfer/reports/print', 'InventorySapBackendController@p
 Route::post('/inventory/transfer/submit', 'InventorySapBackendController@sendInventoryTransfer');
 //SAP PURCHASING AP - CREDIT MEMO START
 Route::get('/inventory/purchasing/apcreditmemo/getters', 'InventorySapBackendController@GettersItemsAPCM');
+Route::post('/inventory/apcm/submit', 'InventorySapBackendController@sendapcmTransfer');
 //SAP PURCHASING AP - INVOICE
 #Route::get('/inventory/purchasing/apinvoice/getters', 'InventorySapBackendController@GettersItemsInventoryTransfer');
 
