@@ -457,6 +457,7 @@ Route::post('/inventory/transfer/submit', 'InventorySapBackendController@sendInv
 Route::get('/inventory/purchasing/apcreditmemo/getters', 'InventorySapBackendController@GettersItemsAPCM');
 Route::post('/inventory/apcm/submit', 'InventorySapBackendController@sendapcmTransfer');
 //SAP PURCHASING AP - INVOICE
+Route::get('/inventory/purchasing/invoice/get', 'InventorySapBackendController@fetchCreatedAPCMExternal');
 #Route::get('/inventory/purchasing/apinvoice/getters', 'InventorySapBackendController@GettersItemsInventoryTransfer');
 
 //END SAP GOODSISSUE

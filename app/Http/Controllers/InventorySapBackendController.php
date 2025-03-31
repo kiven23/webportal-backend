@@ -816,5 +816,43 @@ public function printInventorytransfer(request $req){
         return Response()->json(['error'=>'No Access']);
     }
   }
+  public function fetchCreatedAPCMExternal(request $req){
+   
+     function getItem($icode){
+       $d = DB::connection('mysql-qportal-test')->table('apcm_items')->where('docnum_id', $icode)->get();
+       foreach($d as $item){
+         $data[] = ["ItemCode"=>$item->itemcode, "Quantity"=> $item->quantity, "WarehouseCode"=> $item->towarehouse, "SerialNumbers"=> json_decode($item->serialnumbers)];
+    
+       }
+       return $data;
+     }
+     function getSourceVendor($v){
+        return DB::table('companies')->where('name', $v)->pluck('sap_name')->first();
+     }
+     function getCardCode($t,$c){
+        return DB::connection($t->mssqlcon())->table('OCRD')->where('CardName', $c)->pluck('CardCode')->first();
+     }
+     function getSeries($branch,$d, $objectcode){
+        $seriesname = DB::table('branches')->where('id', $branch->id)->pluck('seriesname')->first();
+        return DB::connection($d->mssqlcon())->table('NNM1')->where('ObjectCode',  $objectcode)->where('SeriesName', $seriesname)->pluck('series')->first();
+     }
+      $id = \Auth::user()->branch;
+     $companies = DB::table('companies')->where('id', $id->companies)->pluck('sap_name')->first();
+     $created = DB::connection('mysql-qportal-test')->table('apcm_created')->where('to_vendor', 'like', '%'.$companies.'%')->get();
+     
+     foreach( $created  as $i){
+         
+        $data [] = ["source_vendor"=> getSourceVendor($i->source_vendor),
+                    "CardCode"=>  getCardCode($this,getSourceVendor($i->source_vendor)),
+                    "Series"=> (int)getSeries($id, $this, $i->objectcode),
+                    "objectcode"=>$i->objectcode,
+                    "to_vendor"=> $i->to_vendor,
+                    "status"=> $i->status,
+                    "lines"=> getItem($i->docnum_id)
+
+                    ];
+     }
+     return $data;
+  }
 #####==========================PURCHASING AP END ==============================#####
 }
