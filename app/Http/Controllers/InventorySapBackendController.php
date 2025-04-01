@@ -637,6 +637,8 @@ public function printInventorytransfer(request $req){
 //     return $pdf->download('inventory-transfer.pdf')->header('Access-Control-Expose-Headers', 'Content-Disposition'); 
 }
 
+
+
 #####==========================PURCHASING AP CREDIT MEMO ==================================#####
     //SAP TABLES BACK-END INVENTORY TRANSFER
     public function sendapcmTransfer(request $req){
@@ -816,43 +818,233 @@ public function printInventorytransfer(request $req){
         return Response()->json(['error'=>'No Access']);
     }
   }
-  public function fetchCreatedAPCMExternal(request $req){
-   
-     function getItem($icode){
-       $d = DB::connection('mysql-qportal-test')->table('apcm_items')->where('docnum_id', $icode)->get();
-       foreach($d as $item){
-         $data[] = ["ItemCode"=>$item->itemcode, "Quantity"=> $item->quantity, "WarehouseCode"=> $item->towarehouse, "SerialNumbers"=> json_decode($item->serialnumbers)];
-    
-       }
-       return $data;
-     }
-     function getSourceVendor($v){
-        return DB::table('companies')->where('name', $v)->pluck('sap_name')->first();
-     }
-     function getCardCode($t,$c){
-        return DB::connection($t->mssqlcon())->table('OCRD')->where('CardName', $c)->pluck('CardCode')->first();
-     }
-     function getSeries($branch,$d, $objectcode){
-        $seriesname = DB::table('branches')->where('id', $branch->id)->pluck('seriesname')->first();
-        return DB::connection($d->mssqlcon())->table('NNM1')->where('ObjectCode',  $objectcode)->where('SeriesName', $seriesname)->pluck('series')->first();
-     }
-      $id = \Auth::user()->branch;
-     $companies = DB::table('companies')->where('id', $id->companies)->pluck('sap_name')->first();
-     $created = DB::connection('mysql-qportal-test')->table('apcm_created')->where('to_vendor', 'like', '%'.$companies.'%')->get();
-     
-     foreach( $created  as $i){
-         
-        $data [] = ["source_vendor"=> getSourceVendor($i->source_vendor),
-                    "CardCode"=>  getCardCode($this,getSourceVendor($i->source_vendor)),
-                    "Series"=> (int)getSeries($id, $this, $i->objectcode),
-                    "objectcode"=>$i->objectcode,
-                    "to_vendor"=> $i->to_vendor,
-                    "status"=> $i->status,
-                    "lines"=> getItem($i->docnum_id)
-
-                    ];
-     }
-     return $data;
-  }
+  
 #####==========================PURCHASING AP END ==============================#####
+
+
+#####==========================PURCHASING AP INVOICE START ==================================#####
+    
+    //SAP TABLES BACK-END INVENTORY TRANSFER
+
+     
+    public function sendapInvoice(request $req){
+        
+        return $req;
+        if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
+            $seriesname = \Auth::user()->branch->seriesname;
+          try{
+              if($req->all()){
+              $data = ["db"=> ['dbname' => $this->getdatabase()->dbname,  'dbserver' => $this->getdatabase()->server], "data"=> $req->all(), "series"=>  \Auth::user()->branch->seriesname]; 
+              $client = new Client(['timeout' => 300000]);
+               
+              $response = $client->post(($this->ip()).'/api/inventory/apcredit/invoice', [
+                  'headers' => ['Content-Type' => 'application/json'],
+                  'body' => json_encode($data),  
+              ]);
+              $body = ($response->getBody());
+              return $body;
+          } 
+          }catch(\Exception $e){
+              return $e;
+          } 
+        }else{
+          return Response()->json(['error'=>'No Access']);
+        }
+       }
+    public function SapTablesAPINVOICE($t){
+        if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
+            if($t == 'items'){
+           
+                return DB::connection($this->mssqlcon())->table('OITM') 
+                ->select('ItemCode','ItemName','FrgnName','OnHand',
+                'U_srp','U_RegNC','U_PresentNC','U_Freebies','U_cSizes');
+                }elseif($t == 'itembywarehouse'){
+                    return DB::connection($this->mssqlcon())->table('OITW');
+                }elseif($t == 'availablesn'){
+                    return DB::connection($this->mssqlcon())->table('OSRI');
+                }elseif($t == 'gl'){
+                    return DB::connection($this->mssqlcon())->table('OACT');
+                }elseif($t == 'inventorytransferlist'){
+                    return DB::connection($this->mssqlcon())->table('OPCH')->where("DocType", "I");
+                }elseif($t == 'whslist'){
+                    return DB::connection($this->mssqlcon())->table('OWHS');
+                }elseif($t == 'udf'){
+                    return DB::connection($this->mssqlcon())->table('UFD1');
+                }elseif($t == 'ocrd'){
+                    return DB::connection($this->mssqlcon())->table('OCRD');
+                }elseif($t == 'companies'){
+                    $companyID = \Auth::user()->branch->companies;
+                    return DB::table('companies')->where('id', $companyID )->pluck('name')->first();
+       
+                }else{
+                return "ERROR WEW!!";
+            }
+        }
+    }
+    public function fetchCreatedAPCMExternal(){
+   
+        function getItem($icode){
+          $d = DB::connection('mysql-qportal-test')->table('apcm_items')->where('docnum_id', $icode)->get();
+          foreach($d as $item){
+            $data[] = ["ItemCode"=>$item->itemcode, "Quantity"=> $item->quantity, "WarehouseCode"=> $item->towarehouse, "SerialNumbers"=> json_decode($item->serialnumbers)];
+       
+          }
+          return $data;
+        }
+        function getSourceVendor($v){
+           return DB::table('companies')->where('name', $v)->pluck('sap_name')->first();
+        }
+        function getCardCode($t,$c){
+           return DB::connection($t->mssqlcon())->table('OCRD')->where('CardName', $c)->pluck('CardCode')->first();
+        }
+        function getSeries($branch,$d, $objectcode){
+           $seriesname = DB::table('branches')->where('id', $branch->id)->pluck('seriesname')->first();
+           return DB::connection($d->mssqlcon())->table('NNM1')->where('ObjectCode',  $objectcode)->where('SeriesName', $seriesname)->pluck('series')->first();
+        }
+         $id = \Auth::user()->branch;
+        $companies = DB::table('companies')->where('id', $id->companies)->pluck('sap_name')->first();
+        $created = DB::connection('mysql-qportal-test')->table('apcm_created')->where('to_vendor', 'like', '%'.$companies.'%')->get();
+        
+        foreach( $created  as $i){
+            
+           $data [] = ["source_vendor"=> getSourceVendor($i->source_vendor),
+                       "CardCode"=>  getCardCode($this,getSourceVendor($i->source_vendor)),
+                       "Series"=> (int)getSeries($id, $this, $i->objectcode),
+                       "objectcode"=>$i->objectcode,
+                       "to_vendor"=> $i->to_vendor,
+                       "status"=> $i->status,
+                       "lines"=> getItem($i->docnum_id)
+   
+                       ];
+        }
+        return $data;
+     }
+    public function GettersItemsAPINVOICE(Request $req){
+        if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
+             
+    //ARRAY DATA MANIPULATION
+    function Recustomize($DocEntry, $db){
+            return DB::connection($db)->table('PCH1')
+            ->select('DocEntry','ItemCode','Dscription as ItemName','Quantity','WhsCode','AcctCode', 'Text')
+            ->where('DocEntry', $DocEntry)->get();
+    }
+    //FUNCTION GET WAREHOUSE
+    function Warehouse($functions,$itemCode){
+        return  $warehouse = $functions->SapTablesAPINVOICE('itembywarehouse')
+            ->select('ItemCode','WhsCode')                
+            ->where('ItemCode',  $itemCode)
+            ->where('OnHand', '>', 0)
+            ->get();
+    }
+    function checkserial($itemCode,$whs,$serial, $t){
+            return  $t->SapTablesAPINVOICE('availablesn')
+            ->select('IntrSerial')
+            ->where('ItemCode', $itemCode)
+            ->where('WhsCode', $whs)
+            ->where('IntrSerial', $serial)
+            ->pluck('IntrSerial')
+            ->first();
+    }
+    //END
+    try {
+            if($req->get == 'items'){
+                if($req->page || $req){
+                    if($req->search){
+                        $v= $req->search;
+                        $req->search = DB::connection($this->mssqlcon())->table('OSRN')->where('DistNumber', $req->search)->pluck('ItemCode')->first();
+                        
+                    $get = $this->SapTablesAPINVOICE('items')
+                        ->where('ItemCode', 'LIKE', '%'.$req->search.'%')
+                        ->where('OnHand', '>', 0)
+                        ->paginate(1)
+                        ;
+                        foreach(Warehouse($this,$req->search) as $i){
+                            
+                            if(checkserial(@$get[0]->ItemCode,@$i->WhsCode,$v,$this)){
+                                $out[] =  ['ItemCode' => @$get[0]->ItemCode,
+                                'id'=> @$get[0]->ItemCode.'-'.@$i->WhsCode,
+                                'WhsCode'=> @$i->WhsCode,
+                                'ItemName' => @$get[0]->ItemName ,
+                                'FrgnName' => @$get[0]->FrgnName,
+                                'OnHand'	=>   @$get[0]->OnHand,
+                                'U_srp'  =>	@$get[0]->U_srp,
+                                'U_RegNC' =>	@$get[0]->U_RegNC,
+                                'U_PresentNC' =>	@$get[0]->U_PresentNC,
+                                'U_Freebies' =>	@$get[0]->U_Freebies,
+                                'U_cSizes'	=> @$get[0]->U_cSizes
+                            ];
+                            }
+                            
+                        }if($out){
+                            return $out;
+                        }else{
+                            return "";
+                        }
+                        
+                    }else{
+                        return "";
+                        return $this->SapTablesAPINVOICE('items') 
+                        ->orderby('CreateDate', 'DESC')
+                        ->where('OnHand', '>', 0)
+                        ->paginate(10);
+                    }
+                }
+            }elseif($req->get == 'itembywarehouse'){
+        
+                    return $this->SapTablesAPINVOICE('itembywarehouse')
+                    ->select('ItemCode','WhsCode','OnHand','IsCommited','OnOrder')
+                    ->where('ItemCode', $req->itemcode)
+                    ->where('OnHand', '>', 0)
+                    ->paginate(10);
+
+            }elseif($req->get == 'availablesn'){
+                return $this->SapTablesAPINVOICE('availablesn')
+                    ->select('IntrSerial','ItemCode','WhsCode')
+                    ->where('ItemCode', $req->itemcode)
+                    ->where('WhsCode', $req->warehouse)
+                // ->where('Status', $req->status)
+                    ->get();
+            }elseif($req->get == 'gl'){
+                return $this->SapTablesAPINVOICE('gl')
+                ->select('AcctCode','AcctName','CurrTotal')
+                ->where('FrozenFor', 'N')
+                ->get();
+            }elseif($req->get == 'inventorytransferlist'){
+                return $this->SapTablesAPINVOICE('inventorytransferlist')
+                ->select('CardName','DocEntry','DocNum','DocStatus','DocDate','Comments','JrnlMemo','Filler')
+                ->orderby('DocDate', 'DESC')
+                ->paginate(1);
+            }elseif($req->get == 'whslist'){
+                return $this->SapTablesAPINVOICE('whslist')
+                ->select('WhsCode')
+                ->get();
+            }elseif($req->get == 'index'){
+                //plucking
+                //?get=index&docentry={}
+                return Recustomize($req->docentry, $this->mssqlcon());
+            }elseif($req->get == 'udf'){
+                return $this->SapTablesAPINVOICE('udf')
+                ->where('FieldID', $req->id)
+                ->select('FldValue','Descr')
+                ->get();
+            }elseif($req->get == 'vendor'){
+                return $this->SapTablesAPINVOICE('ocrd')->select("CardName","CardCode")
+                ->where('CardType', 'S')->where('validFor', 'y')->where('frozenFor', 'n')
+                ->get();
+            }elseif($req->get == 'companies'){
+                return $this->SapTablesAPINVOICE('companies');
+            }elseif($req->get == 'getcreatedapcexternal'){
+                return $this->fetchCreatedAPCMExternal();
+            }else{
+                return "ERROR";
+            }
+    }catch(\Exception $e){
+        return $e;
+    }
+    }else{
+        return Response()->json(['error'=>'No Access']);
+    }
+  }
+   
+#####==========================PURCHASING AP INVOICE END ==============================#####
 }
