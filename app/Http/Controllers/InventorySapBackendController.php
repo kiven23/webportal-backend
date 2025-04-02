@@ -829,12 +829,12 @@ public function printInventorytransfer(request $req){
      
     public function sendapInvoice(request $req){
         
-        return $req;
+       
         if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
             $seriesname = \Auth::user()->branch->seriesname;
           try{
               if($req->all()){
-              $data = ["db"=> ['dbname' => $this->getdatabase()->dbname,  'dbserver' => $this->getdatabase()->server], "data"=> $req->all(), "series"=>  \Auth::user()->branch->seriesname]; 
+              $data = ["db"=> ['dbname' => $this->getdatabase()->dbname,  'dbserver' => $this->getdatabase()->server], "data"=> $req->items, "series"=>  \Auth::user()->branch->seriesname, "comments"=> $req->comments]; 
               $client = new Client(['timeout' => 300000]);
                
               $response = $client->post(($this->ip()).'/api/inventory/apcredit/invoice', [
@@ -886,7 +886,7 @@ public function printInventorytransfer(request $req){
         function getItem($icode){
           $d = DB::connection('mysql-qportal-test')->table('apcm_items')->where('docnum_id', $icode)->get();
           foreach($d as $item){
-            $data[] = ["ItemCode"=>$item->itemcode, "Quantity"=> $item->quantity, "WarehouseCode"=> $item->towarehouse, "SerialNumbers"=> json_decode($item->serialnumbers)];
+            $data[] = ["ItemCode"=>$item->itemcode, "DocNum"=> $item->docnum_id,"Quantity"=> $item->quantity, "WarehouseCode"=> $item->towarehouse, "SerialNumbers"=> json_decode($item->serialnumbers)];
        
           }
           return $data;
@@ -912,6 +912,7 @@ public function printInventorytransfer(request $req){
                        "Series"=> (int)getSeries($id, $this, $i->objectcode),
                        "objectcode"=>$i->objectcode,
                        "to_vendor"=> $i->to_vendor,
+                       "docnumber"=> $i->docnum_id,
                        "status"=> $i->status,
                        "lines"=> getItem($i->docnum_id)
    
