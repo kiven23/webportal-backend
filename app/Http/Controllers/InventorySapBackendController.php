@@ -643,7 +643,6 @@ public function printInventorytransfer(request $req){
     //SAP TABLES BACK-END INVENTORY TRANSFER
     public function sendapcmTransfer(request $req){
         
-        
         if (\Auth::user()->hasRole(['SapB1FullAccess'])) {
             $seriesname = \Auth::user()->branch->seriesname;
           try{
@@ -886,7 +885,7 @@ public function printInventorytransfer(request $req){
         function getItem($icode){
           $d = DB::connection('mysql-qportal-test')->table('apcm_items')->where('docnum_id', $icode)->get();
           foreach($d as $item){
-            $data[] = ["ItemCode"=>$item->itemcode, "DocNum"=> $item->docnum_id,"Quantity"=> $item->quantity, "WarehouseCode"=> $item->towarehouse, "SerialNumbers"=> json_decode($item->serialnumbers)];
+            $data[] = ["ItemCode"=>$item->itemcode, "DocNum"=> $item->docnum_id,"Quantity"=> $item->quantity, "WarehouseCode"=> $item->towarehouse, "SerialNumbers"=> json_decode($item->serialnumbers), "Model"=>$item->itemdescription];
        
           }
           return $data;
@@ -903,7 +902,7 @@ public function printInventorytransfer(request $req){
         }
          $id = \Auth::user()->branch;
         $companies = DB::table('companies')->where('id', $id->companies)->pluck('sap_name')->first();
-        $created = DB::connection('mysql-qportal-test')->table('apcm_created')->where('to_vendor', 'like', '%'.$companies.'%')->get();
+        $created = DB::connection('mysql-qportal-test')->table('apcm_created')->where('status', 0)->where('to_vendor', 'like', '%'.$companies.'%')->get();
         
         foreach( $created  as $i){
             
