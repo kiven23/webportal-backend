@@ -483,10 +483,18 @@ public function sendNewBusinessPartner(request $req){
 
 public function inventorytransferreports($req){
     try {
-      // $database = $this->mssqlcon();
-     $database = '7279f466b64f2099266553eba43fef48';
+     $database = $this->mssqlcon();
+     #$database = '7279f466b64f2099266553eba43fef48';
       function getDocentry($DocEntry,$database){
-        return DB::connection($database)->table('wtr1')->where('DocEntry',  $DocEntry)->get();
+        return DB::connection($database)->table('pch1')->where('DocEntry',  $DocEntry)->get();
+        try{
+            return DB::connection($database)->table('wtr1')->where('DocEntry',  $DocEntry)->get();
+        }catch(\Exception $e){
+             
+            return DB::connection($database)->table('pch1')->where('DocEntry',  $DocEntry)->get();
+
+        }
+        
       }
       function getItems($docentry, $database){
         return DB::connection($database)->table('pdn1')->where('docentry', $docentry)->get();
@@ -519,20 +527,24 @@ public function inventorytransferreports($req){
          ->join('OITL as T4', 'T4.LogEntry', '=', 'T3.LogEntry')
          ->leftJoin('OCRD as T5', 'T5.CardCode', '=', 'T4.CardCode')
          ->where('T1.InvntItem', 'Y')
-         ->where('T4.ApplyType', 67)
+        //  ->where('T4.ApplyType', 67)
          ->whereBetween('T4.AppDocNum', [$docnum, $docnum])
          ->whereBetween('T4.ApplyEntry', [$docenty, $docenty])
          ->where('T4.ItemCode',  $itemcode)
          ->groupBy('T0.AbsEntry')
          ->get();   
       }
-
+     
       $form = getDocentry($req->DocEntry,$database);
+   
       $whs = explode('-', $form[0]->WhsCode);
+      
       $getbranch = DB::table('branches')->where('whscode', 'LIKE', '%'.$whs[0].'%')->get() ;
+      
       $heading = getHeading($req->DocEntry, $database)->get();
       $data = [];
       $sumqty = [];
+    
       foreach($form as $x){
         $data[] = ["prodcat"=> getProdCat($x->ItemCode, $database)[0]->FrgnName,
             "brand"=> getBrand(getProdCat($x->ItemCode, $database)[0]->FirmCode, $database),
@@ -570,16 +582,18 @@ public function printInventorytransfer(request $req){
                 "date" => date('Y/m/d', strtotime($date)) ,
                 "comment" => $comment];
    }
+  
    $reports = $this->inventorytransferreports($req);
-   $comment = $reports['head'][0]->Comments;
-   $date = $reports['head'][0]->DocDate;
-   $branch = $reports['additional'][0]->name;
-   $docnum = $reports['head'][0]->DocNum;
+   $comment = @$reports['head'][0]->Comments;
+   $date = @$reports['head'][0]->DocDate;
+   $branch = @$reports['additional'][0]->name;
+   $docnum = @$reports['head'][0]->DocNum;
    $data = [];
+
    foreach($reports['item'] as $index=> $rep){
       $data[] = format_reports($index,$rep,$comment,$branch,$docnum,$date);
    }
-    
+     
    $response = $client->post('http://192.168.200.11:8004/api/reports/crystal?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJleHAiOjIwNTc3MjQ3NDd9.0F5ZFHigMNt732EHIFd7azram_PWHIC5RGkkz8wqEz8', [
     'headers' => ['Content-Type' => 'application/json'],
     'body' => json_encode($data),
