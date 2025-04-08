@@ -460,7 +460,11 @@ Route::post('/inventory/apcm/submit', 'InventorySapBackendController@sendapcmTra
 // Route::get('/inventory/purchasing/invoice/get', 'InventorySapBackendController@fetchCreatedAPCMExternal');
 Route::get('/inventory/purchasing/apinvoice/getters', 'InventorySapBackendController@GettersItemsAPINVOICE');
 Route::post('/inventory/apinvoice/submit', 'InventorySapBackendController@sendapInvoice');
+Route::get('/inventory/apinvoice/reports/print', 'InventorySapBackendController@apinvoiceprinting');
+Route::get('/inventory/apcm/reports/print', 'InventorySapBackendController@apcredinoteprinting');
 
+ 
+ 
 //END SAP GOODSISSUE
 //SAP GOODSRECEIPT START
 Route::get('/inventory/goodsreceipt/getters', 'InventorySapBackendController@GettersItemsGoodsReceipt');

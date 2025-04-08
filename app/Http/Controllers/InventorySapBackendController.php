@@ -481,19 +481,15 @@ public function sendNewBusinessPartner(request $req){
 
 ## ------------------------------------------- INVENTORY TRANSFER REPORTS GENERATION ----------------------------------------#
 
-public function inventorytransferreports($req){
+public function inventorytransferreports($req, $table,$head){
+    
     try {
+ 
      $database = $this->mssqlcon();
      #$database = '7279f466b64f2099266553eba43fef48';
-      function getDocentry($DocEntry,$database){
-        return DB::connection($database)->table('pch1')->where('DocEntry',  $DocEntry)->get();
-        try{
-            return DB::connection($database)->table('wtr1')->where('DocEntry',  $DocEntry)->get();
-        }catch(\Exception $e){
-             
-            return DB::connection($database)->table('pch1')->where('DocEntry',  $DocEntry)->get();
-
-        }
+      function getDocentry($DocEntry,$database,$tbl){
+        return DB::connection($database)->table($tbl)->where('DocEntry',  $DocEntry)->get();
+         
         
       }
       function getItems($docentry, $database){
@@ -505,8 +501,8 @@ public function inventorytransferreports($req){
       function getBrand($firmcode, $database){
         return DB::connection($database)->table('omrc')->where('FirmCode', $firmcode)->pluck('FirmName')->first();
       }
-      function getHeading($docentry, $database){
-        return DB::connection($database)->table('owtr')->where('DocEntry', $docentry)->select('DocNum','DocDate','CardName','Comments','NumAtCard');
+      function getHeading($docentry, $database,$head){
+        return DB::connection($database)->table($head)->where('DocEntry', $docentry)->select('DocNum','DocDate','CardName','Comments','NumAtCard');
 
       }
       function getSerial($docnum,$docenty,$itemcode,$database){
@@ -527,7 +523,7 @@ public function inventorytransferreports($req){
          ->join('OITL as T4', 'T4.LogEntry', '=', 'T3.LogEntry')
          ->leftJoin('OCRD as T5', 'T5.CardCode', '=', 'T4.CardCode')
          ->where('T1.InvntItem', 'Y')
-        //  ->where('T4.ApplyType', 67)
+         // ->where('T4.ApplyType', 67)
          ->whereBetween('T4.AppDocNum', [$docnum, $docnum])
          ->whereBetween('T4.ApplyEntry', [$docenty, $docenty])
          ->where('T4.ItemCode',  $itemcode)
@@ -535,13 +531,13 @@ public function inventorytransferreports($req){
          ->get();   
       }
      
-      $form = getDocentry($req->DocEntry,$database);
+      $form = getDocentry($req->DocEntry,$database, $table);
    
       $whs = explode('-', $form[0]->WhsCode);
       
       $getbranch = DB::table('branches')->where('whscode', 'LIKE', '%'.$whs[0].'%')->get() ;
       
-      $heading = getHeading($req->DocEntry, $database)->get();
+      $heading = getHeading($req->DocEntry, $database,$head)->get();
       $data = [];
       $sumqty = [];
     
@@ -562,6 +558,7 @@ public function inventorytransferreports($req){
   }
  
 public function printInventorytransfer(request $req){
+    return "";
    $client = new Client(['timeout' => 300000]);
    function format_json($serials){
             $serial = [];
@@ -580,10 +577,12 @@ public function printInventorytransfer(request $req){
                 "name" => $branch,
                 "no" => $docnum,
                 "date" => date('Y/m/d', strtotime($date)) ,
-                "comment" => $comment];
+                "comment" => $comment,
+                "reportname"=> "INVENTORY TRANSFER"];
    }
   
-   $reports = $this->inventorytransferreports($req);
+ 
+   $reports = $this->inventorytransferreports($req,'wtr1', 'owtr');
    $comment = @$reports['head'][0]->Comments;
    $date = @$reports['head'][0]->DocDate;
    $branch = @$reports['additional'][0]->name;
@@ -831,6 +830,51 @@ public function printInventorytransfer(request $req){
         return Response()->json(['error'=>'No Access']);
     }
   }
+  public function apcredinoteprinting(request $req){
+ 
+    $client = new Client(['timeout' => 300000]);
+    function format_json($serials){
+             $serial = [];
+             foreach($serials as $sn){
+                $serial [] = $sn->DistNumber;
+             }
+             return $serial;
+    }
+    function format_reports($index, $data,$comment,$branch,$docnum,$date){
+         return  ["brand" => $data['brand'],
+                 "prodcat" => $data['prodcat'],
+                 "Description" => $data['model'],
+                 "Warehouse" => $data['whs'],
+                 "qty" => $data['qty'],
+                 "serial" => format_json($data['serial']),
+                 "name" => $branch,
+                 "no" => $docnum,
+                 "date" => date('Y/m/d', strtotime($date)) ,
+                 "comment" => $comment,
+                 "reportname"=> "AP CREDIT NOTE"];
+    }
+   
+    $reports = $this->inventorytransferreports($req,'rpc1','orpc');
+    $comment = @$reports['head'][0]->Comments;
+    $date = @$reports['head'][0]->DocDate;
+    $branch = @$reports['additional'][0]->name;
+    $docnum = @$reports['head'][0]->DocNum;
+    $data = [];
+    
+    foreach($reports['item'] as $index=> $rep){
+       $data[] = format_reports($index,$rep,$comment,$branch,$docnum,$date);
+    }
+      
+    $response = $client->post('http://192.168.200.11:8004/api/reports/crystal?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJleHAiOjIwNTc3MjQ3NDd9.0F5ZFHigMNt732EHIFd7azram_PWHIC5RGkkz8wqEz8', [
+     'headers' => ['Content-Type' => 'application/json'],
+     'body' => json_encode($data),
+     ]);
+ 
+     file_put_contents('InventoryTransfer-Report-'.$date.'.pdf', $response->getBody());
+     $response = response()->download('InventoryTransfer-Report-'.$date.'.pdf');
+     $response->headers->set('Access-Control-Expose-Headers', 'Content-Disposition');
+     return $response;
+  }
   
 #####==========================PURCHASING AP END ==============================#####
 
@@ -1058,6 +1102,51 @@ public function printInventorytransfer(request $req){
     }else{
         return Response()->json(['error'=>'No Access']);
     }
+  }
+  public function apinvoiceprinting(request $req){
+ 
+    $client = new Client(['timeout' => 300000]);
+    function format_json($serials){
+             $serial = [];
+             foreach($serials as $sn){
+                $serial [] = $sn->DistNumber;
+             }
+             return $serial;
+    }
+    function format_reports($index, $data,$comment,$branch,$docnum,$date){
+         return  ["brand" => $data['brand'],
+                 "prodcat" => $data['prodcat'],
+                 "Description" => $data['model'],
+                 "Warehouse" => $data['whs'],
+                 "qty" => $data['qty'],
+                 "serial" => format_json($data['serial']),
+                 "name" => $branch,
+                 "no" => $docnum,
+                 "date" => date('Y/m/d', strtotime($date)) ,
+                 "comment" => $comment,
+                 "reportname"=> "AP INVOICE"];
+    }
+   
+    $reports = $this->inventorytransferreports($req,'pch1','opch');
+    $comment = @$reports['head'][0]->Comments;
+    $date = @$reports['head'][0]->DocDate;
+    $branch = @$reports['additional'][0]->name;
+    $docnum = @$reports['head'][0]->DocNum;
+    $data = [];
+ 
+    foreach($reports['item'] as $index=> $rep){
+       $data[] = format_reports($index,$rep,$comment,$branch,$docnum,$date);
+    }
+      
+    $response = $client->post('http://192.168.200.11:8004/api/reports/crystal?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJleHAiOjIwNTc3MjQ3NDd9.0F5ZFHigMNt732EHIFd7azram_PWHIC5RGkkz8wqEz8', [
+     'headers' => ['Content-Type' => 'application/json'],
+     'body' => json_encode($data),
+     ]);
+ 
+     file_put_contents('InventoryTransfer-Report-'.$date.'.pdf', $response->getBody());
+     $response = response()->download('InventoryTransfer-Report-'.$date.'.pdf');
+     $response->headers->set('Access-Control-Expose-Headers', 'Content-Disposition');
+     return $response;
   }
    
 #####==========================PURCHASING AP INVOICE END ==============================#####
