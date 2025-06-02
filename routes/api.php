@@ -428,11 +428,12 @@ Route::group(['prefix' => 'inventory' ,'middleware' => ['jwt.auth', 'grpomiddlew
 	Route::post('/grpo/download', 'InventoryGrpoController@download'); 
 	 
 });
+ 
 Route::get('/grpo/checkserial/getlines', 'InventoryGrpoController@checksn');
 //PRINT GRPO RECEIVING FORM
 Route::get('/gen/grporeceiving', 'InventoryGrpoController@printreceiving');
 Route::get('/getlogs/grpo', 'InventoryGrpoController@getlogs');
- 
+Route::get('/grpo/unserialized', 'InventoryGrpoController@getUncreatedSn');
 //END GRPO INVENTORY
 //INVENTORY TRANSFER PRINTING
  

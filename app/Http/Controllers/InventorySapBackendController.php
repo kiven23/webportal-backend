@@ -117,10 +117,10 @@ class InventorySapBackendController extends Controller
             if($req->get == 'items'){
                 if($req->page || $req){
                     if($req->search){
-                        $v= $req->search;
-                        $req->search = DB::connection($this->mssqlcon())->table('OSRN')->where('DistNumber', $req->search)->pluck('ItemCode')->first();
+                        $v = base64_decode($req->search);
+                        $req->search = DB::connection($this->mssqlcon())->table('OSRN')->where('DistNumber','=', base64_decode($req->search))->pluck('ItemCode')->first();
                          
-                       $get = $this->SapTablesInventoryTransfer('items')
+                        $get = $this->SapTablesInventoryTransfer('items')
                         ->where('ItemCode', 'LIKE', '%'.$req->search.'%')
                         ->where('OnHand', '>', 0)
                         ->paginate(1)
@@ -146,7 +146,7 @@ class InventorySapBackendController extends Controller
                         }if($out){
                             return $out;
                         }else{
-                            return "";
+                            return "Found";
                         }
                          
                     }else{
@@ -170,7 +170,8 @@ class InventorySapBackendController extends Controller
                     ->select('IntrSerial','ItemCode','WhsCode')
                     ->where('ItemCode', $req->itemcode)
                     ->where('WhsCode', $req->warehouse)
-                   // ->where('Status', $req->status)
+                    //->where('Status', $req->status)
+                	->whereNotNull('IntrSerial')
                     ->get();
             }elseif($req->get == 'gl'){
                 return $this->SapTablesInventoryTransfer('gl')
@@ -193,13 +194,13 @@ class InventorySapBackendController extends Controller
             }elseif($req->get == 'udf'){
                 return $this->SapTablesInventoryTransfer('udf')
                 ->where('FieldID', $req->id)
-                ->select('FldValue','Descr')
+                ->select('FldValue','Descr','FieldID')
                 ->get();
             }else{
                 return "ERROR";
             }
        }catch(\Exception $e){
-         return $e;
+         return 1;
        }
     }else{
         return Response()->json(['error'=>'No Access']);
@@ -558,7 +559,7 @@ public function inventorytransferreports($req, $table,$head){
   }
  
 public function printInventorytransfer(request $req){
-    return "";
+  
    $client = new Client(['timeout' => 300000]);
    function format_json($serials){
             $serial = [];
@@ -593,7 +594,7 @@ public function printInventorytransfer(request $req){
       $data[] = format_reports($index,$rep,$comment,$branch,$docnum,$date);
    }
      
-   $response = $client->post('http://192.168.200.11:8004/api/reports/crystal?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJleHAiOjIwNTc3MjQ3NDd9.0F5ZFHigMNt732EHIFd7azram_PWHIC5RGkkz8wqEz8', [
+   $response = $client->post('http://192.168.200.11:8004/api/reports/crystal/inventorytransfer?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJleHAiOjIwNTc3MjQ3NDd9.0F5ZFHigMNt732EHIFd7azram_PWHIC5RGkkz8wqEz8', [
     'headers' => ['Content-Type' => 'application/json'],
     'body' => json_encode($data),
     ]);

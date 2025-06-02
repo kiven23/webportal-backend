@@ -128,14 +128,39 @@ class InventoryGrpoController extends Controller
     return $all;
   }
   public function createdFunction(request $req){
-      
+    
     $user = \Auth::user()->barcoder;
     $database = explode(' -', \Auth::user()->dbselection->dbname);
     $req['db'] = $database[0];
     if(\Auth::user()->id == 2608){
       $data = DB::connection('mysql-qportal-test')->table('po')->where('DocEntry', $req->data)->get();
     }else{
-      $data = DB::connection('mysql-qportal')->table('po')->where('DocEntry', $req->data)->get();
+      try{
+        if($req->check == 0){
+          if(\Auth::user()->id == 2606){
+            $data = DB::connection('mysql-qportal-test')->table('po')->where('DocEntry', $req->data)->get();
+          }else{
+            $data = DB::connection('mysql-qportal')->table('po')->where('DocEntry', $req->data)->get();
+          }
+   
+        }else{
+          if(\Auth::user()->id == 2606){
+            $data = DB::connection('mysql-qportal-test')->table('po')->where('DocEntry', $req->data)->get();
+          }else{
+            $data = DB::connection('mysql-qportal')->table('po')->where('DocEntry', $req->data)->where('status', 0)->get();
+          }
+          
+        }
+      }catch(\Exception $e){
+        if(\Auth::user()->id == 2606){
+          $data = DB::connection('mysql-qportal-test')->table('po')->where('DocEntry', $req->data)->get();
+        }else{
+          $data = DB::connection('mysql-qportal')->table('po')->where('DocEntry', $req->data)->get();
+        }
+    
+      }
+       
+      
     }
     
          
@@ -270,26 +295,80 @@ class InventoryGrpoController extends Controller
     $pdf = PDF::loadView("grpobarcode.generator", ["data"=> $new]);
     return $pdf->download('sample.pdf')->header('Access-Control-Expose-Headers', 'Content-Disposition'); 
   }
-  public function grporeports($data){
+  // public function grporeports($data){
     
-    try {
-      $database = $this->mssqlcon();
-      // $expo = explode('-',$data);
-      // $po = $expo[0];
-      // $qty = (int)$expo[1];
-      // $line = (int)$expo[2];
+  //   try {
+  //     $database = $this->mssqlcon();
+  //     // $expo = explode('-',$data);
+  //     // $po = $expo[0];
+  //     // $qty = (int)$expo[1];
+  //     // $line = (int)$expo[2];
       
-      function getDocentry($mapid){
+  //     function getDocentry($mapid){
+  //       if(\Auth::user()->id == 2608){
+  //         return DB::connection('mysql-qportal-test')->table('serial')->where('mapid', $mapid)->pluck('docentry')->first();
+  //       }else{
+  //         return DB::connection('mysql-qportal')->table('serial')->where('mapid', $mapid)->pluck('docentry')->first();
+  //       }
+        
+  //     }
+  //     // function getSn($map){
+  //     //   return DB::connection('mysql-qportal')->table('mapline')->where('mapline', $map)->get();
+  //     // }
+  //     function getItems($docentry, $database){
+  //       return DB::connection($database)->table('pdn1')->where('docentry', $docentry)->get();
+  //     }
+  //     function getProdCat($itemcode, $database){
+  //       return DB::connection($database)->table('oitm')->where('ItemCode', $itemcode)->select('FrgnName', 'FirmCode')->get();
+  //     }
+  //     function getBrand($firmcode, $database){
+  //       return DB::connection($database)->table('omrc')->where('FirmCode', $firmcode)->pluck('FirmName')->first();
+  //     }
+  //     function getHeading($docentry, $database){
+  //       return DB::connection($database)->table('opdn')->where('DocEntry', $docentry)->select('DocNum','DocDate','CardName','Comments','NumAtCard');
+
+  //     }
+
+  //     $form = getItems(getDocentry($data), $database);
+  //     $heading = getHeading(getDocentry($data), $database)->get();
+  //     $data = [];
+  //     $sumqty = [];
+  //     foreach($form as $x){
+  //       $data[] = ["prodcat"=> getProdCat($x->ItemCode, $database)[0]->FrgnName,
+  //       "brand"=> getBrand(getProdCat($x->ItemCode, $database)[0]->FirmCode, $database),
+  //       "model"=> $x->Dscription, "po"=> $x->BaseEntry, "qty"=> $x->Quantity, "serial"=> $x->Text];
+  //       $sumqty[] = $x->Quantity;
+  //     }
+  //     return ["head"=> $heading, "item"=> $data, "total"=> $sumqty];
+  //   } catch (\Exception $e) {
+  //     return $e;
+  //   }
+ 
+  // }
+  public function grporeportsgen($req, $table,$head){
+     
+    try {
+ 
+     $database = $this->mssqlcon();
+     #$database = '7279f466b64f2099266553eba43fef48';
+      function getDocentry($DocEntry,$database,$tbl){
+        return DB::connection($database)->table($tbl)->where('DocEntry',  $DocEntry)->get();
+         
+        
+      }
+      function Docentry($mapid){
         if(\Auth::user()->id == 2608){
           return DB::connection('mysql-qportal-test')->table('serial')->where('mapid', $mapid)->pluck('docentry')->first();
         }else{
-          return DB::connection('mysql-qportal')->table('serial')->where('mapid', $mapid)->pluck('docentry')->first();
+          if(\Auth::user()->id == 2606){
+             return DB::connection('mysql-qportal-test')->table('serial')->where('mapid', $mapid)->pluck('docentry')->first();
+          }else{
+            return DB::connection('mysql-qportal')->table('serial')->where('mapid', $mapid)->pluck('docentry')->first();
+          }
         }
         
       }
-      // function getSn($map){
-      //   return DB::connection('mysql-qportal')->table('mapline')->where('mapline', $map)->get();
-      // }
+      
       function getItems($docentry, $database){
         return DB::connection($database)->table('pdn1')->where('docentry', $docentry)->get();
       }
@@ -299,30 +378,127 @@ class InventoryGrpoController extends Controller
       function getBrand($firmcode, $database){
         return DB::connection($database)->table('omrc')->where('FirmCode', $firmcode)->pluck('FirmName')->first();
       }
-      function getHeading($docentry, $database){
-        return DB::connection($database)->table('opdn')->where('DocEntry', $docentry)->select('DocNum','DocDate','CardName','Comments','NumAtCard');
+      function getHeading($docentry, $database,$head){
+        return DB::connection($database)->table($head)->where('DocEntry', $docentry)->select('DocNum','DocDate','CardName','Comments','NumAtCard');
 
       }
-
-      $form = getItems(getDocentry($data), $database);
-      $heading = getHeading(getDocentry($data), $database)->get();
+      function getSerial($docnum,$docenty,$itemcode,$database){
+         return DB::connection($database)->table('OSRN as T0')
+         ->select(
+             DB::raw('MIN(T0.DistNumber) as DistNumber'),
+         )
+         ->join('OITM as T1', 'T1.ItemCode', '=', 'T0.ItemCode')
+         ->leftJoin('OSRQ as T2', function($join) {
+             $join->on('T2.ItemCode', '=', 'T0.ItemCode')
+                  ->on('T2.SysNumber', '=', 'T0.SysNumber')
+                  ->where('T2.Quantity', '>', 0);
+         })
+         ->join('ITL1 as T3', function($join) {
+             $join->on('T3.ItemCode', '=', 'T0.ItemCode')
+                  ->on('T3.SysNumber', '=', 'T0.SysNumber');
+         })
+         ->join('OITL as T4', 'T4.LogEntry', '=', 'T3.LogEntry')
+         ->leftJoin('OCRD as T5', 'T5.CardCode', '=', 'T4.CardCode')
+         ->where('T1.InvntItem', 'Y')
+         // ->where('T4.ApplyType', 67)
+         ->whereBetween('T4.AppDocNum', [$docnum, $docnum])
+         ->whereBetween('T4.ApplyEntry', [$docenty, $docenty])
+         ->where('T4.ItemCode',  $itemcode)
+         ->groupBy('T0.AbsEntry')
+         ->get();   
+      }
+ 
+      $docentry = Docentry($req);
+      
+      $form = getDocentry($docentry,$database, $table);
+   
+      $whs = explode('-', $form[0]->WhsCode);
+       
+      $getbranch = DB::table('branches')->where('whscode', 'LIKE', '%'.$whs[0].'%')->get() ;
+      
+      $heading = getHeading($docentry, $database,$head)->get();
       $data = [];
       $sumqty = [];
+       
       foreach($form as $x){
+        
+        $input = $x->Text;
+        $cleaned = trim((string)$input);
+        $parts = array_filter(explode(" ", $cleaned));
+        $parts = array_values($parts);
+        
+        // Step 4: Check if index 0 exists
+        if (isset($parts[0])) {
+            $d = "✅ Value: " . $parts[0];
+        } else {
+            $d = "❌ Walang laman si index 0";
+        }
         $data[] = ["prodcat"=> getProdCat($x->ItemCode, $database)[0]->FrgnName,
-        "brand"=> getBrand(getProdCat($x->ItemCode, $database)[0]->FirmCode, $database),
-        "model"=> $x->Dscription, "po"=> $x->BaseEntry, "qty"=> $x->Quantity, "serial"=> $x->Text];
+            "brand"=> getBrand(getProdCat($x->ItemCode, $database)[0]->FirmCode, $database),
+            "model"=> $x->Dscription,
+            "whs"=> $x->WhsCode,
+            "qty"=> (float)$x->Quantity, 
+            "serial"=> $parts  ];
+            //getSerial($docentry,$docentry,$x->ItemCode,$database)]
         $sumqty[] = $x->Quantity;
       }
-      return ["head"=> $heading, "item"=> $data, "total"=> $sumqty];
+     
+      return ["head"=> $heading, "item"=> $data, "total"=> $sumqty, "additional"=> $getbranch];
     } catch (\Exception $e) {
       return $e;
     }
  
   }
+ 
   public function printreceiving(request $req){
-     
-    $reports = $this->grporeports($req->data );
+    
+  
+    $client = new Client(['timeout' => 300000]);
+   function format_json($serials){
+            $serial = [];
+            foreach($serials as $sn){
+               $serial [] = $sn;
+            }
+            return $serial;
+   }
+   function format_reports($index, $data,$comment,$branch,$docnum,$date,$NumAtCard){
+        return  ["brand" => $data['brand'],
+                "prodcat" => $data['prodcat'],
+                "Description" => $data['model'],
+                "Warehouse" => $data['whs'],
+                "qty" => $data['qty'],
+                "serial" => format_json($data['serial']),
+                "name" => $branch,
+                "no" => $docnum,
+                "date" => date('Y/m/d', strtotime($date)) ,
+                "comment" => $comment,
+                "reportname"=> "Goods Receipt PO",
+                "ref"=> $NumAtCard];
+   }
+  
+ 
+   $reports = $this->grporeportsgen($req->data, 'pdn1','opdn');
+   $comment = @$reports['head'][0]->Comments;
+   $date = @$reports['head'][0]->DocDate;
+   $branch = @$reports['additional'][0]->name;
+   $docnum = @$reports['head'][0]->DocNum;
+   $NumAtCard = $reports['head'][0]->NumAtCard;
+   $data = [];
+    
+   foreach($reports['item'] as $index=> $rep){
+      $data[] = format_reports($index,$rep,$comment,$branch,$docnum,$date, $NumAtCard);
+   }
+    
+   $response = $client->post('http://192.168.200.11:8004/api/reports/crystal/grpo?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJleHAiOjIwNTc3MjQ3NDd9.0F5ZFHigMNt732EHIFd7azram_PWHIC5RGkkz8wqEz8', [
+    'headers' => ['Content-Type' => 'application/json'],
+    'body' => json_encode($data),
+    ]);
+
+    file_put_contents('InventoryTransfer-Report-'.$date.'.pdf', $response->getBody());
+    $response = response()->download('InventoryTransfer-Report-'.$date.'.pdf');
+    $response->headers->set('Access-Control-Expose-Headers', 'Content-Disposition');
+    return $response;
+    $reports = $this->grporeportsgen($req->data, 'pdn1','opdn' );
  
     $head = $reports['head'];
     $rep = $reports['item'];
@@ -339,5 +515,28 @@ class InventoryGrpoController extends Controller
     
       return DB::connection('diapidata')->table('grpologs')->where('mapid', $req->data)->pluck('logs')->first();
      
+  }
+  public function getUncreatedSn(){
+    $code = DB::table('branches')->where('id', \Auth::user()->branch_id)->pluck('whscode')->first();
+    $dd = explode(",", $code);
+        if( $dd[0] == 'ADMN'){
+          $whs = ["ADMN","ADM2","ANON","EASY","THRE","STEA","ELEC","OUTX","ISAB","APPT","CAMA","MIAW"];
+        }else{
+          $whs = $dd;
+        }
+        return DB::connection('mysql-qportal')
+        ->table('po')
+        ->where('status', 0)
+        ->where(function($q) use ($whs) {
+            foreach ($whs as $base) {
+                // this covers everything that *contains* that base code
+                $q->orWhere('WhsCode', 'like', "%{$base}%");
+            }
+        })
+        ->select('docentry')
+        ->get();
+    // $companies = \Auth::user()->branch->companies;
+    // $branch = DB::table('branches')->where('')
+    //return DB::connection('mysql-qportal')->table('po')->where('status', 0)->whereIn('WhsCode', 'like', '%'.$whs.'%')->select('docentry')->get();
   }
 }
